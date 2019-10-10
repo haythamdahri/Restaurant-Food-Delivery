@@ -1,0 +1,13 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title>Activation Email</title>
+</head>
+<body>
+<div>
+    <p>This is an activation email.</p>
+</div>
+<a th:href="@{'http://localhost:4200/activate-account/' + ${token}}" target="_blank">Activate my account</a>
+</body>
+</html>
