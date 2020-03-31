@@ -7,7 +7,7 @@ import org.springframework.stereotype.Repository;
 import org.springframework.web.bind.annotation.CrossOrigin;
 
 @Repository
-@RepositoryRestResource
+@RepositoryRestResource(path = "/messages")
 @CrossOrigin("*")
 public interface MessageRepository extends JpaRepository<Message, Long> {
 }

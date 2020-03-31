@@ -11,6 +11,8 @@ import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 
+import java.util.Date;
+
 @SpringBootApplication
 public class RestaurantDeliveryServiceBackendApplication implements CommandLineRunner {
 
@@ -30,7 +32,9 @@ public class RestaurantDeliveryServiceBackendApplication implements CommandLineR
     @Override
     public void run(String... args) throws Exception {
 /*        // Save users
-        User user = new User(null, "haytham.dahri@gmail.com", this.bCryptPasswordEncoder.encode("toortoor"), "haytham_dahri", true, "", null);
+        User user = new User(null, "haytham.dahri@gmail.com",
+                this.bCryptPasswordEncoder.encode("toortoor"),
+                "haytham_dahri", true, "", "Casablanca, Morocco", "", new Date(), null);
 
         user = this.userRepository.save(user);
 
@@ -46,7 +50,6 @@ public class RestaurantDeliveryServiceBackendApplication implements CommandLineR
 
         // Save the user
         this.userRepository.save(user);*/
-
 
     }
 }
