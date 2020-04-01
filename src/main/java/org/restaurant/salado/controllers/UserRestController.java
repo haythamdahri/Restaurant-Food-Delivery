@@ -80,8 +80,8 @@ public class UserRestController {
     /*
      * Reset Password Request Endpoint
      */
-    @RequestMapping(value = "/passwordreset/request", method = RequestMethod.POST)
-    public ResponseEntity<Map> resetPasswordRequest(@RequestBody String email) {
+    @RequestMapping(value = "/passwordreset", method = RequestMethod.GET)
+    public ResponseEntity<Map> resetPasswordRequest(@RequestParam(value = "email") String email) {
         System.out.println(email);
         Map<Object, Object> data = new HashMap<>();
         // Retrieve user
@@ -93,11 +93,19 @@ public class UserRestController {
             user.setExpiryDate(user.calculateExpiryDate(this.tokenExpiration));
             // Save user
             user = this.userService.saveUser(user);
-            // Send password reset email
-            this.emailService.sendResetPasswordEmail(user.getToken(), user.getEmail(), "Password Reset");
+            // Create final user
+            User finalUser = user;
+            Thread t1 = new Thread(){
+                public void run() {
+                    // Send password reset email
+                    emailService.sendResetPasswordEmail(finalUser.getToken(), finalUser.getEmail(), "Password Reset");
+                }
+            };
+            // Start thread
+            t1.start();
             // Set response data
             data.put("status", true);
-            data.put("message", "Reset password email has been sent to " + user.getEmail() + ".");
+            data.put("message", "Password reset email has been sent to " + user.getEmail() + ".");
         } else if (user != null && !user.isEnabled()) {
             data.put("status", false);
             data.put("message", "Account not enabled yet!");
@@ -112,7 +120,7 @@ public class UserRestController {
     /*
      * Reset Password Post Endpoint
      */
-    @RequestMapping(value = "/passwordreset/finalization", method = RequestMethod.POST)
+    @RequestMapping(value = "/passwordreset", method = RequestMethod.POST)
     public ResponseEntity<Map> performResetPassword(@RequestBody PasswordReset passwordReset) {
         Map<Object, Object> data = new HashMap<>();
         // Retrieve user
@@ -128,8 +136,14 @@ public class UserRestController {
                 user.setToken(null);
                 user.setExpiryDate(null);
                 this.userService.saveUser(user);
-                // Send email
-                this.emailService.sendResetPasswordCompleteEmail(user.getToken(), user.getEmail(), "Password Changed");
+                Thread t1 = new Thread(){
+                    public void run() {
+                        // Send email
+                        emailService.sendResetPasswordCompleteEmail(user.getEmail(), "Password Changed");
+                    }
+                };
+                // Start thread
+                t1.start();
                 // Set success data
                 data.put("status", true);
                 data.put("message", "Password has been changed successfully");
@@ -183,7 +197,7 @@ public class UserRestController {
     /*
      * Check token validity endpoint
      */
-    @RequestMapping(value = "/tokenscheck/{token}", method = RequestMethod.GET)
+    @RequestMapping(value = "/tokens/{token}/check", method = RequestMethod.GET)
     public ResponseEntity<Map> checkToken(@PathVariable(name = "token") String token) {
         Map<Object, Object> data = new HashMap<>();
         boolean status;

@@ -11,7 +11,7 @@ import org.springframework.web.bind.annotation.ResponseBody;
 @CrossOrigin(value = "*")
 public class RestaurantController {
 
-    @RequestMapping(value = "/", method = RequestMethod.GET)
+    @RequestMapping(value = "", method = RequestMethod.GET)
     @ResponseBody
     public String home() {
         return "Welcome To Our Restaurant";

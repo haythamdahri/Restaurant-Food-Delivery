@@ -9,13 +9,12 @@ import java.util.Map;
 
 public interface MailContentBuilder {
 
-    public String buildActivationEmail(String token);
+    String buildActivationEmail(String token);
 
-    public String buildPasswordResetEmail(String token);
+    String buildPasswordResetEmail(String token);
 
-    public String buildPasswordResetCompleteEmail(String token);
+    String buildPasswordResetCompleteEmail();
 
-    public String buildUpdateUserMailEmail(String token);
-
+    String buildUpdateUserMailEmail(String token);
 
 }

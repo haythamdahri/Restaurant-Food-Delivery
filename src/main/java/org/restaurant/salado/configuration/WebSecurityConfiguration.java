@@ -63,15 +63,11 @@ public class WebSecurityConfiguration extends WebSecurityConfigurerAdapter {
                 // dont authenticate this particular request
                 .authorizeRequests().antMatchers(
                 "/api/roles/**",
-                "/authenticate",
+                "/auth/**",
                 "/api/meals",
                 "/api/messages",
                 "/api/users/search/existsByEmail",
-                "/api/v1/sign-up",
-                "/api/v1/activate-account/**",
-                "/api/v1/reset-password",
-                "/api/v1/check-token/**",
-                "/api/v1//perform-reset-password"
+                "/api/v1/users/**"
                 ).permitAll().
                 antMatchers(HttpMethod.OPTIONS, "/**").permitAll().
                 // all other requests need to be authenticated

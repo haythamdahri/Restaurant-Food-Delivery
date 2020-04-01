@@ -29,9 +29,8 @@ public class MailContentBuilderImpl implements MailContentBuilder {
         return templateEngine.process("mailing/password-reset", context);
     }
 
-    public String buildPasswordResetCompleteEmail(String token) {
+    public String buildPasswordResetCompleteEmail() {
         Context context = new Context();
-        context.setVariable("token", token);
         return templateEngine.process("mailing/password-reset-complete", context);
     }
 

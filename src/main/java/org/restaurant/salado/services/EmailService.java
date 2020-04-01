@@ -4,16 +4,16 @@ import java.util.Map;
 
 public interface EmailService {
 
-    public boolean sendSimpleMessage(String to, String subject, String text);
+    boolean sendSimpleMessage(String to, String subject, String text);
 
-    public boolean sendActivationEmail(String token, String to, String subject);
+    boolean sendActivationEmail(String token, String to, String subject);
 
-    public boolean sendResetPasswordEmail(String token, String to, String subject);
+    boolean sendResetPasswordEmail(String token, String to, String subject);
 
-    public boolean sendResetPasswordCompleteEmail(String token, String to, String subject);
+    boolean sendResetPasswordCompleteEmail(String to, String subject);
 
-    public boolean sendUpdateUserMailEmail(String token, String to, String subject);
+    boolean sendUpdateUserMailEmail(String token, String to, String subject);
 
-    public boolean sendMessageWithAttachment(String to, String subject, String text, String pathToAttachment);
+    boolean sendMessageWithAttachment(String to, String subject, String text, String pathToAttachment);
 
 }
