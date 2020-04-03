@@ -1,12 +1,12 @@
-package org.restaurant.salado.services;
+package org.restaurant.salado.services.implementations;
 
 import org.restaurant.salado.entities.User;
 import org.restaurant.salado.repositories.UserRepository;
+import org.restaurant.salado.services.UserService;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Service;
 
-import java.util.Collection;
+import java.util.List;
 import java.util.Optional;
 
 @Service
@@ -14,9 +14,6 @@ public class UserServiceImpl implements UserService {
 
     @Autowired
     private UserRepository userRepository;
-
-    @Autowired
-    private BCryptPasswordEncoder bCryptPasswordEncoder;
 
     @Override
     public User saveUser(User user) {
@@ -37,11 +34,7 @@ public class UserServiceImpl implements UserService {
 
     @Override
     public User getUser(String email) {
-        Optional<User> optionalUser = this.userRepository.findByEmail(email);
-        if( optionalUser.isPresent() ) {
-            return optionalUser.get();
-        }
-        return null;
+        return this.userRepository.findByEmail(email).orElse(null);
     }
 
     @Override
@@ -57,7 +50,7 @@ public class UserServiceImpl implements UserService {
     }
 
     @Override
-    public Collection<User> getUsers() {
+    public List<User> getUsers() {
         return this.userRepository.findAll();
     }
 }

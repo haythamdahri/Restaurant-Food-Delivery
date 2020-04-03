@@ -3,6 +3,7 @@ package org.restaurant.salado.entities;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
+import org.hibernate.annotations.CreationTimestamp;
 import org.springframework.web.bind.annotation.CrossOrigin;
 
 import javax.persistence.*;
@@ -33,11 +34,16 @@ public class Message implements Serializable {
     @Column(name = "phone")
     private String phone;
 
-    @Column(name = "message")
+    @Column(name = "message", length = 15000)
     private String message;
 
     @Temporal(TemporalType.TIMESTAMP)
     @Column(name = "time")
-    private Date time = new Date();
+    private Date time;
+
+    @PrePersist
+    void createdAt() {
+        this.time = new Date();
+    }
 
 }

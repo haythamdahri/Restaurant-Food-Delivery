@@ -1,7 +1,5 @@
 package org.restaurant.salado.services;
 
-import java.util.Map;
-
 public interface EmailService {
 
     boolean sendSimpleMessage(String to, String subject, String text);

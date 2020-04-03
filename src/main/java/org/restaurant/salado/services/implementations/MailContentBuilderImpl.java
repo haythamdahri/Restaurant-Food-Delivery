@@ -1,5 +1,6 @@
-package org.restaurant.salado.services;
+package org.restaurant.salado.services.implementations;
 
+import org.restaurant.salado.services.MailContentBuilder;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.thymeleaf.TemplateEngine;

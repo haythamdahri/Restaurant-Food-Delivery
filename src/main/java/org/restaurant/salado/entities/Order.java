@@ -50,6 +50,10 @@ public class Order implements Serializable {
     @Column(name = "cancelled")
     private boolean cancelled;
 
+    @OneToOne(fetch = FetchType.EAGER, optional = true, cascade = CascadeType.ALL, targetEntity = Shipping.class, orphanRemoval = true)
+    @JoinColumn(name = "shipping_id")
+    private Shipping shipping;
+
     // Convenient method to add a new meal to the current order
     public void addMeal(MealOrder mealOrder) {
         if (this.mealOrders == null) {

@@ -1,8 +1,5 @@
 package org.restaurant.salado;
 
-import org.restaurant.salado.entities.Role;
-import org.restaurant.salado.entities.RoleType;
-import org.restaurant.salado.entities.User;
 import org.restaurant.salado.repositories.RoleRepository;
 import org.restaurant.salado.repositories.UserRepository;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -10,8 +7,6 @@ import org.springframework.boot.CommandLineRunner;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
-
-import java.util.Date;
 
 @SpringBootApplication
 public class RestaurantDeliveryServiceBackendApplication implements CommandLineRunner {

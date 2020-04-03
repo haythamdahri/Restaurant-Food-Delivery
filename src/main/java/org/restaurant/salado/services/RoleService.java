@@ -2,20 +2,19 @@ package org.restaurant.salado.services;
 
 import org.restaurant.salado.entities.Role;
 import org.restaurant.salado.entities.RoleType;
-import org.restaurant.salado.entities.User;
 
-import java.util.Collection;
+import java.util.List;
 
 public interface RoleService {
 
-    public Role saveRole(Role role);
+    Role saveRole(Role role);
 
-    public Role getRole(Long id);
+    Role getRole(Long id);
 
-    public Role getRole(RoleType roleType);
+    Role getRole(RoleType roleType);
 
-    public boolean deleteRole(Long id);
+    boolean deleteRole(Long id);
 
-    public Collection<Role> getRoles();
+    List<Role> getRoles();
 
 }

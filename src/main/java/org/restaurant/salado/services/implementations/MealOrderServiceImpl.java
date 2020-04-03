@@ -1,11 +1,12 @@
-package org.restaurant.salado.services;
+package org.restaurant.salado.services.implementations;
 
 import org.restaurant.salado.entities.MealOrder;
 import org.restaurant.salado.repositories.MealOrderRepository;
+import org.restaurant.salado.services.MealOrderService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
-import java.util.Collection;
+import java.util.List;
 
 @Service
 public class MealOrderServiceImpl implements MealOrderService {
@@ -25,12 +26,12 @@ public class MealOrderServiceImpl implements MealOrderService {
     }
 
     @Override
-    public Collection<MealOrder> getMealOrders(Long orderId) {
+    public List<MealOrder> getMealOrders(Long orderId) {
         return this.mealOrderRepository.findByOrderId(orderId);
     }
 
     @Override
-    public Collection<MealOrder> getMealOrders() {
+    public List<MealOrder> getMealOrders() {
         return this.mealOrderRepository.findAll();
     }
 }

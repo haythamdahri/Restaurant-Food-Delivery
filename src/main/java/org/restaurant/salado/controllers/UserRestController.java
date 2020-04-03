@@ -71,8 +71,15 @@ public class UserRestController {
         user.setPassword(this.bCryptPasswordEncoder.encode(user.getPassword()));
         // Create user account
         user = this.userService.saveUser(user);
-        // Send activation email
-        this.emailService.sendActivationEmail(user.getToken(), user.getEmail(), "Account Activation");
+        User finalUser = user;
+        Thread t1 = new Thread(){
+            public void run() {
+                // Send activation email
+                emailService.sendActivationEmail(finalUser.getToken(), finalUser.getEmail(), "Account Activation");
+            }
+        };
+        // Start thread
+        t1.start();
         // Return success message response
         return new ResponseEntity<>(user, HttpStatus.OK);
     }

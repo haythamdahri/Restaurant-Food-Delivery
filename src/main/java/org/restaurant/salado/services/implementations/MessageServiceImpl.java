@@ -1,12 +1,12 @@
-package org.restaurant.salado.services;
+package org.restaurant.salado.services.implementations;
 
-import org.restaurant.salado.entities.MealOrder;
 import org.restaurant.salado.entities.Message;
 import org.restaurant.salado.repositories.MessageRepository;
+import org.restaurant.salado.services.MessageService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
-import java.util.Collection;
+import java.util.List;
 
 @Service
 public class MessageServiceImpl implements MessageService {
@@ -26,7 +26,12 @@ public class MessageServiceImpl implements MessageService {
     }
 
     @Override
-    public Collection<Message> getMessages() {
+    public Message getMessage(Long id) {
+        return this.messageRepository.findById(id).orElse(null);
+    }
+
+    @Override
+    public List<Message> getMessages() {
         return this.messageRepository.findAll();
     }
 }

@@ -49,14 +49,14 @@ public class MealOrderRestController {
         if (optionalOrder.isPresent()) {
             userOrder = optionalOrder.get();
         } else {
-            userOrder = new Order(null, user, null, 0, "", new Date(), false, false);
+            userOrder = new Order(null, user, null, 0, "", new Date(), false, false, null);
         }
         // Check if meal already exists in cart
         if (userOrder.getMealOrders() != null) {
             for (MealOrder ml : userOrder.getMealOrders()) {
                 if (ml.getMeal().getId() == mealOrder.getMeal().getId()) {
                     Map<String, String> errorResponse = new HashMap<>();
-                    errorResponse.put("message", "Selected meal already exists in your cart!");
+                    errorResponse.put("message", "Meal already exists in your cart!");
                     errorResponse.put("error", "true");
                     return new ResponseEntity<>(errorResponse, HttpStatus.OK);
                 }

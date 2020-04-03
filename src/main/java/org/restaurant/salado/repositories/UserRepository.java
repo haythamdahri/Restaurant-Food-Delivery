@@ -14,12 +14,12 @@ import java.util.Optional;
 @CrossOrigin(value = "*")
 public interface UserRepository extends JpaRepository<User, Long> {
 
-    public Optional<User> findByEmail(@Param("email") String email);
+    Optional<User> findByEmail(@Param("email") String email);
 
-    public boolean existsByEmail(@Param("email") String email);
+    boolean existsByEmail(@Param("email") String email);
 
-    public Optional<User> findByEmailAndEnabledIsTrue(@Param("email") String email);
+    Optional<User> findByEmailAndEnabledIsTrue(@Param("email") String email);
 
-    public Optional<User> findByToken(@Param("token") String token);
+    Optional<User> findByToken(@Param("token") String token);
 
 }

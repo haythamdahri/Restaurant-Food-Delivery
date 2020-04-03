@@ -9,6 +9,6 @@ import org.springframework.data.rest.webmvc.config.RepositoryRestConfigurerAdapt
 public class RepositoryConfig extends RepositoryRestConfigurerAdapter {
     @Override
     public void configureRepositoryRestConfiguration(RepositoryRestConfiguration config) {
-        config.exposeIdsFor(Meal.class, MealOrder.class, Message.class, Order.class, Role.class, User.class);
+        config.exposeIdsFor(Meal.class, MealOrder.class, Message.class, Order.class, Role.class, User.class, Shipping.class);
     }
 }

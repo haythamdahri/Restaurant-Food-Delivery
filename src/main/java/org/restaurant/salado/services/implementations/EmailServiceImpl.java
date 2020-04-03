@@ -1,5 +1,7 @@
-package org.restaurant.salado.services;
+package org.restaurant.salado.services.implementations;
 
+import org.restaurant.salado.services.EmailService;
+import org.restaurant.salado.services.MailContentBuilder;
 import org.restaurant.salado.utils.RestaurantUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;

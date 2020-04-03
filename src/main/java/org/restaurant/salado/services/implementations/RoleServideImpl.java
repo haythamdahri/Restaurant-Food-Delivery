@@ -1,13 +1,13 @@
-package org.restaurant.salado.services;
+package org.restaurant.salado.services.implementations;
 
 import org.restaurant.salado.entities.Role;
 import org.restaurant.salado.entities.RoleType;
 import org.restaurant.salado.repositories.RoleRepository;
+import org.restaurant.salado.services.RoleService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
-import java.util.Collection;
-import java.util.Optional;
+import java.util.List;
 
 @Service
 public class RoleServideImpl implements RoleService {
@@ -22,8 +22,7 @@ public class RoleServideImpl implements RoleService {
 
     @Override
     public Role getRole(Long id) {
-        Optional<Role> optionalRole = this.roleRepository.findById(id);
-        return optionalRole.orElse(null);
+        return this.roleRepository.findById(id).orElse(null);
     }
 
     @Override
@@ -38,7 +37,7 @@ public class RoleServideImpl implements RoleService {
     }
 
     @Override
-    public Collection<Role> getRoles() {
+    public List<Role> getRoles() {
         return this.roleRepository.findAll();
     }
 }

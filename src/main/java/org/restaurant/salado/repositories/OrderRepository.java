@@ -7,18 +7,23 @@ import org.springframework.data.rest.core.annotation.RepositoryRestResource;
 import org.springframework.stereotype.Repository;
 import org.springframework.web.bind.annotation.CrossOrigin;
 
-import java.util.Collection;
+import java.util.List;
 
 @Repository
 @RepositoryRestResource
 @CrossOrigin(value = "*")
 public interface OrderRepository extends JpaRepository<Order, Long> {
 
-    public Collection<Order> findByUserId(@Param("id") Long id);
+    List<Order> findByUserId(@Param("id") Long id);
 
-    public Collection<Order> findByUserEmail(@Param("email") String email);
+    List<Order> findByUserEmail(@Param("email") String email);
 
-    // Fetch last active order
-    public Order findByUserIdAndCancelledFalseAndDeliveredFalse(@Param("userId") Long userId);
+    /**
+     * Fetch last active order for a givven user id
+     *
+     * @param userId
+     * @return Order
+     */
+    Order findByUserIdAndCancelledFalseAndDeliveredFalse(@Param("userId") Long userId);
 
 }
