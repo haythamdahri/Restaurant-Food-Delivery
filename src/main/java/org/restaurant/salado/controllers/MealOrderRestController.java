@@ -10,10 +10,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.Authentication;
-import org.springframework.web.bind.annotation.CrossOrigin;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 import java.util.*;
 
@@ -74,5 +71,60 @@ public class MealOrderRestController {
         // Return response entity
         return new ResponseEntity<>(userOrder, HttpStatus.OK);
     }
+
+    @RequestMapping(path ="/{mealOrderId}", method = RequestMethod.DELETE)
+    public ResponseEntity<?> deleteMealOrder(@PathVariable(value = "mealOrderId") Long mealOrderId, Authentication authentication) throws Exception {
+        // Create response object
+        Map<Object, Object> data = new HashMap<>();
+        try {
+            // Delete meal order
+            boolean isMealOrderDeleted = this.mealOrderService.deleteMealOrder(mealOrderId);
+            // Check if meal order is delete
+            if (isMealOrderDeleted) {
+                data.put("status", true);
+                data.put("message", "Meal order has been deleted from your cart successfully");
+            } else {
+                throw new Exception();
+            }
+        } catch(Exception ex) {
+            data.put("status", false);
+            data.put("message", "An error occurred while deleting meal order, please try again!");
+        }
+        // return response
+        return new ResponseEntity<Map<Object, Object>>(data, HttpStatus.OK);
+    }
+
+    @RequestMapping(path ="/{mealOrderId}/quantity/{quantity}", method = RequestMethod.PATCH)
+    public ResponseEntity<?> updateMealOrderQuantity(@PathVariable(value = "mealOrderId") Long mealOrderId, @PathVariable(value = "quantity") int quantity) {
+        // Create response object
+        Map<Object, Object> data = new HashMap<>();
+        try {
+            // Retrieve mealOrder
+            MealOrder mealOrder = this.mealOrderService.getMealOrder(mealOrderId);
+            // Check if meal order exists
+            if (mealOrder != null) {
+                // Check meal available quantity
+                if( mealOrder.getMeal().getStock() >= quantity ) {
+                    // Update mealOrder quantity and save it
+                    mealOrder.setQuantity(quantity);
+                    this.mealOrderService.saveMealOrder(mealOrder);
+                    // Set response data
+                    data.put("status", true);
+                    data.put("message", "Meal order quantity has been updated successfully");
+                } else {
+                    data.put("status", false);
+                    data.put("message", "Unavailable quantity in the stock, only " + mealOrder.getMeal().getStock() + " is available");
+                }
+            } else {
+                throw new Exception();
+            }
+        } catch(Exception ex) {
+            data.put("status", false);
+            data.put("message", "An error occurred while updating meal order quantity, please try again!");
+        }
+        // return response
+        return new ResponseEntity<Map<Object, Object>>(data, HttpStatus.OK);
+    }
+
 
 }

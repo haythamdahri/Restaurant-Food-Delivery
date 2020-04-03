@@ -8,7 +8,9 @@ public interface MealOrderService {
 
     MealOrder saveMealOrder(MealOrder mealOrder);
 
-    boolean deleteMealOrder(Long id);
+    boolean deleteMealOrder(Long id) throws Exception;
+
+    MealOrder getMealOrder(Long mealOrderId);
 
     List<MealOrder> getMealOrders(Long orderId);
 

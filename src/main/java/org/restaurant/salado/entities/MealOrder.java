@@ -42,4 +42,9 @@ public class MealOrder implements Serializable {
         order.addMeal(this);
     }
 
+    // Convenient method to delete mealOrder from the current order
+    public void deleteMealOrderFromOrder(Long mealOrderId) {
+        this.order.getMealOrders().removeIf(mealOrder -> mealOrder.getId().equals(this.id));
+    }
+
 }

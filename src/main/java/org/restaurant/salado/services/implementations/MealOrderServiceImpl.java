@@ -20,9 +20,23 @@ public class MealOrderServiceImpl implements MealOrderService {
     }
 
     @Override
-    public boolean deleteMealOrder(Long id) {
-        this.mealOrderRepository.deleteById(id);
-        return true;
+    public boolean deleteMealOrder(Long id) throws Exception{
+        MealOrder mealOrder = this.mealOrderRepository.findById(id).orElse(null);
+        // Check if mealOrder exists
+        if( mealOrder != null ) {
+            // Delete mealOrder from order
+            mealOrder.deleteMealOrderFromOrder(mealOrder.getId());
+            // Delete current mealOrder
+            this.mealOrderRepository.deleteById(id);
+            return this.mealOrderRepository.findById(id).orElse(null) == null;
+        }
+        // throw exception if mealOrder does not exist
+        throw new Exception();
+    }
+
+    @Override
+    public MealOrder getMealOrder(Long mealOrderId) {
+        return this.mealOrderRepository.findById(mealOrderId).orElse(null);
     }
 
     @Override
