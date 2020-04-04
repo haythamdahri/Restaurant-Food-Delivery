@@ -1,18 +1,23 @@
 package org.restaurant.salado.entities;
 
-import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
-import org.springframework.web.bind.annotation.CrossOrigin;
+import lombok.RequiredArgsConstructor;
+import org.springframework.beans.factory.annotation.Value;
 
+import javax.annotation.PostConstruct;
 import javax.persistence.*;
 import java.io.Serializable;
+import java.math.BigDecimal;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Date;
 
+/**
+ * @author Haytam DAHRI
+ */
 @Entity
 @Table(name = "orders")
 @Data
@@ -34,8 +39,12 @@ public class Order implements Serializable {
     @JoinTable(name = "orders_meal_orders", joinColumns = @JoinColumn(name = "order_id"), inverseJoinColumns = @JoinColumn(name = "meal_id"))
     private Collection<MealOrder> mealOrders;
 
-    @Column(name = "total_price")
-    private double totalPrice;
+    @Transient
+    private BigDecimal totalPrice;
+
+    @Transient
+    @Value("${shipping.price}")
+    private BigDecimal shippingFees;
 
     @Column(name = "delivery_address")
     private String deliveryAddress;
@@ -54,7 +63,11 @@ public class Order implements Serializable {
     @JoinColumn(name = "shipping_id")
     private Shipping shipping;
 
-    // Convenient method to add a new meal to the current order
+    /**
+     * Convenient method to add a new meal to the current order
+     *
+     * @param mealOrder
+     */
     public void addMeal(MealOrder mealOrder) {
         if (this.mealOrders == null) {
             this.mealOrders = new ArrayList<>();
@@ -62,14 +75,28 @@ public class Order implements Serializable {
         this.mealOrders.add(mealOrder);
     }
 
-    // Callculate the new total ice
-    public void calculateTotalPrice() {
-        this.totalPrice = 0;
+    /**
+     * Calculate shipping fees
+     */
+    void calculateShippingFees() {
+        this.totalPrice = this.totalPrice.add(this.shippingFees);
+    }
+
+    /**
+     * Post Load calculations
+     */
+    @PostLoad
+    public void postLoad() {
+        System.out.println("============ CALLING POST LOAD METHOD ORDER ============");
         if (this.mealOrders != null) {
-            for (MealOrder mealOrder : this.mealOrders) {
-                this.totalPrice += mealOrder.getPrice() * mealOrder.getQuantity();
-            }
+            this.mealOrders.stream().peek(mealOrder -> this.totalPrice = this.totalPrice.add(mealOrder.getTotalPrice()));
         }
+        System.out.println("============ Total price order: " + this.totalPrice);
+    }
+
+    @PostConstruct
+    public void postConstruct() {
+        this.postLoad();
     }
 
 }

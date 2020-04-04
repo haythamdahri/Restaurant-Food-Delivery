@@ -8,6 +8,9 @@ import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 
+/**
+ * @author Haytam DAHRI
+ */
 @SpringBootApplication
 public class RestaurantDeliveryServiceBackendApplication implements CommandLineRunner {
 
@@ -24,6 +27,11 @@ public class RestaurantDeliveryServiceBackendApplication implements CommandLineR
         SpringApplication.run(RestaurantDeliveryServiceBackendApplication.class, args);
     }
 
+    /**
+     * Business logic to execute after application start
+     * @param args
+     * @throws Exception
+     */
     @Override
     public void run(String... args) throws Exception {
 /*        // Save users

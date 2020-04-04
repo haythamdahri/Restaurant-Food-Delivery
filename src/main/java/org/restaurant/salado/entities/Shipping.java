@@ -6,6 +6,9 @@ import lombok.NoArgsConstructor;
 
 import javax.persistence.*;
 
+/**
+ * @author Haytam DAHRI
+ */
 @Entity
 @Table(name = "shipping")
 @Data

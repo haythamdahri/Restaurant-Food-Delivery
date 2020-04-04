@@ -1,5 +1,8 @@
 package org.restaurant.salado.services;
 
+/**
+ * @author Haytam DAHRI
+ */
 public interface EmailService {
 
     boolean sendSimpleMessage(String to, String subject, String text);

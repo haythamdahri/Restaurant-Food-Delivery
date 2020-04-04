@@ -9,6 +9,9 @@ import org.springframework.web.bind.annotation.CrossOrigin;
 
 import java.util.Optional;
 
+/**
+ * @author Haytam DAHRI
+ */
 @Repository
 @RepositoryRestResource
 @CrossOrigin(value = "*")

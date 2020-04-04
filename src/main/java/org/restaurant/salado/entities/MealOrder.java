@@ -4,12 +4,14 @@ import com.fasterxml.jackson.annotation.JsonIgnore;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
-import org.hibernate.annotations.Formula;
-import org.springframework.web.bind.annotation.CrossOrigin;
 
 import javax.persistence.*;
 import java.io.Serializable;
+import java.math.BigDecimal;
 
+/**
+ * @author Haytam DAHRI
+ */
 @Entity
 @Table(name = "meal_orders")
 @Data
@@ -34,17 +36,29 @@ public class MealOrder implements Serializable {
     @Column(name = "quantity")
     private int quantity;
 
-    @Column(name = "price")
-    private double price;
+    @Transient
+    private BigDecimal totalPrice;
 
     public void setOrder(Order order) {
         this.order = order;
         order.addMeal(this);
     }
 
-    // Convenient method to delete mealOrder from the current order
-    public void deleteMealOrderFromOrder(Long mealOrderId) {
-        this.order.getMealOrders().removeIf(mealOrder -> mealOrder.getId().equals(this.id));
+    /**
+     * Convenient method to delete mealOrder from the current order
+     */
+    public void deleteMealOrderFromOrder(MealOrder mealOrder) {
+        this.order.getMealOrders().remove(mealOrder);
+    }
+
+    /**
+     * Post Load calculations
+     */
+    @PostLoad
+    public void postLoad() {
+        System.out.println("============ CALLING POST LOAD METHOD MealOrder ============");
+        this.totalPrice = BigDecimal.valueOf(this.quantity).multiply(this.meal.getPrice());
+        System.out.println("============ Total price meal order: " + this.totalPrice);
     }
 
 }

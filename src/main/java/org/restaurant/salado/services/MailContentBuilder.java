@@ -1,5 +1,8 @@
 package org.restaurant.salado.services;
 
+/**
+ * @author Haytam DAHRI
+ */
 public interface MailContentBuilder {
 
     String buildActivationEmail(String token);

@@ -3,13 +3,14 @@ package org.restaurant.salado.entities;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
-import org.hibernate.annotations.CreationTimestamp;
-import org.springframework.web.bind.annotation.CrossOrigin;
 
 import javax.persistence.*;
 import java.io.Serializable;
 import java.util.Date;
 
+/**
+ * @author Haytam DAHRI
+ */
 @Entity
 @Table(name = "messages")
 @Data

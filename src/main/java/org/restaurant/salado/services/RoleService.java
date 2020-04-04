@@ -5,6 +5,9 @@ import org.restaurant.salado.entities.RoleType;
 
 import java.util.List;
 
+/**
+ * @author Haytam DAHRI
+ */
 public interface RoleService {
 
     Role saveRole(Role role);

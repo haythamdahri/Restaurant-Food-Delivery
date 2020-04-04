@@ -6,7 +6,6 @@ import org.springframework.context.annotation.Configuration;
 import org.springframework.mail.javamail.JavaMailSender;
 import org.springframework.mail.javamail.JavaMailSenderImpl;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
-import org.springframework.stereotype.Component;
 import org.springframework.web.servlet.config.annotation.CorsRegistry;
 import org.springframework.web.servlet.config.annotation.ResourceHandlerRegistry;
 import org.springframework.web.servlet.config.annotation.WebMvcConfigurer;
@@ -14,6 +13,9 @@ import org.springframework.web.servlet.config.annotation.WebMvcConfigurerAdapter
 
 import java.util.Properties;
 
+/**
+ * @author Haytam DAHRI
+ */
 @Configuration
 public class BeansProvider {
 
@@ -29,8 +31,10 @@ public class BeansProvider {
     @Value("${spring.mail.password}")
     private String password;
 
-    /*
-     * @Configure JavaMailSender
+    /**
+     * Configure JavaMailSender
+     *
+     * @return
      */
     @Bean
     public JavaMailSender getJavaMailSender() {
@@ -50,11 +54,21 @@ public class BeansProvider {
         return mailSender;
     }
 
+    /**
+     * Provide BCryptPasswordEncoder instance
+     *
+     * @return
+     */
     @Bean
     public BCryptPasswordEncoder bCryptPasswordEncoder() {
         return new BCryptPasswordEncoder(12);
     }
 
+    /**
+     * Cors configuration
+     *
+     * @return
+     */
     @Bean
     public WebMvcConfigurer corsConfigurer() {
         return new WebMvcConfigurerAdapter() {

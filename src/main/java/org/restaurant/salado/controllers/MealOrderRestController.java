@@ -12,8 +12,12 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.Authentication;
 import org.springframework.web.bind.annotation.*;
 
+import java.math.BigDecimal;
 import java.util.*;
 
+/**
+ * @author Haytham DAHRI
+ */
 @RestController
 @RequestMapping(path = "/api/v1/mealorders")
 @CrossOrigin(value = "*")
@@ -28,9 +32,12 @@ public class MealOrderRestController {
     @Autowired
     private MealOrderService mealOrderService;
 
-    /*
+    /**
      * Add meal order to user orders
-     * @temp set orders for first user
+     *
+     * @param mealOrder
+     * @param authentication
+     * @return ResponseEntity
      */
     @RequestMapping("/")
     public ResponseEntity<Object> addUserOder(@RequestBody MealOrder mealOrder, Authentication authentication) {
@@ -43,11 +50,7 @@ public class MealOrderRestController {
         // Create a new user order
         Order userOrder;
         // Check if user has already a waiting order
-        if (optionalOrder.isPresent()) {
-            userOrder = optionalOrder.get();
-        } else {
-            userOrder = new Order(null, user, null, 0, "", new Date(), false, false, null);
-        }
+        userOrder = optionalOrder.orElseGet(() -> new Order(null, user, null, BigDecimal.valueOf(0), BigDecimal.valueOf(0), "", new Date(), false, false, null));
         // Check if meal already exists in cart
         if (userOrder.getMealOrders() != null) {
             for (MealOrder ml : userOrder.getMealOrders()) {
@@ -62,17 +65,25 @@ public class MealOrderRestController {
         // Save order
         userOrder.setCancelled(false);
         userOrder.setDelivered(false);
-        userOrder.calculateTotalPrice();
         userOrder = this.orderService.saveOrder(userOrder);
         // Calculate price then save mealOrder
-        mealOrder.setPrice(mealOrder.getQuantity() * mealOrder.getMeal().getPrice());
+        BigDecimal totalPrice = BigDecimal.valueOf(mealOrder.getQuantity()).multiply(mealOrder.getMeal().getPrice());
+        mealOrder.setTotalPrice(totalPrice);
         mealOrder.setOrder(userOrder);
         this.mealOrderService.saveMealOrder(mealOrder);
         // Return response entity
         return new ResponseEntity<>(userOrder, HttpStatus.OK);
     }
 
-    @RequestMapping(path ="/{mealOrderId}", method = RequestMethod.DELETE)
+    /**
+     * Delete meal from a mealOrder object
+     *
+     * @param mealOrderId
+     * @param authentication
+     * @return ResponseEntity
+     * @throws Exception
+     */
+    @RequestMapping(path = "/{mealOrderId}", method = RequestMethod.DELETE)
     public ResponseEntity<?> deleteMealOrder(@PathVariable(value = "mealOrderId") Long mealOrderId, Authentication authentication) throws Exception {
         // Create response object
         Map<Object, Object> data = new HashMap<>();
@@ -86,7 +97,7 @@ public class MealOrderRestController {
             } else {
                 throw new Exception();
             }
-        } catch(Exception ex) {
+        } catch (Exception ex) {
             data.put("status", false);
             data.put("message", "An error occurred while deleting meal order, please try again!");
         }
@@ -94,7 +105,14 @@ public class MealOrderRestController {
         return new ResponseEntity<Map<Object, Object>>(data, HttpStatus.OK);
     }
 
-    @RequestMapping(path ="/{mealOrderId}/quantity/{quantity}", method = RequestMethod.PATCH)
+    /**
+     * Update mealOrder quantity
+     *
+     * @param mealOrderId
+     * @param quantity
+     * @return ResponseEntity
+     */
+    @RequestMapping(path = "/{mealOrderId}/quantity/{quantity}", method = RequestMethod.PATCH)
     public ResponseEntity<?> updateMealOrderQuantity(@PathVariable(value = "mealOrderId") Long mealOrderId, @PathVariable(value = "quantity") int quantity) {
         // Create response object
         Map<Object, Object> data = new HashMap<>();
@@ -104,7 +122,7 @@ public class MealOrderRestController {
             // Check if meal order exists
             if (mealOrder != null) {
                 // Check meal available quantity
-                if( mealOrder.getMeal().getStock() >= quantity ) {
+                if (mealOrder.getMeal().getStock() >= quantity) {
                     // Update mealOrder quantity and save it
                     mealOrder.setQuantity(quantity);
                     this.mealOrderService.saveMealOrder(mealOrder);
@@ -118,7 +136,7 @@ public class MealOrderRestController {
             } else {
                 throw new Exception();
             }
-        } catch(Exception ex) {
+        } catch (Exception ex) {
             data.put("status", false);
             data.put("message", "An error occurred while updating meal order quantity, please try again!");
         }

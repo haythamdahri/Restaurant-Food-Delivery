@@ -25,7 +25,7 @@ public class MealOrderServiceImpl implements MealOrderService {
         // Check if mealOrder exists
         if( mealOrder != null ) {
             // Delete mealOrder from order
-            mealOrder.deleteMealOrderFromOrder(mealOrder.getId());
+            mealOrder.deleteMealOrderFromOrder(mealOrder);
             // Delete current mealOrder
             this.mealOrderRepository.deleteById(id);
             return this.mealOrderRepository.findById(id).orElse(null) == null;

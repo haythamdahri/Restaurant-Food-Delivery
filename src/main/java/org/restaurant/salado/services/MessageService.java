@@ -2,9 +2,11 @@ package org.restaurant.salado.services;
 
 import org.restaurant.salado.entities.Message;
 
-import java.util.Collection;
 import java.util.List;
 
+/**
+ * @author Haytam DAHRI
+ */
 public interface MessageService {
 
     Message saveMessage(Message message);

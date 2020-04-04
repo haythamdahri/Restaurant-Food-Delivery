@@ -4,6 +4,9 @@ import org.restaurant.salado.entities.Order;
 
 import java.util.List;
 
+/**
+ * @author Haytam DAHRI
+ */
 public interface OrderService {
 
     Order saveOrder(Order order);

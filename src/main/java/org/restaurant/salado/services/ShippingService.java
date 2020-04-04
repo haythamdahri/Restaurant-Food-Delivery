@@ -4,6 +4,9 @@ import org.restaurant.salado.entities.Shipping;
 
 import java.util.List;
 
+/**
+ * @author Haytam DAHRI
+ */
 public interface ShippingService {
 
     Shipping saveShipping(Shipping shipping);

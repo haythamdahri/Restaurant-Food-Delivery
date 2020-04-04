@@ -3,7 +3,9 @@ package org.restaurant.salado.controllers;
 import org.restaurant.salado.entities.RoleType;
 import org.restaurant.salado.entities.User;
 import org.restaurant.salado.models.PasswordReset;
-import org.restaurant.salado.services.*;
+import org.restaurant.salado.services.EmailService;
+import org.restaurant.salado.services.RoleService;
+import org.restaurant.salado.services.UserService;
 import org.restaurant.salado.utils.RestaurantUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
@@ -19,44 +21,40 @@ import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.*;
 
+/**
+ * @author Haytam DAHRI
+ */
 @RestController
 @RequestMapping(path = "/api/v1/users")
 @CrossOrigin(value = "*")
 public class UserRestController {
 
+    private static final List<String> imageContentTypes = Arrays.asList("image/png", "image/jpeg", "image/gif");
     @Autowired
     private UserService userService;
-
     @Autowired
     private EmailService emailService;
-
     @Autowired
     private RoleService roleService;
-
     @Autowired
     private BCryptPasswordEncoder bCryptPasswordEncoder;
-
     @Autowired
     private RestaurantUtils restaurantUtils;
-
     @Value("${default_user_image}")
     private String DEFAULT_USER_IMAGE;
-
     @Value("${token_expiration}")
     private int tokenExpiration;
-
     @Value("${upload_dir}")
     private String UPLOAD_DIR;
 
-    private static final List<String> imageContentTypes = Arrays.asList("image/png", "image/jpeg", "image/gif");
-
-
-    /*
+    /**
      * Sign up end point
+     *
+     * @param user
+     * @return ResponseEntity<User>
      */
     @RequestMapping(value = "/", method = RequestMethod.POST)
     public ResponseEntity<User> registerUser(@RequestBody User user) {
-
         // Generate user token and expiration date
         // Add user role
         // Set user default image
@@ -72,7 +70,7 @@ public class UserRestController {
         // Create user account
         user = this.userService.saveUser(user);
         User finalUser = user;
-        Thread t1 = new Thread(){
+        Thread t1 = new Thread() {
             public void run() {
                 // Send activation email
                 emailService.sendActivationEmail(finalUser.getToken(), finalUser.getEmail(), "Account Activation");
@@ -84,8 +82,11 @@ public class UserRestController {
         return new ResponseEntity<>(user, HttpStatus.OK);
     }
 
-    /*
-     * Reset Password Request Endpoint
+    /**
+     * Password Rset Request Endpoint
+     *
+     * @param email
+     * @return ResponseEntity<Map>
      */
     @RequestMapping(value = "/passwordreset", method = RequestMethod.GET)
     public ResponseEntity<Map> resetPasswordRequest(@RequestParam(value = "email") String email) {
@@ -102,7 +103,7 @@ public class UserRestController {
             user = this.userService.saveUser(user);
             // Create final user
             User finalUser = user;
-            Thread t1 = new Thread(){
+            Thread t1 = new Thread() {
                 public void run() {
                     // Send password reset email
                     emailService.sendResetPasswordEmail(finalUser.getToken(), finalUser.getEmail(), "Password Reset");
@@ -124,8 +125,11 @@ public class UserRestController {
         return new ResponseEntity<>(data, HttpStatus.OK);
     }
 
-    /*
-     * Reset Password Post Endpoint
+    /**
+     * Password Reset Post Endpoint
+     *
+     * @param passwordReset
+     * @return ResponseEntity<Map>
      */
     @RequestMapping(value = "/passwordreset", method = RequestMethod.POST)
     public ResponseEntity<Map> performResetPassword(@RequestBody PasswordReset passwordReset) {
@@ -143,7 +147,7 @@ public class UserRestController {
                 user.setToken(null);
                 user.setExpiryDate(null);
                 this.userService.saveUser(user);
-                Thread t1 = new Thread(){
+                Thread t1 = new Thread() {
                     public void run() {
                         // Send email
                         emailService.sendResetPasswordCompleteEmail(user.getEmail(), "Password Changed");
@@ -166,8 +170,11 @@ public class UserRestController {
         return new ResponseEntity<>(data, HttpStatus.OK);
     }
 
-    /*
-     * Activate account Endpoint
+    /**
+     * Account activation Endpoint
+     *
+     * @param token
+     * @return ResponseEntity<Map>
      */
     @RequestMapping(value = "/activation/{token}", method = RequestMethod.GET)
     public ResponseEntity<Map> activateAccount(@PathVariable(name = "token") String token) {
@@ -201,8 +208,11 @@ public class UserRestController {
         return new ResponseEntity<>(data, HttpStatus.OK);
     }
 
-    /*
-     * Check token validity endpoint
+    /**
+     * Token validity check Endpoint
+     *
+     * @param token
+     * @return ResponseEntity<Map>
      */
     @RequestMapping(value = "/tokens/{token}/check", method = RequestMethod.GET)
     public ResponseEntity<Map> checkToken(@PathVariable(name = "token") String token) {
@@ -232,8 +242,12 @@ public class UserRestController {
         return new ResponseEntity<>(data, HttpStatus.OK);
     }
 
-    /*
-     * Upload user picture endpoint
+    /**
+     * User image upload Endpoint
+     *
+     * @param file
+     * @param authentication
+     * @return ResponseEntity<Map>
      */
     @RequestMapping(value = "/image", method = RequestMethod.POST)
     public ResponseEntity<Map> uploadUserImage(@RequestParam(name = "image") MultipartFile file, Authentication authentication) {
@@ -276,8 +290,12 @@ public class UserRestController {
         return new ResponseEntity<>(data, HttpStatus.OK);
     }
 
-    /*
-     * Update user email endpoint
+    /**
+     * User email updaye Endpoint
+     *
+     * @param newEmail
+     * @param authentication
+     * @return ResponseEntity<Map>
      */
     @RequestMapping(value = "/email", method = RequestMethod.POST)
     public ResponseEntity<Map> updateUserEmail(@RequestParam(name = "email") String newEmail, Authentication authentication) {

@@ -3,11 +3,14 @@ package org.restaurant.salado.entities;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
-import org.springframework.web.bind.annotation.CrossOrigin;
 
 import javax.persistence.*;
 import java.io.Serializable;
+import java.math.BigDecimal;
 
+/**
+ * @author Haytam DAHRI
+ */
 @Entity
 @Table(name = "meals")
 @Data
@@ -27,9 +30,15 @@ public class Meal implements Serializable {
     private String image;
 
     @Column(name = "price")
-    private double price;
+    private BigDecimal price;
 
     @Column(name = "stock")
     private Long stock;
+
+    @Column(name = "views")
+    private Long views;
+
+    @Column(name = "sale_price")
+    private BigDecimal salePrice;
 
 }

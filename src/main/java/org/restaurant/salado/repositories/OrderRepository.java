@@ -9,6 +9,9 @@ import org.springframework.web.bind.annotation.CrossOrigin;
 
 import java.util.List;
 
+/**
+ * @author Haytam DAHRI
+ */
 @Repository
 @RepositoryRestResource
 @CrossOrigin(value = "*")
@@ -19,7 +22,7 @@ public interface OrderRepository extends JpaRepository<Order, Long> {
     List<Order> findByUserEmail(@Param("email") String email);
 
     /**
-     * Fetch last active order for a givven user id
+     * Fetch last active order for a given user id
      *
      * @param userId
      * @return Order

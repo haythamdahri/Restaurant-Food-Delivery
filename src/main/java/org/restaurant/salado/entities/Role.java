@@ -8,6 +8,9 @@ import javax.persistence.*;
 import java.io.Serializable;
 import java.util.Collection;
 
+/**
+ * @author Haytam DAHRI
+ */
 @Entity
 @Table(name = "roles")
 @Data

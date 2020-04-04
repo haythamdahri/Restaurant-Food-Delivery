@@ -13,7 +13,9 @@ import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.web.bind.annotation.*;
 
-
+/**
+ * @author Haytham DAHRI
+ */
 @RestController
 @RequestMapping(path = "/auth")
 @CrossOrigin("*")
@@ -26,6 +28,11 @@ public class JwtAuthenticationController {
     @Autowired
     private UserDetailsService userDetailsService;
 
+    /**
+     * @param authenticationRequest
+     * @return ResponseEntity
+     * @throws Exception
+     */
     @RequestMapping(value = "/", method = RequestMethod.POST)
     public ResponseEntity<?> createAuthenticationToken(@RequestBody JwtRequest authenticationRequest) throws Exception {
         authenticate(authenticationRequest.getEmail(), authenticationRequest.getPassword());
@@ -35,6 +42,11 @@ public class JwtAuthenticationController {
         return ResponseEntity.ok(new JwtResponse(token));
     }
 
+    /**
+     * @param email
+     * @param password
+     * @throws Exception
+     */
     private void authenticate(String email, String password) throws Exception {
         try {
             authenticationManager.authenticate(new UsernamePasswordAuthenticationToken(email, password));

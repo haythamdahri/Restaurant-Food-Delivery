@@ -2,7 +2,9 @@ package org.restaurant.salado.entities;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
-import lombok.*;
+import lombok.AllArgsConstructor;
+import lombok.Data;
+import lombok.NoArgsConstructor;
 
 import javax.persistence.*;
 import java.io.Serializable;
@@ -12,6 +14,9 @@ import java.util.Calendar;
 import java.util.Collection;
 import java.util.Date;
 
+/**
+ * @author Haytam DAHRI
+ */
 @Entity
 @Table(name = "users")
 @Data
@@ -56,7 +61,10 @@ public class User implements Serializable {
     @JsonIgnoreProperties("users")
     private Collection<Role> roles;
 
-    // Convenient method to add new roles
+    /**
+     * Convenient method to add new roles
+     * @param role
+     */
     public void addRole(Role role) {
         if( this.roles == null ) {
             this.roles = new ArrayList<>();
@@ -64,7 +72,11 @@ public class User implements Serializable {
         this.roles.add(role);
     }
 
-    // Calculate expiry date
+    /**
+     * Expiration calculator
+     * @param expiryTimeInMinutes
+     * @return
+     */
     public Date calculateExpiryDate(int expiryTimeInMinutes) {
         Calendar cal = Calendar.getInstance();
         cal.setTime(new Timestamp(cal.getTime().getTime()));
@@ -72,7 +84,10 @@ public class User implements Serializable {
         return new Date(cal.getTime().getTime());
     }
 
-    // Check token validity
+    /**
+     * Token validation checker
+     * @return
+     */
     @JsonIgnore
     public boolean isValidToken() {
         return this.expiryDate != null && this.expiryDate.getTime() > new Date().getTime();

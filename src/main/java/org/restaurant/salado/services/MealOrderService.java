@@ -4,6 +4,9 @@ import org.restaurant.salado.entities.MealOrder;
 
 import java.util.List;
 
+/**
+ * @author Haytam DAHRI
+ */
 public interface MealOrderService {
 
     MealOrder saveMealOrder(MealOrder mealOrder);

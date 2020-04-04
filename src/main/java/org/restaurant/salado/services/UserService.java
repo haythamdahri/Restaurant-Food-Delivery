@@ -4,6 +4,9 @@ import org.restaurant.salado.entities.User;
 
 import java.util.List;
 
+/**
+ * @author Haytam DAHRI
+ */
 public interface UserService {
 
     User saveUser(User user);

@@ -13,36 +13,32 @@ import org.springframework.stereotype.Service;
 
 import javax.mail.internet.MimeMessage;
 import java.io.File;
+import java.util.Objects;
 
+/**
+ * @author Haytam DAHRI
+ */
 @Service
 public class EmailServiceImpl implements EmailService {
 
-    /*
-     * @Inject an instance of MailContentBuilder
-     */
     @Autowired
     private MailContentBuilder mailContentBuilder;
 
-    /*
-     * @Inject an instance of JavaMailSender which we have created as a bean
-     */
     @Autowired
     private JavaMailSender mailSender;
 
-    /**
-     * Inject from mail sender
-     */
     @Value("${mail.sender}")
     private String from;
 
-    /**
-     * Inject restaurant utils
-     */
     @Autowired
     private RestaurantUtils restaurantUtils;
 
-    /*
-     * @Send simple email message implementation
+    /**
+     * Send simple email message implementation
+     * @param to
+     * @param subject
+     * @param text
+     * @return boolean
      */
     @Override
     public boolean sendSimpleMessage(String to, String subject, String text) {
@@ -59,8 +55,12 @@ public class EmailServiceImpl implements EmailService {
         }
     }
 
-    /*
-     * @Send professional templated email message implementation
+    /**
+     * Send professional email message with template implementation
+     * @param token
+     * @param to
+     * @param subject
+     * @return boolean
      */
     @Override
     public boolean sendActivationEmail(String token, String to, String subject) {
@@ -75,8 +75,12 @@ public class EmailServiceImpl implements EmailService {
         }
     }
 
-    /*
-     * @Send professional templated email message implementation
+    /**
+     * Send professional email message with template implementation
+     * @param token
+     * @param to
+     * @param subject
+     * @return boolean
      */
     @Override
     public boolean sendResetPasswordEmail(String token, String to, String subject) {
@@ -92,8 +96,11 @@ public class EmailServiceImpl implements EmailService {
         }
     }
 
-    /*
-     * @Send professional templated email message implementation
+    /**
+     * Send professional email message with template implementation
+     * @param to
+     * @param subject
+     * @return boolean
      */
     @Override
     public boolean sendResetPasswordCompleteEmail(String to, String subject) {
@@ -108,8 +115,13 @@ public class EmailServiceImpl implements EmailService {
         }
     }
 
-    /*
-     * @Send email update
+    /**
+     * Send user email update
+     * Provide update token
+     * @param token
+     * @param to
+     * @param subject
+     * @return boolean
      */
     @Override
     public boolean sendUpdateUserMailEmail(String token, String to, String subject) {
@@ -124,8 +136,13 @@ public class EmailServiceImpl implements EmailService {
         }
     }
 
-    /*
-     * @Send email with attachment implementation
+    /**
+     * Send email with attachment implementation
+     * @param to
+     * @param subject
+     * @param text
+     * @param pathToAttachment
+     * @return boolean
      */
     @Override
     public boolean sendMessageWithAttachment(String to, String subject, String text, String pathToAttachment) {
@@ -136,7 +153,7 @@ public class EmailServiceImpl implements EmailService {
             FileSystemResource file
                     = new FileSystemResource(new File(pathToAttachment));
             // Add file attachment
-            helper.addAttachment(file.getFilename(), file);
+            helper.addAttachment(Objects.requireNonNull(file.getFilename()), file);
             mailSender.send(message);
             return true;
         } catch (Exception ex) {
