@@ -15,6 +15,10 @@ public interface OrderService {
 
     List<Order> getUserOrders(Long id);
 
+    List<Order> getUserOrders(String email);
+
+    List<Order> getUserOrdersOutOfShippingFees(String email);
+
     Order getLastActiveOrder(Long id);
 
     Order getLastActiveOrderOutOfShippingFees(Long id);
@@ -22,6 +26,8 @@ public interface OrderService {
     Order getOrder(Long id);
 
     Order getOrderOutOfShippingFees(Long id);
+
+    List<Order> getOrdersOutOfShippingFees();
 
     List<Order> getOrders();
 

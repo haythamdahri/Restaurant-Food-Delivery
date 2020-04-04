@@ -8,6 +8,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
+import java.util.stream.Collectors;
 
 /**
  * @author Haytam DAHRI
@@ -31,38 +32,77 @@ public class OrderServiceImpl implements OrderService {
 
     @Override
     public Order getLastActiveOrder(Long id) {
-        return this.orderRepository.findByUserIdAndCancelledFalseAndDeliveredFalse(id).map(order -> {
-            order.setShippingFees(ValuesProvider.SHIPPING_FEES);
-            return order;
-        }).orElse(null);
+        return this.orderRepository.findByUserIdAndCancelledFalseAndDeliveredFalse(id)
+                .map(order -> {
+                    order.postLoad();
+                    order.setShippingFees(ValuesProvider.SHIPPING_FEES);
+                    return order;
+                }).orElse(null);
     }
 
     @Override
     public Order getLastActiveOrderOutOfShippingFees(Long id) {
-        return this.orderRepository.findByUserIdAndCancelledFalseAndDeliveredFalse(id).orElse(null);
+        return this.orderRepository.findByUserIdAndCancelledFalseAndDeliveredFalse(id)
+                .map(order -> {
+                    order.postLoad();
+                    return order;
+                }).orElse(null);
     }
 
 
     @Override
     public Order getOrder(Long id) {
-        return this.orderRepository.findById(id).map(order -> {
-            order.setShippingFees(ValuesProvider.SHIPPING_FEES);
-            return order;
-        }).orElse(null);
+        return this.orderRepository.findById(id)
+                .map(order -> {
+                    order.setShippingFees(ValuesProvider.SHIPPING_FEES);
+                    return order;
+                }).orElse(null);
     }
 
     @Override
     public Order getOrderOutOfShippingFees(Long id) {
-        return this.orderRepository.findById(id).orElse(null);
+        return this.orderRepository.findById(id)
+                .map(order -> {
+                    order.postLoad();
+                    return order;
+                }).orElse(null);
     }
 
     @Override
     public List<Order> getOrders() {
-        return this.orderRepository.findAll();
+        return this.postLoadExecuter(this.orderRepository.findAll(), true);
+    }
+
+    @Override
+    public List<Order> getOrdersOutOfShippingFees() {
+        return this.postLoadExecuter(this.orderRepository.findAll(), false);
     }
 
     @Override
     public List<Order> getUserOrders(Long id) {
         return this.orderRepository.findByUserId(id);
+    }
+
+    @Override
+    public List<Order> getUserOrdersOutOfShippingFees(String email) {
+        return this.postLoadExecuter(this.orderRepository.findByUserEmail(email), false);
+    }
+
+    @Override
+    public List<Order> getUserOrders(String email) {
+        return this.postLoadExecuter(this.orderRepository.findByUserEmail(email), true);
+    }
+
+    private List<Order> postLoadExecuter(List<Order> orders, Boolean isFeeesIncluded) {
+        return isFeeesIncluded ?
+                orders.stream()
+                        .peek(Order::postLoad)
+                        .peek(order -> order.setShippingFees(ValuesProvider.SHIPPING_FEES))
+                        .collect(Collectors.toList())
+                :
+                orders.stream()
+                        .peek(Order::postLoad)
+                        .collect(Collectors.toList());
+
     }
 }

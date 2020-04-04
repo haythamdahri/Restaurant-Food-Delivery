@@ -98,6 +98,7 @@ public class MealOrderRestController {
                 throw new Exception();
             }
         } catch (Exception ex) {
+            ex.printStackTrace();
             data.put("status", false);
             data.put("message", "An error occurred while deleting meal order, please try again!");
         }

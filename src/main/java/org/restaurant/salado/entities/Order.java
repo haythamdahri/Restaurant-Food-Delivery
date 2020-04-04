@@ -5,7 +5,10 @@ import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.security.access.prepost.PostAuthorize;
+import org.springframework.security.access.prepost.PostFilter;
 
+import javax.annotation.PostConstruct;
 import javax.persistence.*;
 import java.io.Serializable;
 import java.math.BigDecimal;
@@ -79,12 +82,12 @@ public class Order implements Serializable {
     /**
      * Post Load calculations
      */
-    @PostLoad
+    @PostConstruct
     public void postLoad() {
         if (this.mealOrders != null) {
             this.price = this.mealOrders.stream()
                     .map(MealOrder::getTotalPrice)    // map MealOrder
-                    .reduce(BigDecimal.ZERO, BigDecimal::add);      // reduce results and add shipping fees
+                    .reduce(BigDecimal.ZERO, BigDecimal::add);      // reduce results
         }
     }
 

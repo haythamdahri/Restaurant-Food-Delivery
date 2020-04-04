@@ -32,6 +32,7 @@ public class User implements Serializable {
     @Column(name = "email", unique = true, insertable = true, updatable = true)
     private String email;
 
+    @JsonIgnore
     @Column(name = "password")
     private String password;
 

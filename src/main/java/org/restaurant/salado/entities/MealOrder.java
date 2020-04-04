@@ -52,10 +52,15 @@ public class MealOrder implements Serializable {
     }
 
     /**
+     * Calculate total price method
+     */
+    @PostLoad
+    public void postLoad() {
+        this.totalPrice = BigDecimal.valueOf(this.quantity).multiply(this.meal.getPrice());
+    }
+
+    /**
      * totalPrice getter
      */
-    public BigDecimal getTotalPrice() {
-        return BigDecimal.valueOf(this.quantity).multiply(this.meal.getPrice());
-    }
 
 }

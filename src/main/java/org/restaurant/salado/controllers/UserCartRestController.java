@@ -51,7 +51,6 @@ public class UserCartRestController {
             data.put("status", true);
             data.put("noActiveOrder", true);
         } else {
-            System.out.println("Total price: " + userActiveOrder.getTotalPrice());
             data.put("status", true);
             data.put("activeOrder", userActiveOrder);
         }
