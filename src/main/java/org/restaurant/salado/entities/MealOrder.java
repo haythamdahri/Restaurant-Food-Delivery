@@ -52,13 +52,10 @@ public class MealOrder implements Serializable {
     }
 
     /**
-     * Post Load calculations
+     * totalPrice getter
      */
-    @PostLoad
-    public void postLoad() {
-        System.out.println("============ CALLING POST LOAD METHOD MealOrder ============");
-        this.totalPrice = BigDecimal.valueOf(this.quantity).multiply(this.meal.getPrice());
-        System.out.println("============ Total price meal order: " + this.totalPrice);
+    public BigDecimal getTotalPrice() {
+        return BigDecimal.valueOf(this.quantity).multiply(this.meal.getPrice());
     }
 
 }

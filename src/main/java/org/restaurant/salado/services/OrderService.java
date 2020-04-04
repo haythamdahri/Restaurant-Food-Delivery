@@ -17,6 +17,12 @@ public interface OrderService {
 
     Order getLastActiveOrder(Long id);
 
+    Order getLastActiveOrderOutOfShippingFees(Long id);
+
+    Order getOrder(Long id);
+
+    Order getOrderOutOfShippingFees(Long id);
+
     List<Order> getOrders();
 
 }

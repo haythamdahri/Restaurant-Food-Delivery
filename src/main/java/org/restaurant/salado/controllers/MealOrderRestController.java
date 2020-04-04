@@ -50,7 +50,7 @@ public class MealOrderRestController {
         // Create a new user order
         Order userOrder;
         // Check if user has already a waiting order
-        userOrder = optionalOrder.orElseGet(() -> new Order(null, user, null, BigDecimal.valueOf(0), BigDecimal.valueOf(0), "", new Date(), false, false, null));
+        userOrder = optionalOrder.orElseGet(() -> new Order(null, user, null, BigDecimal.valueOf(0), BigDecimal.valueOf(0), BigDecimal.valueOf(0), "", new Date(), false, false, null));
         // Check if meal already exists in cart
         if (userOrder.getMealOrders() != null) {
             for (MealOrder ml : userOrder.getMealOrders()) {

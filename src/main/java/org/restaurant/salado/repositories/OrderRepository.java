@@ -8,6 +8,7 @@ import org.springframework.stereotype.Repository;
 import org.springframework.web.bind.annotation.CrossOrigin;
 
 import java.util.List;
+import java.util.Optional;
 
 /**
  * @author Haytam DAHRI
@@ -27,6 +28,6 @@ public interface OrderRepository extends JpaRepository<Order, Long> {
      * @param userId
      * @return Order
      */
-    Order findByUserIdAndCancelledFalseAndDeliveredFalse(@Param("userId") Long userId);
+    Optional<Order> findByUserIdAndCancelledFalseAndDeliveredFalse(@Param("userId") Long userId);
 
 }

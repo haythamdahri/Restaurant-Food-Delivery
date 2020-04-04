@@ -4,10 +4,8 @@ import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
-import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Value;
 
-import javax.annotation.PostConstruct;
 import javax.persistence.*;
 import java.io.Serializable;
 import java.math.BigDecimal;
@@ -38,6 +36,9 @@ public class Order implements Serializable {
     @ManyToMany(fetch = FetchType.EAGER)
     @JoinTable(name = "orders_meal_orders", joinColumns = @JoinColumn(name = "order_id"), inverseJoinColumns = @JoinColumn(name = "meal_id"))
     private Collection<MealOrder> mealOrders;
+
+    @Transient
+    private BigDecimal price;
 
     @Transient
     private BigDecimal totalPrice;
@@ -76,27 +77,24 @@ public class Order implements Serializable {
     }
 
     /**
-     * Calculate shipping fees
-     */
-    void calculateShippingFees() {
-        this.totalPrice = this.totalPrice.add(this.shippingFees);
-    }
-
-    /**
      * Post Load calculations
      */
     @PostLoad
     public void postLoad() {
-        System.out.println("============ CALLING POST LOAD METHOD ORDER ============");
         if (this.mealOrders != null) {
-            this.mealOrders.stream().peek(mealOrder -> this.totalPrice = this.totalPrice.add(mealOrder.getTotalPrice()));
+            this.price = this.mealOrders.stream()
+                    .map(MealOrder::getTotalPrice)    // map MealOrder
+                    .reduce(BigDecimal.ZERO, BigDecimal::add);      // reduce results and add shipping fees
         }
-        System.out.println("============ Total price order: " + this.totalPrice);
     }
 
-    @PostConstruct
-    public void postConstruct() {
-        this.postLoad();
+    /**
+     * shipping fees setter
+     * Calculate total price
+     */
+    public void setShippingFees(BigDecimal shippingFees) {
+        this.shippingFees = shippingFees;
+        this.totalPrice = this.price.add(shippingFees);
     }
 
 }

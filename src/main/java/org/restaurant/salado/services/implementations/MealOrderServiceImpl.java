@@ -8,6 +8,9 @@ import org.springframework.stereotype.Service;
 
 import java.util.List;
 
+/**
+ * @author Haytam DAHRI
+ */
 @Service
 public class MealOrderServiceImpl implements MealOrderService {
 
@@ -20,10 +23,10 @@ public class MealOrderServiceImpl implements MealOrderService {
     }
 
     @Override
-    public boolean deleteMealOrder(Long id) throws Exception{
+    public boolean deleteMealOrder(Long id) throws Exception {
         MealOrder mealOrder = this.mealOrderRepository.findById(id).orElse(null);
         // Check if mealOrder exists
-        if( mealOrder != null ) {
+        if (mealOrder != null) {
             // Delete mealOrder from order
             mealOrder.deleteMealOrderFromOrder(mealOrder);
             // Delete current mealOrder

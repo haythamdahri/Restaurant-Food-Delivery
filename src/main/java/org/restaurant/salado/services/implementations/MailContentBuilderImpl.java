@@ -6,8 +6,9 @@ import org.springframework.stereotype.Service;
 import org.thymeleaf.TemplateEngine;
 import org.thymeleaf.context.Context;
 
-import java.util.Map;
-
+/**
+ * @author Haytam DAHRI
+ */
 @Service
 public class MailContentBuilderImpl implements MailContentBuilder {
 

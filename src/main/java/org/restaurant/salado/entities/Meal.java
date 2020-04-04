@@ -41,4 +41,13 @@ public class Meal implements Serializable {
     @Column(name = "sale_price")
     private BigDecimal salePrice;
 
+    /**
+     * Retrieve meal price
+     * Check if product in sale
+     * @return BigDecimal
+     */
+    public BigDecimal getPrice() {
+        return this.salePrice != null ? this.salePrice : this.price;
+    }
+
 }
