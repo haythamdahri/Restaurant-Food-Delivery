@@ -1,6 +1,7 @@
 package org.restaurant.salado.services;
 
 import org.restaurant.salado.entities.Meal;
+import org.springframework.data.domain.Page;
 
 import java.util.List;
 
@@ -17,8 +18,8 @@ public interface MealService {
 
     List<Meal> getMeals();
 
-    List<Meal> getMealsAndIncrementViews();
+    Page<Meal> getMeals(int page);
 
-    List<Meal> getPopularMeals();
+    List<Meal> getPopularMeals(int page);
 
 }

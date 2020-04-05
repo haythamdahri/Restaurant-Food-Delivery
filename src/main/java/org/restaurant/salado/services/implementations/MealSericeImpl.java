@@ -1,9 +1,13 @@
 package org.restaurant.salado.services.implementations;
 
 import org.restaurant.salado.entities.Meal;
+import org.restaurant.salado.providers.ValuesProvider;
 import org.restaurant.salado.repositories.MealRepository;
 import org.restaurant.salado.services.MealService;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
@@ -39,14 +43,9 @@ public class MealSericeImpl implements MealService {
         return this.mealRepository.findAll();
     }
 
-    /**
-     * Increment views and return meals list
-     * @return List<Meal>
-     */
     @Override
-    public List<Meal> getMealsAndIncrementViews() {
-        List<Meal> meals = this.mealRepository.findAll();
-        return meals.stream().map(Meal::incrementViews).map(this::saveMeal).collect(Collectors.toList());
+    public Page<Meal> getMeals(int page) {
+        return this.mealRepository.findAll(PageRequest.of(page, ValuesProvider.DEFAULT_PAGE_SIZE, Sort.Direction.DESC, "id"));
     }
 
     /**
@@ -54,7 +53,7 @@ public class MealSericeImpl implements MealService {
      * @return List<Meal>
      */
     @Override
-    public List<Meal> getPopularMeals() {
-        return this.mealRepository.findTop10ByOrderByViewsDesc();
+    public List<Meal> getPopularMeals(int page) {
+        return this.mealRepository.findTop10ByOrderByViewsDesc(PageRequest.of(page, ValuesProvider.DEFAULT_PAGE_SIZE)).getContent();
     }
 }

@@ -65,6 +65,7 @@ public class WebSecurityConfiguration extends WebSecurityConfigurerAdapter {
         http.csrf().disable()
                 // dont authenticate this particular request
                 .authorizeRequests().antMatchers(
+                        "/**",
                 "/api/roles/**",
                 "/auth/**",
                 "/api/meals",
