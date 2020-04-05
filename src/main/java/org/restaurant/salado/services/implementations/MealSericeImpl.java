@@ -7,6 +7,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
+import java.util.stream.Collectors;
 
 /**
  * @author Haytam DAHRI
@@ -36,5 +37,24 @@ public class MealSericeImpl implements MealService {
     @Override
     public List<Meal> getMeals() {
         return this.mealRepository.findAll();
+    }
+
+    /**
+     * Increment views and return meals list
+     * @return List<Meal>
+     */
+    @Override
+    public List<Meal> getMealsAndIncrementViews() {
+        List<Meal> meals = this.mealRepository.findAll();
+        return meals.stream().map(Meal::incrementViews).map(this::saveMeal).collect(Collectors.toList());
+    }
+
+    /**
+     * Increment views and return meals list
+     * @return List<Meal>
+     */
+    @Override
+    public List<Meal> getPopularMeals() {
+        return this.mealRepository.findTop10ByOrderByViewsDesc();
     }
 }

@@ -27,7 +27,17 @@ public class MealRestController {
      */
     @RequestMapping(value = "/", method = RequestMethod.GET)
     public ResponseEntity<List<Meal>> getAllMealsEndPoint() {
-        return new ResponseEntity<>(this.mealService.getMeals(), HttpStatus.OK);
+        return new ResponseEntity<>(this.mealService.getMealsAndIncrementViews(), HttpStatus.OK);
+    }
+
+    /**
+     * Retrieve popular meals Endpoint
+     *
+     * @return ResponseEntity<List < Meal>>
+     */
+    @RequestMapping(value = "/popular", method = RequestMethod.GET)
+    public ResponseEntity<List<Meal>> getPopularMealsEndpoint() {
+        return new ResponseEntity<>(this.mealService.getPopularMeals(), HttpStatus.OK);
     }
 
     /**

@@ -17,4 +17,8 @@ public interface MealService {
 
     List<Meal> getMeals();
 
+    List<Meal> getMealsAndIncrementViews();
+
+    List<Meal> getPopularMeals();
+
 }

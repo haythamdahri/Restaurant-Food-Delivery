@@ -36,7 +36,7 @@ public class Meal implements Serializable {
     private Long stock;
 
     @Column(name = "views")
-    private Long views;
+    private Long views = 0L;
 
     @Column(name = "sale_price")
     private BigDecimal salePrice;
@@ -48,6 +48,14 @@ public class Meal implements Serializable {
      */
     public BigDecimal getPrice() {
         return this.salePrice != null ? this.salePrice : this.price;
+    }
+
+    /**
+     * Increment views for current meal
+     */
+    public Meal incrementViews() {
+        this.views += 1L;
+        return this;
     }
 
 }
