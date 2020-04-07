@@ -18,8 +18,8 @@ public interface MealService {
 
     List<Meal> getMeals();
 
-    Page<Meal> getMeals(int page);
+    Page<Meal> getMeals(int page, int size);
 
-    List<Meal> getPopularMeals(int page);
+    List<Meal> getPopularMeals(int page, int size);
 
 }

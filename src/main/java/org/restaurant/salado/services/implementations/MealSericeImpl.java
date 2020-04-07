@@ -44,8 +44,8 @@ public class MealSericeImpl implements MealService {
     }
 
     @Override
-    public Page<Meal> getMeals(int page) {
-        return this.mealRepository.findAll(PageRequest.of(page, ValuesProvider.DEFAULT_PAGE_SIZE, Sort.Direction.DESC, "id"));
+    public Page<Meal> getMeals(int page, int size) {
+        return this.mealRepository.findAll(PageRequest.of(page, size, Sort.Direction.DESC, "id"));
     }
 
     /**
@@ -53,7 +53,7 @@ public class MealSericeImpl implements MealService {
      * @return List<Meal>
      */
     @Override
-    public List<Meal> getPopularMeals(int page) {
-        return this.mealRepository.findTop10ByOrderByViewsDesc(PageRequest.of(page, ValuesProvider.DEFAULT_PAGE_SIZE)).getContent();
+    public List<Meal> getPopularMeals(int page, int size) {
+        return this.mealRepository.findTop10ByOrderByViewsDesc(PageRequest.of(page, size)).getContent();
     }
 }

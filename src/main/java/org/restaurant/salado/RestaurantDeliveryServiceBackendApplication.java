@@ -1,9 +1,5 @@
 package org.restaurant.salado;
 
-import org.restaurant.salado.entities.Role;
-import org.restaurant.salado.entities.RoleType;
-import org.restaurant.salado.entities.User;
-import org.restaurant.salado.repositories.MealOrderRepository;
 import org.restaurant.salado.repositories.RoleRepository;
 import org.restaurant.salado.repositories.UserRepository;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -13,7 +9,6 @@ import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 
 import javax.transaction.Transactional;
-import java.util.Date;
 
 /**
  * @author Haytam DAHRI

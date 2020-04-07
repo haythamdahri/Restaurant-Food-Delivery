@@ -22,9 +22,10 @@ public class RestaurantRestController {
      * @return Map<String, String>
      */
     @RequestMapping(value = "/", method = RequestMethod.GET)
-    public Map<String, String> home() {
-        Map<String, String> data = new HashMap<>();
+    public Map<?, ?> home() throws Exception{
+        Map<Object, Object> data = new HashMap<>();
         data.put("name", "HAYTHAM DAHRI");
+        data.put("age", 22);
         return data;
     }
 

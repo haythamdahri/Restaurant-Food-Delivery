@@ -1,6 +1,7 @@
 package org.restaurant.salado.controllers;
 
 import org.restaurant.salado.entities.Meal;
+import org.restaurant.salado.providers.ValuesProvider;
 import org.restaurant.salado.services.MealService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
@@ -18,6 +19,7 @@ import java.util.List;
 @CrossOrigin(value = "*")
 public class MealRestController {
 
+    private static final String DEFAULT_PAGE_SIZE = String.valueOf(ValuesProvider.DEFAULT_PAGE_SIZE);
     @Autowired
     private MealService mealService;
 
@@ -27,8 +29,9 @@ public class MealRestController {
      * @return ResponseEntity<List < Meal>>
      */
     @RequestMapping(value = "/", method = RequestMethod.GET)
-    public ResponseEntity<Page<Meal>> retrieveMealsEndPoint(@RequestParam(value = "page", defaultValue = "0", required = false) int page) {
-        return new ResponseEntity<>(this.mealService.getMeals(page), HttpStatus.OK);
+    public ResponseEntity<Page<Meal>> retrieveMealsEndPoint(@RequestParam(value = "page", required = false, defaultValue = "0") int page, @RequestParam(value = "size", required = false, defaultValue = "${page.default_size}") int size) throws InterruptedException {
+        return new ResponseEntity<>(this.mealService.getMeals(page, size), HttpStatus.OK);
+
     }
 
     /**
@@ -37,8 +40,8 @@ public class MealRestController {
      * @return ResponseEntity<List < Meal>>
      */
     @RequestMapping(value = "/popular", method = RequestMethod.GET)
-    public ResponseEntity<List<Meal>> getPopularMealsEndpoint(@RequestParam(value = "page", defaultValue = "0", required = false) int page) {
-        return new ResponseEntity<>(this.mealService.getPopularMeals(page), HttpStatus.OK);
+    public ResponseEntity<List<Meal>> getPopularMealsEndpoint(@RequestParam(value = "page", required = false, defaultValue = "0") int page, @RequestParam(value = "size", required = false, defaultValue = "${page.default_size}") int size) {
+        return new ResponseEntity<>(this.mealService.getPopularMeals(page, size), HttpStatus.OK);
     }
 
     /**
