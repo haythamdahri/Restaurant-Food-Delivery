@@ -18,6 +18,9 @@ import static org.springframework.test.web.servlet.request.MockMvcRequestBuilder
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.content;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
+/**
+ * @author Haytham DAHRI
+ */
 @RunWith(SpringRunner.class)
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
 public class RestaurantRestIntegrationTest {
@@ -37,10 +40,12 @@ public class RestaurantRestIntegrationTest {
 
     /**
      * Test RestaurantRestController endpoint: /api/v1/
+     *
      * @throws Exception
      */
     @WithMockUser(value = "spring")
     @Test
+
     public void givenAuthRequestOnRestaurantRestService_shouldSucceedWith200AndExpectSameContent() throws Exception {
         // Build expected data
         JSONObject data = new JSONObject();

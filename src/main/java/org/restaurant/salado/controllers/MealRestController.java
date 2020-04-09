@@ -28,10 +28,19 @@ public class MealRestController {
      *
      * @return ResponseEntity<List < Meal>>
      */
+    @RequestMapping(value = "/test", method = RequestMethod.GET)
+    public ResponseEntity<List<Meal>> fetchMealsEndPoint(@RequestParam(value = "page", required = false, defaultValue = "0") int page, @RequestParam(value = "size", required = false, defaultValue = "${page.default_size}") int size) throws InterruptedException {
+        return ResponseEntity.ok(this.mealService.getMeals(page, size).getContent());
+    }
+
+    /**
+     * Retrieve all meals Endpoint
+     *
+     * @return ResponseEntity<List < Meal>>
+     */
     @RequestMapping(value = "/", method = RequestMethod.GET)
     public ResponseEntity<Page<Meal>> retrieveMealsEndPoint(@RequestParam(value = "page", required = false, defaultValue = "0") int page, @RequestParam(value = "size", required = false, defaultValue = "${page.default_size}") int size) throws InterruptedException {
-        return new ResponseEntity<>(this.mealService.getMeals(page, size), HttpStatus.OK);
-
+        return ResponseEntity.ok(this.mealService.getMeals(page, size));
     }
 
     /**

@@ -62,6 +62,15 @@ public class UserRestController {
     private String UPLOAD_DIR;
 
     /**
+     * Retriebe all users endpoint
+     * @return ResponseEntity
+     */
+    @RequestMapping(path = "/", method = RequestMethod.GET)
+    public ResponseEntity<?> retrieveAllUsers() {
+        return ResponseEntity.ok(this.userService.getUsers());
+    }
+
+    /**
      * Sign up end point
      *
      * @param user
@@ -93,7 +102,7 @@ public class UserRestController {
         // Start thread
         t1.start();
         // Return success message response
-        return new ResponseEntity<>(user, HttpStatus.OK);
+        return ResponseEntity.ok(user);
     }
 
     /**
@@ -136,7 +145,7 @@ public class UserRestController {
             data.put("message", "Email does not belong to any user or email not enabled yet!");
         }
         // Return response
-        return new ResponseEntity<>(data, HttpStatus.OK);
+        return ResponseEntity.ok(data);
     }
 
     /**
@@ -181,7 +190,7 @@ public class UserRestController {
             data.put("message", "Invalid token!");
         }
         // Return response
-        return new ResponseEntity<>(data, HttpStatus.OK);
+        return ResponseEntity.ok(data);
     }
 
     /**
@@ -219,7 +228,7 @@ public class UserRestController {
             }
         }
         // Return final response
-        return new ResponseEntity<>(data, HttpStatus.OK);
+        return ResponseEntity.ok(data);
     }
 
     /**
@@ -253,7 +262,7 @@ public class UserRestController {
         data.put("status", status);
         data.put("message", message);
         // Return response
-        return new ResponseEntity<>(data, HttpStatus.OK);
+        return ResponseEntity.ok(data);
     }
 
     /**
@@ -301,7 +310,7 @@ public class UserRestController {
         data.put("status", status);
         data.put("message", message);
         data.put("user", user);
-        return new ResponseEntity<>(data, HttpStatus.OK);
+        return ResponseEntity.ok(data);
     }
 
     /**
@@ -347,7 +356,7 @@ public class UserRestController {
         data.put("status", status);
         data.put("message", message);
         // Return response
-        return new ResponseEntity<>(data, HttpStatus.OK);
+        return ResponseEntity.ok(data);
     }
 
     /**
@@ -362,7 +371,7 @@ public class UserRestController {
         String email = authentication.getName();
         // Retrieve user preferred meals;
         List<Meal> preferredMeals = this.userService.getUser(email).getPreferredMeals();
-        return new ResponseEntity<>(preferredMeals, HttpStatus.OK);
+        return ResponseEntity.ok(preferredMeals);
     }
 
     /**
@@ -396,7 +405,7 @@ public class UserRestController {
             data.put("message", "An error occurred, please try again!");
         }
         // Return response
-        return new ResponseEntity<>(data, HttpStatus.OK);
+        return ResponseEntity.ok(data);
     }
 
 }
