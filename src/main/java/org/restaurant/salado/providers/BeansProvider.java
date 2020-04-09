@@ -73,7 +73,7 @@ public class BeansProvider {
      */
     @Bean
     public WebMvcConfigurer corsConfigurer() {
-        return new WebMvcConfigurerAdapter() {
+        return new WebMvcConfigurer() {
             @Override
             public void addCorsMappings(CorsRegistry registry) {
                 registry.addMapping("/**").allowCredentials(true).allowedOrigins("http://localhost:8080")

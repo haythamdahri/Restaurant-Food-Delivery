@@ -1,9 +1,11 @@
 package org.restaurant.salado.controllers;
 
+import org.restaurant.salado.entities.Meal;
 import org.restaurant.salado.entities.RoleType;
 import org.restaurant.salado.entities.User;
 import org.restaurant.salado.models.PasswordReset;
 import org.restaurant.salado.services.EmailService;
+import org.restaurant.salado.services.MealService;
 import org.restaurant.salado.services.RoleService;
 import org.restaurant.salado.services.UserService;
 import org.restaurant.salado.utils.RestaurantUtils;
@@ -12,10 +14,12 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.Authentication;
+import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
+import javax.transaction.Transactional;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
@@ -32,18 +36,28 @@ public class UserRestController {
     private static final List<String> imageContentTypes = Arrays.asList("image/png", "image/jpeg", "image/gif");
     @Autowired
     private UserService userService;
+
     @Autowired
     private EmailService emailService;
+
     @Autowired
     private RoleService roleService;
+
+    @Autowired
+    private MealService mealService;
+
     @Autowired
     private BCryptPasswordEncoder bCryptPasswordEncoder;
+
     @Autowired
     private RestaurantUtils restaurantUtils;
+
     @Value("${default_user_image}")
     private String DEFAULT_USER_IMAGE;
+
     @Value("${token_expiration}")
     private int tokenExpiration;
+
     @Value("${upload_dir}")
     private String UPLOAD_DIR;
 
@@ -335,4 +349,54 @@ public class UserRestController {
         // Return response
         return new ResponseEntity<>(data, HttpStatus.OK);
     }
+
+    /**
+     * User products preferences Endpoint
+     *
+     * @param authentication
+     * @return
+     */
+    @Transactional
+    @RequestMapping(path = "/preferences", method = RequestMethod.GET)
+    public ResponseEntity<?> retrieveUserPreferences(@AuthenticationPrincipal Authentication authentication) {
+        String email = authentication.getName();
+        // Retrieve user preferred meals;
+        List<Meal> preferredMeals = this.userService.getUser(email).getPreferredMeals();
+        return new ResponseEntity<>(preferredMeals, HttpStatus.OK);
+    }
+
+    /**
+     * Add product to User preferences Endpoint
+     *
+     * @param authentication
+     * @return
+     */
+    @Transactional
+    @RequestMapping(path = "/preferences", method = RequestMethod.POST)
+    public ResponseEntity<?> toggleProductFromUserPreferences(@RequestParam(value = "id") Long mealId, @AuthenticationPrincipal Authentication authentication) {
+        // Build response data
+        Map<Object, Object> data = new HashMap<>();
+        try {
+            String email = authentication.getName();
+            // Add meal to user preferred meals;
+            Meal meal = this.mealService.getMeal(mealId);
+            User user = this.userService.getUser(email);
+            boolean preferred = user.addOrRemoveMealFromUserPreferences(meal);
+            // Save user
+            this.userService.saveUser(user);
+            // Put data
+            data.put("status", true);
+            data.put("preferred", preferred);
+            String message = preferred ? "Meal has been added to your preferences successfully" : "Meal has been removed from your preferences successfully";
+            data.put("message", message);
+        } catch (Exception ex) {
+            System.out.println("Error: " + ex.getMessage());
+            data.put("status", false);
+            data.put("preferred", false);
+            data.put("message", "An error occurred, please try again!");
+        }
+        // Return response
+        return new ResponseEntity<>(data, HttpStatus.OK);
+    }
+
 }

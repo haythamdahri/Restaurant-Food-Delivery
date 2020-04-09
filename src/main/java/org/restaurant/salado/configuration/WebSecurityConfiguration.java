@@ -68,6 +68,7 @@ public class WebSecurityConfiguration extends WebSecurityConfigurerAdapter {
                 "/api/roles/**",
                 "/auth/**",
                 "/api/meals",
+                "/api/v1/meals/**",
                 "/api/messages",
                 "/api/users/search/existsByEmail",
                 "/api/v1/users/**"

@@ -1,5 +1,6 @@
 package org.restaurant.salado.entities;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
@@ -7,6 +8,7 @@ import lombok.NoArgsConstructor;
 import javax.persistence.*;
 import java.io.Serializable;
 import java.math.BigDecimal;
+import java.util.List;
 
 /**
  * @author Haytam DAHRI
@@ -40,6 +42,10 @@ public class Meal implements Serializable {
 
     @Column(name = "sale_price")
     private BigDecimal salePrice;
+
+    @JsonIgnore
+    @ManyToMany(mappedBy = "preferredMeals", targetEntity = User.class)
+    private List<User> usersPreferences;
 
     /**
      * Retrieve meal price

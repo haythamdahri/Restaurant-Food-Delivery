@@ -9,6 +9,8 @@ import org.springframework.data.web.PageableDefault;
 import org.springframework.stereotype.Repository;
 import org.springframework.web.bind.annotation.CrossOrigin;
 
+import java.util.List;
+
 /**
  * @author Haytam DAHRI
  */
@@ -18,5 +20,7 @@ import org.springframework.web.bind.annotation.CrossOrigin;
 public interface MealRepository extends JpaRepository<Meal, Long> {
 
     Page<Meal> findTop10ByOrderByViewsDesc(@PageableDefault Pageable pageable);
+
+    List<Meal> findMealByUsersPreferences_Email(String email);
 
 }

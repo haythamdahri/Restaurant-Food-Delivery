@@ -1,4 +1,4 @@
-package org.restaurant.salado.services.implementations;
+package org.restaurant.salado.services.impl;
 
 import org.restaurant.salado.services.EmailService;
 import org.restaurant.salado.services.MailContentBuilder;

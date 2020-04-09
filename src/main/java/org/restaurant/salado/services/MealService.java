@@ -22,4 +22,6 @@ public interface MealService {
 
     List<Meal> getPopularMeals(int page, int size);
 
+    List<Meal> getUserPreferredMeals(String email);
+
 }

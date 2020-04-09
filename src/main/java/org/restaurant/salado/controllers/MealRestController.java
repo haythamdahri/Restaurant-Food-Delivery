@@ -1,7 +1,7 @@
 package org.restaurant.salado.controllers;
 
 import org.restaurant.salado.entities.Meal;
-import org.restaurant.salado.providers.ValuesProvider;
+import org.restaurant.salado.providers.Constants;
 import org.restaurant.salado.services.MealService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
@@ -19,7 +19,7 @@ import java.util.List;
 @CrossOrigin(value = "*")
 public class MealRestController {
 
-    private static final String DEFAULT_PAGE_SIZE = String.valueOf(ValuesProvider.DEFAULT_PAGE_SIZE);
+    private static final String DEFAULT_PAGE_SIZE = String.valueOf(Constants.DEFAULT_PAGE_SIZE);
     @Autowired
     private MealService mealService;
 

@@ -9,8 +9,7 @@ import java.math.BigDecimal;
 /**
  * @author Haytham DAHRI
  */
-@Configuration
-public class ValuesProvider {
+public class Constants {
 
     public static final BigDecimal SHIPPING_FEES = BigDecimal.valueOf(50.00);
     public static final int DEFAULT_PAGE_SIZE = 3;

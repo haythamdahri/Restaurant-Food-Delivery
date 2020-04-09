@@ -1,7 +1,7 @@
-package org.restaurant.salado.services.implementations;
+package org.restaurant.salado.services.impl;
 
 import org.restaurant.salado.entities.Order;
-import org.restaurant.salado.providers.ValuesProvider;
+import org.restaurant.salado.providers.Constants;
 import org.restaurant.salado.repositories.OrderRepository;
 import org.restaurant.salado.services.OrderService;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -35,7 +35,7 @@ public class OrderServiceImpl implements OrderService {
         return this.orderRepository.findByUserIdAndCancelledFalseAndDeliveredFalse(id)
                 .map(order -> {
                     order.postLoad();
-                    order.setShippingFees(ValuesProvider.SHIPPING_FEES);
+                    order.setShippingFees(Constants.SHIPPING_FEES);
                     return order;
                 }).orElse(null);
     }
@@ -54,7 +54,7 @@ public class OrderServiceImpl implements OrderService {
     public Order getOrder(Long id) {
         return this.orderRepository.findById(id)
                 .map(order -> {
-                    order.setShippingFees(ValuesProvider.SHIPPING_FEES);
+                    order.setShippingFees(Constants.SHIPPING_FEES);
                     return order;
                 }).orElse(null);
     }
@@ -97,7 +97,7 @@ public class OrderServiceImpl implements OrderService {
         return isFeeesIncluded ?
                 orders.stream()
                         .peek(Order::postLoad)
-                        .peek(order -> order.setShippingFees(ValuesProvider.SHIPPING_FEES))
+                        .peek(order -> order.setShippingFees(Constants.SHIPPING_FEES))
                         .collect(Collectors.toList())
                 :
                 orders.stream()

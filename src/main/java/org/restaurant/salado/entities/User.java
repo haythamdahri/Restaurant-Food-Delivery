@@ -9,10 +9,7 @@ import lombok.NoArgsConstructor;
 import javax.persistence.*;
 import java.io.Serializable;
 import java.sql.Timestamp;
-import java.util.ArrayList;
-import java.util.Calendar;
-import java.util.Collection;
-import java.util.Date;
+import java.util.*;
 
 /**
  * @author Haytam DAHRI
@@ -62,6 +59,10 @@ public class User implements Serializable {
     @JsonIgnoreProperties("users")
     private Collection<Role> roles;
 
+    @ManyToMany(targetEntity = Meal.class)
+    @JoinTable(name="users_preferred_meals", joinColumns = @JoinColumn(name = "user_id"), inverseJoinColumns = @JoinColumn(name = "meal_id"))
+    private List<Meal> preferredMeals;
+
     /**
      * Convenient method to add new roles
      * @param role
@@ -93,5 +94,24 @@ public class User implements Serializable {
     public boolean isValidToken() {
         return this.expiryDate != null && this.expiryDate.getTime() > new Date().getTime();
     }
+
+    /**
+     * Convenient method to add meal to user preferences
+     * @param meal
+     */
+    public boolean addOrRemoveMealFromUserPreferences(Meal meal) {
+        if( this.preferredMeals == null ) {
+            return false;
+        } else {
+            if (this.preferredMeals.contains(meal)) {
+                this.preferredMeals.remove(meal);
+                return false;
+            } else {
+                this.preferredMeals.add(meal);
+                return true;
+            }
+        }
+    }
+
 
 }
