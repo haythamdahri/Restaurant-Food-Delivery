@@ -78,31 +78,37 @@ public class UserRestController {
      */
     @RequestMapping(value = "/", method = RequestMethod.POST)
     public ResponseEntity<User> registerUser(@RequestBody User user) {
-        // Generate user token and expiration date
-        // Add user role
-        // Set user default image
-        user.setImage(this.DEFAULT_USER_IMAGE);
-        user.setRoles(new ArrayList<>());
-        user.addRole(this.roleService.getRole(RoleType.ROLE_USER));
-        String token = UUID.randomUUID().toString();
-        user.setToken(token);
-        user.setExpiryDate(user.calculateExpiryDate(this.tokenExpiration));
-        user.setEnabled(false);
-        // Hash the password
-        user.setPassword(this.bCryptPasswordEncoder.encode(user.getPassword()));
-        // Create user account
-        user = this.userService.saveUser(user);
-        User finalUser = user;
-        Thread t1 = new Thread() {
-            public void run() {
-                // Send activation email
-                emailService.sendActivationEmail(finalUser.getToken(), finalUser.getEmail(), "Account Activation");
-            }
-        };
-        // Start thread
-        t1.start();
-        // Return success message response
-        return ResponseEntity.ok(user);
+        try {
+            // Generate user token and expiration date
+            // Add user role
+            // Set user default image
+            user.setImage(this.DEFAULT_USER_IMAGE);
+            user.setRoles(new ArrayList<>());
+            user.addRole(this.roleService.getRole(RoleType.ROLE_USER));
+            String token = UUID.randomUUID().toString();
+            user.setToken(token);
+            user.setExpiryDate(user.calculateExpiryDate(this.tokenExpiration));
+            user.setEnabled(false);
+            // Hash the password
+            System.out.println(user.getPassword());
+            user.setPassword(this.bCryptPasswordEncoder.encode(user.getPassword()));
+            // Create user account
+            user = this.userService.saveUser(user);
+            User finalUser = user;
+            Thread t1 = new Thread() {
+                public void run() {
+                    // Send activation email
+                    emailService.sendActivationEmail(finalUser.getToken(), finalUser.getEmail(), "Account Activation");
+                }
+            };
+            // Start thread
+            t1.start();
+            // Return success message response
+            return ResponseEntity.ok(user);
+        } catch(Exception ex) {
+            ex.printStackTrace();
+        }
+        return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).build();
     }
 
     /**

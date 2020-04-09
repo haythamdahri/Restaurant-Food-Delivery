@@ -1,5 +1,6 @@
 package org.restaurant.salado.entities;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
@@ -24,10 +25,12 @@ public class Role implements Serializable {
     private Long id;
 
     @Enumerated(EnumType.STRING)
-    @Column(name = "role_name", unique = true, insertable = true, updatable = false)
+    @Column(name = "role_name", unique = true, updatable = false)
     private RoleType roleName;
 
     @ManyToMany(mappedBy = "roles")
+    @JsonIgnore
     private Collection<User> users;
+
 
 }

@@ -8,6 +8,7 @@ import lombok.NoArgsConstructor;
 import javax.persistence.*;
 import java.io.Serializable;
 import java.math.BigDecimal;
+import java.util.ArrayList;
 import java.util.List;
 
 /**
@@ -43,6 +44,9 @@ public class Meal implements Serializable {
     @Column(name = "sale_price")
     private BigDecimal salePrice;
 
+    @OneToMany(fetch = FetchType.LAZY, mappedBy = "meal")
+    private List<Review> reviews;
+
     @JsonIgnore
     @ManyToMany(mappedBy = "preferredMeals", targetEntity = User.class)
     private List<User> usersPreferences;
@@ -62,6 +66,17 @@ public class Meal implements Serializable {
     public Meal incrementViews() {
         this.views += 1L;
         return this;
+    }
+
+    /**
+     * Convenient method to add a new to the current meal
+     * @param review
+     */
+    public void addReview(Review review) {
+        if( this.reviews == null ) {
+            this.reviews = new ArrayList<>();
+        }
+        this.reviews.add(review);
     }
 
 }

@@ -2,6 +2,7 @@ package org.restaurant.salado.entities;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
+import com.fasterxml.jackson.annotation.JsonProperty;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
@@ -29,7 +30,7 @@ public class User implements Serializable {
     @Column(name = "email", unique = true, insertable = true, updatable = true)
     private String email;
 
-    @JsonIgnore
+    @JsonProperty(access = JsonProperty.Access.WRITE_ONLY)
     @Column(name = "password")
     private String password;
 
@@ -62,6 +63,10 @@ public class User implements Serializable {
     @ManyToMany(targetEntity = Meal.class)
     @JoinTable(name="users_preferred_meals", joinColumns = @JoinColumn(name = "user_id"), inverseJoinColumns = @JoinColumn(name = "meal_id"))
     private List<Meal> preferredMeals;
+
+    @OneToMany(fetch = FetchType.LAZY, mappedBy = "user")
+    @JsonProperty(access = JsonProperty.Access.WRITE_ONLY)
+    private List<Review> reviews;
 
     /**
      * Convenient method to add new roles
