@@ -7,9 +7,14 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.*;
 
+import javax.transaction.Transactional;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 /**
  * @author Haytham DAHRI
@@ -41,6 +46,48 @@ public class MealRestController {
     @RequestMapping(value = "/", method = RequestMethod.GET)
     public ResponseEntity<Page<Meal>> retrieveMealsEndPoint(@RequestParam(value = "page", required = false, defaultValue = "0") int page, @RequestParam(value = "size", required = false, defaultValue = "${page.default_size}") int size) throws InterruptedException {
         return ResponseEntity.ok(this.mealService.getMeals(page, size));
+    }
+
+    /**
+     * Retrieve meal and increment number of views
+     *
+     * @param id
+     * @return
+     */
+    @RequestMapping(value = "/{id}", method = RequestMethod.GET)
+    @Transactional
+    public ResponseEntity<?> fetchMeal(@PathVariable(value = "id") Long id, @AuthenticationPrincipal Authentication authentication) {
+        // Build response object
+        Map<Object, Object> data = new HashMap<>();
+        Meal meal = null;
+        boolean mealPreferred = false;
+        try {
+            // Retrieve meal
+            meal = this.mealService.getMeal(id);
+            // Check if meal exists
+            if( meal != null ) {
+                // Update number of views and save the meal
+                meal = this.mealService.saveMeal(meal.incrementViews());
+                // Check meal preferences if user is authenticated
+                if( authentication != null ) {
+                    mealPreferred = meal.getUsersPreferences().stream().anyMatch(user -> {
+                        return user.getEmail().equalsIgnoreCase(authentication.getName());
+                    });
+                }
+                // Set response object
+                data.put("meal", meal);
+                data.put("mealPreferred", mealPreferred);
+                // Return 200 response
+                return ResponseEntity.ok(data);
+            }
+            // throw exception
+            throw new Exception("No meal has been found!");
+        } catch(Exception ex) {
+            ex.printStackTrace();
+            data.put("message", ex.getMessage());
+            // Return 500 response
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(data);
+        }
     }
 
     /**
