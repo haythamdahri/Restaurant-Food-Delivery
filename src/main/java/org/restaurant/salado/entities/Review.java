@@ -1,6 +1,7 @@
 package org.restaurant.salado.entities;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.fasterxml.jackson.annotation.JsonProperty;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
@@ -8,6 +9,7 @@ import lombok.NoArgsConstructor;
 import javax.persistence.*;
 import javax.validation.constraints.Max;
 import javax.validation.constraints.Min;
+import java.util.Date;
 
 /**
  * @author Haytham DAHRI
@@ -37,8 +39,19 @@ public class Review {
     private String comment;
 
     @Column(name = "rating")
-    @Min(value= 0)
+    @Min(value = 0)
     @Max(value = 5)
     private int rating;
+
+    @Temporal(TemporalType.TIMESTAMP)
+    @Column(name = "time")
+    @JsonProperty(access = JsonProperty.Access.READ_ONLY)
+    private Date timestamp;
+
+    @PrePersist
+    void createdAt() {
+        this.timestamp = new Date();
+    }
+
 
 }

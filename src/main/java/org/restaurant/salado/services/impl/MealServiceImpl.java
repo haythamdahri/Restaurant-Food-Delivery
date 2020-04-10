@@ -15,7 +15,7 @@ import java.util.List;
  * @author Haytam DAHRI
  */
 @Service
-public class MealSericeImpl implements MealService {
+public class MealServiceImpl implements MealService {
 
     @Autowired
     private MealRepository mealRepository;

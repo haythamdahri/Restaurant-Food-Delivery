@@ -41,7 +41,7 @@ public class MealRestController {
     /**
      * Retrieve all meals Endpoint
      *
-     * @return ResponseEntity<List < Meal>>
+     * @return ResponseEntity<Page<Meal>>
      */
     @RequestMapping(value = "/", method = RequestMethod.GET)
     public ResponseEntity<Page<Meal>> retrieveMealsEndPoint(@RequestParam(value = "page", required = false, defaultValue = "0") int page, @RequestParam(value = "size", required = false, defaultValue = "${page.default_size}") int size) throws InterruptedException {
@@ -52,7 +52,7 @@ public class MealRestController {
      * Retrieve meal and increment number of views
      *
      * @param id
-     * @return
+     * @return ResponseEntity
      */
     @RequestMapping(value = "/{id}", method = RequestMethod.GET)
     @Transactional

@@ -1,6 +1,7 @@
 package org.restaurant.salado.entities;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.fasterxml.jackson.annotation.JsonProperty;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
@@ -45,6 +46,7 @@ public class Meal implements Serializable {
     private BigDecimal salePrice;
 
     @OneToMany(fetch = FetchType.LAZY, mappedBy = "meal")
+    @JsonProperty(access = JsonProperty.Access.WRITE_ONLY)
     private List<Review> reviews;
 
     @JsonIgnore
