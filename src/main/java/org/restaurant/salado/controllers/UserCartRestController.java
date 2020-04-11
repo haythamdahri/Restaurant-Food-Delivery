@@ -13,6 +13,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RestController;
 
+import javax.transaction.Transactional;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -22,6 +23,7 @@ import java.util.Map;
 @RestController
 @RequestMapping(path = "/api/v1/usercart")
 @CrossOrigin(value = "*")
+@Transactional
 public class UserCartRestController {
 
     @Autowired
@@ -47,10 +49,12 @@ public class UserCartRestController {
         // Check if their is an active order
         if (userActiveOrder == null) {
             data.put("status", true);
+            data.put("activeOrder", null);
             data.put("noActiveOrder", true);
         } else {
             data.put("status", true);
             data.put("activeOrder", userActiveOrder);
+            data.put("noActiveOrder", false);
         }
         return new ResponseEntity<Map<Object, Object>>(data, HttpStatus.OK);
     }

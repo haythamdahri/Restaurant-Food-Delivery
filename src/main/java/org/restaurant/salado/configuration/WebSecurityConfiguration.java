@@ -64,10 +64,9 @@ public class WebSecurityConfiguration extends WebSecurityConfigurerAdapter {
         // We don't need CSRF for this example
         http.csrf().disable()
                 // Dont authenticate this particular request for GET request only
-                .authorizeRequests().antMatchers( HttpMethod.GET,
+                .authorizeRequests().antMatchers(HttpMethod.GET,
                 "/api/v1/restaurantfiles/**",
                 "/api/roles/**",
-                "/auth/**",
                 "/api/meals",
                 "/api/v1/meals/**",
                 "/api/v1/reviews/**",
@@ -75,9 +74,14 @@ public class WebSecurityConfiguration extends WebSecurityConfigurerAdapter {
                 "/api/users/search/existsByEmail",
                 "/api/v1/users/**"
         ).permitAll().
-                antMatchers(HttpMethod.OPTIONS, "/**").permitAll().
+                antMatchers(HttpMethod.OPTIONS, "/**").permitAll()
+                // Allow POST for authentication
+                .antMatchers(
+                        "/auth/**",
+                        "/api/v1/users/"
+                ).permitAll()
                 // all other requests need to be authenticated
-                        anyRequest().authenticated().and().
+                .anyRequest().authenticated().and().
                 /**
                  * make sure we use stateless session; session won't be used to store user's state.
                  */

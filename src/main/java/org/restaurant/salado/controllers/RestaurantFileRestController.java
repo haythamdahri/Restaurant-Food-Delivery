@@ -61,8 +61,7 @@ public class RestaurantFileRestController {
     /**
      * Retrieve Blob file only
      * @param id
-     * @param response
-     * @return
+     * @return ResponseEntity<byte[]>
      * @throws IOException
      */
     @RequestMapping(value = "/file/{id}")

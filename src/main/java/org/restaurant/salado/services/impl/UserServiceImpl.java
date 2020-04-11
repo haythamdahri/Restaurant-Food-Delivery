@@ -6,6 +6,7 @@ import org.restaurant.salado.services.UserService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import javax.transaction.Transactional;
 import java.util.List;
 import java.util.Optional;
 
@@ -24,12 +25,14 @@ public class UserServiceImpl implements UserService {
     }
 
     @Override
+    @Transactional
     public User getUser(Long id) {
         Optional<User> optionalUser = this.userRepository.findById(id);
         return optionalUser.orElse(null);
     }
 
     @Override
+    @Transactional
     public User getEnabledUser(String email) {
         Optional<User> optionalUser = this.userRepository.findByEmailAndEnabledIsTrue(email);
         return optionalUser.orElse(null);

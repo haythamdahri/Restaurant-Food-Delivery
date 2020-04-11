@@ -1,5 +1,6 @@
 package org.restaurant.salado.controllers;
 
+import org.apache.commons.io.IOUtils;
 import org.restaurant.salado.entities.Meal;
 import org.restaurant.salado.entities.RestaurantFile;
 import org.restaurant.salado.entities.RoleType;
@@ -10,6 +11,7 @@ import org.restaurant.salado.utils.RestaurantUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.HttpStatus;
+import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
@@ -18,9 +20,8 @@ import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
 import javax.transaction.Transactional;
-import java.nio.file.Files;
-import java.nio.file.Path;
-import java.nio.file.Paths;
+import java.io.File;
+import java.io.FileInputStream;
 import java.util.*;
 
 /**
@@ -29,6 +30,7 @@ import java.util.*;
 @RestController
 @RequestMapping(path = "/api/v1/users")
 @CrossOrigin(value = "*")
+@Transactional
 public class UserRestController {
 
     private static final List<String> imageContentTypes = Arrays.asList("image/png", "image/jpeg", "image/gif");
@@ -57,11 +59,23 @@ public class UserRestController {
     @Value("${token_expiration}")
     private int tokenExpiration;
 
-    @Value("${upload_dir}")
-    private String UPLOAD_DIR;
+    @RequestMapping(path = "/current", method = RequestMethod.GET)
+    public ResponseEntity<?> retrieveAuthenticatedUser(@AuthenticationPrincipal Authentication authentication) {
+        // Check if user is authenticated
+        if (authentication != null) {
+            // Fetch user using service tier and its image
+            User user = this.userService.getUser(authentication.getName());
+            return ResponseEntity.ok(user);
+            // Return Response
+        } else {
+            // Return unauthorized user response
+            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).build();
+        }
+    }
 
     /**
      * Retriebe all users endpoint
+     *
      * @return ResponseEntity
      */
     @RequestMapping(path = "/", method = RequestMethod.GET)
@@ -81,7 +95,10 @@ public class UserRestController {
             // Generate user token and expiration date
             // Add user role
             // Set user default image
-            user.setImage(this.restaurantFileService.getRestaurantFile(this.DEFAULT_USER_IMAGE));
+            File file = new File("uploads/users/images/default.png");
+            RestaurantFile restaurantFile = new RestaurantFile(null, file.getName(), RestaurantUtils.getExtensionByApacheCommonLib(file.getName()), MediaType.IMAGE_PNG, IOUtils.toByteArray(new FileInputStream(file)), null);
+            restaurantFile = this.restaurantFileService.saveRestaurantFile(restaurantFile);
+            user.setImage(restaurantFile);
             user.setRoles(new ArrayList<>());
             user.addRole(this.roleService.getRole(RoleType.ROLE_USER));
             String token = UUID.randomUUID().toString();
@@ -104,7 +121,7 @@ public class UserRestController {
             t1.start();
             // Return success message response
             return ResponseEntity.ok(user);
-        } catch(Exception ex) {
+        } catch (Exception ex) {
             ex.printStackTrace();
         }
         return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).build();
@@ -295,15 +312,11 @@ public class UserRestController {
                     message = "Invalid user image";
                     status = false;
                 } else {
-                    // Create user image file and link it with current user
-                    RestaurantFile restaurantFile = this.restaurantFileService.saveRestaurantFile(file);
+                    // Update user image file and link it with current user
+                    RestaurantFile restaurantFile = this.restaurantFileService.saveRestaurantFile(file, user.getImage());
                     user.setImage(restaurantFile);
                     // Save the user on the database
                     user = this.userService.saveUser(user);
-                    // Upload user image or update it if exists
-                    byte[] bytes = file.getBytes();
-                    Path path = Paths.get(this.UPLOAD_DIR + "/users/images/" + user.getImage());
-                    Files.write(path, bytes);
                     // Set message
                     status = true;
                     message = "User image has been changed successfully";

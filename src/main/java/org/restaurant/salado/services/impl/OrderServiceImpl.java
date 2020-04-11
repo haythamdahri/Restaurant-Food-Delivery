@@ -7,6 +7,7 @@ import org.restaurant.salado.services.OrderService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import javax.transaction.Transactional;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -14,6 +15,7 @@ import java.util.stream.Collectors;
  * @author Haytam DAHRI
  */
 @Service
+@Transactional
 public class OrderServiceImpl implements OrderService {
 
     @Autowired
@@ -70,12 +72,12 @@ public class OrderServiceImpl implements OrderService {
 
     @Override
     public List<Order> getOrders() {
-        return this.postLoadExecuter(this.orderRepository.findAll(), true);
+        return this.postLoadExecute(this.orderRepository.findAll(), true);
     }
 
     @Override
     public List<Order> getOrdersOutOfShippingFees() {
-        return this.postLoadExecuter(this.orderRepository.findAll(), false);
+        return this.postLoadExecute(this.orderRepository.findAll(), false);
     }
 
     @Override
@@ -85,16 +87,16 @@ public class OrderServiceImpl implements OrderService {
 
     @Override
     public List<Order> getUserOrdersOutOfShippingFees(String email) {
-        return this.postLoadExecuter(this.orderRepository.findByUserEmail(email), false);
+        return this.postLoadExecute(this.orderRepository.findByUserEmail(email), false);
     }
 
     @Override
     public List<Order> getUserOrders(String email) {
-        return this.postLoadExecuter(this.orderRepository.findByUserEmail(email), true);
+        return this.postLoadExecute(this.orderRepository.findByUserEmail(email), true);
     }
 
-    private List<Order> postLoadExecuter(List<Order> orders, Boolean isFeeesIncluded) {
-        return isFeeesIncluded ?
+    private List<Order> postLoadExecute(List<Order> orders, Boolean isFeesIncluded) {
+        return isFeesIncluded ?
                 orders.stream()
                         .peek(Order::postLoad)
                         .peek(order -> order.setShippingFees(Constants.SHIPPING_FEES))

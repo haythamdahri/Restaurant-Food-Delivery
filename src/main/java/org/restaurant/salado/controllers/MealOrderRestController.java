@@ -3,7 +3,9 @@ package org.restaurant.salado.controllers;
 import org.restaurant.salado.entities.MealOrder;
 import org.restaurant.salado.entities.Order;
 import org.restaurant.salado.entities.User;
+import org.restaurant.salado.models.MealOrderRequest;
 import org.restaurant.salado.services.MealOrderService;
+import org.restaurant.salado.services.MealService;
 import org.restaurant.salado.services.OrderService;
 import org.restaurant.salado.services.UserService;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -12,6 +14,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.Authentication;
 import org.springframework.web.bind.annotation.*;
 
+import javax.transaction.Transactional;
 import java.math.BigDecimal;
 import java.util.*;
 
@@ -21,6 +24,7 @@ import java.util.*;
 @RestController
 @RequestMapping(path = "/api/v1/mealorders")
 @CrossOrigin(value = "*")
+@Transactional
 public class MealOrderRestController {
 
     @Autowired
@@ -30,17 +34,22 @@ public class MealOrderRestController {
     private OrderService orderService;
 
     @Autowired
+    private MealService mealService;
+
+    @Autowired
     private MealOrderService mealOrderService;
 
     /**
      * Add meal order to user orders
      *
-     * @param mealOrder
+     * @param mealOrderRequest
      * @param authentication
      * @return ResponseEntity
      */
-    @RequestMapping("/")
-    public ResponseEntity<Object> addUserOder(@RequestBody MealOrder mealOrder, Authentication authentication) {
+    @RequestMapping(path = "/", method = RequestMethod.POST)
+    public ResponseEntity<Object> addUserOder(@RequestBody MealOrderRequest mealOrderRequest, Authentication authentication) {
+        // Create MealOrder object
+        MealOrder mealOrder = new MealOrder(null, null, this.mealService.getMeal(mealOrderRequest.getMealId()), mealOrderRequest.getQuantity(), BigDecimal.ZERO);
         // Fetch connected user from database
         User user = this.userService.getUser(authentication.getName());
         // Get or create user order cart
@@ -58,7 +67,7 @@ public class MealOrderRestController {
                     Map<String, String> errorResponse = new HashMap<>();
                     errorResponse.put("message", "Meal already exists in your cart!");
                     errorResponse.put("error", "true");
-                    return new ResponseEntity<>(errorResponse, HttpStatus.OK);
+                    return ResponseEntity.ok(errorResponse);
                 }
             }
         }
@@ -72,7 +81,7 @@ public class MealOrderRestController {
         mealOrder.setOrder(userOrder);
         this.mealOrderService.saveMealOrder(mealOrder);
         // Return response entity
-        return new ResponseEntity<>(userOrder, HttpStatus.OK);
+        return ResponseEntity.ok(userOrder);
     }
 
     /**

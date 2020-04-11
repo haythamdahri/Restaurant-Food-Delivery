@@ -1,13 +1,12 @@
 package org.restaurant.salado.entities;
 
+import com.fasterxml.jackson.annotation.JsonProperty;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 import org.springframework.http.MediaType;
 
 import javax.persistence.*;
-import javax.validation.constraints.NotBlank;
-import javax.validation.constraints.NotNull;
 import java.time.ZoneId;
 import java.time.ZonedDateTime;
 
@@ -36,6 +35,8 @@ public class RestaurantFile {
     private MediaType mediaType;
 
     @Lob
+    @Column(name = "file")
+    @JsonProperty(access = JsonProperty.Access.WRITE_ONLY)
     private byte[] file;
 
     @Column(name = "timestamp", nullable = false)

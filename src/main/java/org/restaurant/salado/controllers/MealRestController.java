@@ -1,6 +1,7 @@
 package org.restaurant.salado.controllers;
 
 import org.restaurant.salado.entities.Meal;
+import org.restaurant.salado.models.MealOrderRequest;
 import org.restaurant.salado.providers.Constants;
 import org.restaurant.salado.services.MealService;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -46,6 +47,19 @@ public class MealRestController {
     @RequestMapping(value = "/", method = RequestMethod.GET)
     public ResponseEntity<Page<Meal>> retrieveMealsEndPoint(@RequestParam(value = "page", required = false, defaultValue = "0") int page, @RequestParam(value = "size", required = false, defaultValue = "${page.default_size}") int size) throws InterruptedException {
         return ResponseEntity.ok(this.mealService.getMeals(page, size));
+    }
+
+    /**
+     * Meal post, put request handler
+     *
+     * @param mealRequest
+     * @return ResponseEntity<Meal>
+     */
+    @RequestMapping(value = "/", method = {RequestMethod.POST, RequestMethod.PATCH})
+    public ResponseEntity<?> postMeal(@RequestBody MealOrderRequest mealRequest) {
+        System.out.println("POSTING -----------> MEAL");
+        System.out.println(mealRequest);
+        return new ResponseEntity<>("Great", HttpStatus.OK);
     }
 
     /**
@@ -100,16 +114,5 @@ public class MealRestController {
         return new ResponseEntity<>(this.mealService.getPopularMeals(page, size), HttpStatus.OK);
     }
 
-    /**
-     * Meal post, put request handler
-     *
-     * @param meal
-     * @return ResponseEntity<Meal>
-     */
-    @RequestMapping(value = "/", method = {RequestMethod.POST, RequestMethod.PATCH})
-    public ResponseEntity<Meal> postMeal(@RequestBody Meal meal) {
-        meal = this.mealService.saveMeal(meal);
-        return new ResponseEntity<>(meal, HttpStatus.OK);
-    }
 
 }

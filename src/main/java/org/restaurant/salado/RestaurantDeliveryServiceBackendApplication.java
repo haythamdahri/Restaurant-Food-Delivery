@@ -1,24 +1,24 @@
 package org.restaurant.salado;
 
 import org.apache.commons.io.IOUtils;
-import org.restaurant.salado.entities.RestaurantFile;
-import org.restaurant.salado.entities.Role;
-import org.restaurant.salado.entities.RoleType;
-import org.restaurant.salado.entities.User;
+import org.restaurant.salado.entities.*;
 import org.restaurant.salado.repositories.RoleRepository;
 import org.restaurant.salado.repositories.UserRepository;
+import org.restaurant.salado.services.MealService;
 import org.restaurant.salado.services.RestaurantFileService;
 import org.restaurant.salado.utils.RestaurantUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.CommandLineRunner;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
+import org.springframework.context.annotation.Bean;
 import org.springframework.http.MediaType;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 
 import javax.transaction.Transactional;
 import java.io.File;
 import java.io.FileInputStream;
+import java.math.BigDecimal;
 import java.nio.file.Paths;
 import java.util.Date;
 
@@ -36,6 +36,9 @@ public class RestaurantDeliveryServiceBackendApplication implements CommandLineR
 
     @Autowired
     private RestaurantFileService restaurantFileService;
+
+    @Autowired
+    private MealService mealService;
 
     @Autowired
     private BCryptPasswordEncoder bCryptPasswordEncoder;
@@ -78,5 +81,11 @@ public class RestaurantDeliveryServiceBackendApplication implements CommandLineR
         // Save the user
         this.userRepository.save(user);*/
 
+        // Persist Meals
+        /*File file = new File("/home/haytham/Downloads/meal.jpg");
+        RestaurantFile restaurantFile = new RestaurantFile(null, file.getName(), RestaurantUtils.getExtensionByApacheCommonLib(file.getName()), MediaType.IMAGE_PNG, IOUtils.toByteArray(new FileInputStream(file)), null);
+        Meal meal = new Meal(null, "Crispy Chicken Salad", restaurantFile, BigDecimal.valueOf(75L), 150L, 896L, BigDecimal.valueOf(70L), null, null);
+        meal = this.mealService.saveMeal(meal);*/
     }
+
 }

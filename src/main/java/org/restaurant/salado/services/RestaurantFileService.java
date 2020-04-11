@@ -16,6 +16,8 @@ public interface RestaurantFileService {
 
     RestaurantFile saveRestaurantFile(MultipartFile file) throws IOException;
 
+    RestaurantFile saveRestaurantFile(MultipartFile file, RestaurantFile restaurantFile) throws IOException;
+
     Boolean deleteRestaurantFile(Long id);
 
     RestaurantFile getRestaurantFile(Long id);

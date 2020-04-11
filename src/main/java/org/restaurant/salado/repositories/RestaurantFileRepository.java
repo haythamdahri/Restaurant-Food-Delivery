@@ -9,7 +9,7 @@ import org.springframework.data.web.PageableDefault;
 import org.springframework.stereotype.Repository;
 import org.springframework.web.bind.annotation.CrossOrigin;
 
-import java.util.List;
+import javax.transaction.Transactional;
 import java.util.Optional;
 
 /**
@@ -18,6 +18,7 @@ import java.util.Optional;
 @Repository
 @RepositoryRestResource
 @CrossOrigin(value = "*")
+@Transactional
 public interface RestaurantFileRepository extends JpaRepository<RestaurantFile, Long> {
 
     Page<RestaurantFile> findByOrderByIdDesc(@PageableDefault Pageable pageable);

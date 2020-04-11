@@ -30,7 +30,7 @@ public class Meal implements Serializable {
     @Column(name = "name", unique = true, insertable = true, updatable = true)
     private String name;
 
-    @OneToOne(cascade = CascadeType.ALL, fetch = FetchType.LAZY, targetEntity = RestaurantFile.class)
+    @OneToOne(cascade = CascadeType.ALL, fetch = FetchType.EAGER, targetEntity = RestaurantFile.class)
     @JoinColumn(name = "image_id")
     private RestaurantFile image;
 

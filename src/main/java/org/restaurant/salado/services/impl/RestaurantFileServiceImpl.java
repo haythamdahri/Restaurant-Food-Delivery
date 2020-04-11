@@ -38,6 +38,15 @@ public class RestaurantFileServiceImpl implements RestaurantFileService {
     }
 
     @Override
+    public RestaurantFile saveRestaurantFile(MultipartFile file, RestaurantFile restaurantFile) throws IOException {
+        // Update image data
+        restaurantFile.setName(file.getOriginalFilename());
+        restaurantFile.setExtension(RestaurantUtils.getExtensionByApacheCommonLib(file.getOriginalFilename()));
+        restaurantFile.setFile(file.getBytes());
+        return this.restaurantFileRepository.save(restaurantFile);
+    }
+
+    @Override
     public Boolean deleteRestaurantFile(Long id) {
         this.restaurantFileRepository.deleteById(id);
         return true;
