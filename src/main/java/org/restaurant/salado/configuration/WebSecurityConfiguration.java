@@ -65,6 +65,7 @@ public class WebSecurityConfiguration extends WebSecurityConfigurerAdapter {
         http.csrf().disable()
                 // Dont authenticate this particular request for GET request only
                 .authorizeRequests().antMatchers( HttpMethod.GET,
+                "/api/v1/restaurantfiles/**",
                 "/api/roles/**",
                 "/auth/**",
                 "/api/meals",

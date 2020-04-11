@@ -12,6 +12,6 @@ import java.math.BigDecimal;
 public class Constants {
 
     public static final BigDecimal SHIPPING_FEES = BigDecimal.valueOf(50.00);
-    public static final int DEFAULT_PAGE_SIZE = 3;
+    public static final int DEFAULT_PAGE_SIZE = 5;
 
 }

@@ -30,8 +30,9 @@ public class Meal implements Serializable {
     @Column(name = "name", unique = true, insertable = true, updatable = true)
     private String name;
 
-    @Column(name = "image")
-    private String image;
+    @OneToOne(cascade = CascadeType.ALL, fetch = FetchType.LAZY, targetEntity = RestaurantFile.class)
+    @JoinColumn(name = "image_id")
+    private RestaurantFile image;
 
     @Column(name = "price")
     private BigDecimal price;

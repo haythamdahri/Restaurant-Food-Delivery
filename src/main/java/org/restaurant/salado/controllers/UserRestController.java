@@ -1,13 +1,11 @@
 package org.restaurant.salado.controllers;
 
 import org.restaurant.salado.entities.Meal;
+import org.restaurant.salado.entities.RestaurantFile;
 import org.restaurant.salado.entities.RoleType;
 import org.restaurant.salado.entities.User;
 import org.restaurant.salado.models.PasswordReset;
-import org.restaurant.salado.services.EmailService;
-import org.restaurant.salado.services.MealService;
-import org.restaurant.salado.services.RoleService;
-import org.restaurant.salado.services.UserService;
+import org.restaurant.salado.services.*;
 import org.restaurant.salado.utils.RestaurantUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
@@ -34,6 +32,7 @@ import java.util.*;
 public class UserRestController {
 
     private static final List<String> imageContentTypes = Arrays.asList("image/png", "image/jpeg", "image/gif");
+
     @Autowired
     private UserService userService;
 
@@ -50,7 +49,7 @@ public class UserRestController {
     private BCryptPasswordEncoder bCryptPasswordEncoder;
 
     @Autowired
-    private RestaurantUtils restaurantUtils;
+    private RestaurantFileService restaurantFileService;
 
     @Value("${default_user_image}")
     private String DEFAULT_USER_IMAGE;
@@ -82,7 +81,7 @@ public class UserRestController {
             // Generate user token and expiration date
             // Add user role
             // Set user default image
-            user.setImage(this.DEFAULT_USER_IMAGE);
+            user.setImage(this.restaurantFileService.getRestaurantFile(this.DEFAULT_USER_IMAGE));
             user.setRoles(new ArrayList<>());
             user.addRole(this.roleService.getRole(RoleType.ROLE_USER));
             String token = UUID.randomUUID().toString();
@@ -118,7 +117,7 @@ public class UserRestController {
      * @return ResponseEntity<Map>
      */
     @RequestMapping(value = "/passwordreset", method = RequestMethod.GET)
-    public ResponseEntity<Map> resetPasswordRequest(@RequestParam(value = "email") String email) {
+    public ResponseEntity<?> resetPasswordRequest(@RequestParam(value = "email") String email) {
         System.out.println(email);
         Map<Object, Object> data = new HashMap<>();
         // Retrieve user
@@ -161,7 +160,7 @@ public class UserRestController {
      * @return ResponseEntity<Map>
      */
     @RequestMapping(value = "/passwordreset", method = RequestMethod.POST)
-    public ResponseEntity<Map> performResetPassword(@RequestBody PasswordReset passwordReset) {
+    public ResponseEntity<?> performResetPassword(@RequestBody PasswordReset passwordReset) {
         Map<Object, Object> data = new HashMap<>();
         // Retrieve user
         User user = this.userService.getUserByToken(passwordReset.getToken());
@@ -206,7 +205,7 @@ public class UserRestController {
      * @return ResponseEntity<Map>
      */
     @RequestMapping(value = "/activation/{token}", method = RequestMethod.GET)
-    public ResponseEntity<Map> activateAccount(@PathVariable(name = "token") String token) {
+    public ResponseEntity<?> activateAccount(@PathVariable(name = "token") String token) {
         Map<Object, Object> data = new HashMap<>();
         // Retrieve user based on received token
         User user = this.userService.getUserByToken(token);
@@ -244,7 +243,7 @@ public class UserRestController {
      * @return ResponseEntity<Map>
      */
     @RequestMapping(value = "/tokens/{token}/check", method = RequestMethod.GET)
-    public ResponseEntity<Map> checkToken(@PathVariable(name = "token") String token) {
+    public ResponseEntity<?> checkToken(@PathVariable(name = "token") String token) {
         Map<Object, Object> data = new HashMap<>();
         boolean status;
         String message = "";
@@ -279,7 +278,7 @@ public class UserRestController {
      * @return ResponseEntity<Map>
      */
     @RequestMapping(value = "/image", method = RequestMethod.POST)
-    public ResponseEntity<Map> uploadUserImage(@RequestParam(name = "image") MultipartFile file, Authentication authentication) {
+    public ResponseEntity<?> uploadUserImage(@RequestParam(name = "image") MultipartFile file, Authentication authentication) {
         Map<Object, Object> data = new HashMap<>();
         boolean status;
         User user;
@@ -296,7 +295,9 @@ public class UserRestController {
                     message = "Invalid user image";
                     status = false;
                 } else {
-                    user.setImage(user.getId() + "." + this.restaurantUtils.getExtensionByApacheCommonLib(file.getOriginalFilename()));
+                    // Create user image file and link it with current user
+                    RestaurantFile restaurantFile = this.restaurantFileService.saveRestaurantFile(file);
+                    user.setImage(restaurantFile);
                     // Save the user on the database
                     user = this.userService.saveUser(user);
                     // Upload user image or update it if exists
@@ -327,7 +328,7 @@ public class UserRestController {
      * @return ResponseEntity<Map>
      */
     @RequestMapping(value = "/email", method = RequestMethod.POST)
-    public ResponseEntity<Map> updateUserEmail(@RequestParam(name = "email") String newEmail, Authentication authentication) {
+    public ResponseEntity<?> updateUserEmail(@RequestParam(name = "email") String newEmail, Authentication authentication) {
         Map<Object, Object> data = new HashMap<>();
         boolean status;
         User user;

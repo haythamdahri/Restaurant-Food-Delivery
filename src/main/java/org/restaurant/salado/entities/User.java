@@ -40,8 +40,9 @@ public class User implements Serializable {
     @Column(name = "enabled")
     private boolean enabled;
 
-    @Column(name = "image")
-    private String image;
+    @OneToOne(cascade = CascadeType.ALL, fetch = FetchType.LAZY, targetEntity = RestaurantFile.class)
+    @JoinColumn(name = "image_id")
+    private RestaurantFile image;
 
     @Column(name = "location")
     private String location;

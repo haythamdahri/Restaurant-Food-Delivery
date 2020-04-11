@@ -13,7 +13,6 @@ import javax.servlet.http.HttpSession;
 /**
  * @author Haytam DAHRI
  */
-@Component
 public class RestaurantUtils {
 
     /**
@@ -21,7 +20,7 @@ public class RestaurantUtils {
      * @param filename
      * @return String
      */
-    public String getExtensionByApacheCommonLib(String filename) {
+    public static String getExtensionByApacheCommonLib(String filename) {
         return FilenameUtils.getExtension(filename);
     }
 
@@ -36,7 +35,7 @@ public class RestaurantUtils {
      * @return MimeMessageHelper
      * @throws MessagingException
      */
-    public MimeMessageHelper buildMimeMessageHelper(String from, String to, String subject, String text, MimeMessage message, boolean isMultipart) throws MessagingException {
+    public static MimeMessageHelper buildMimeMessageHelper(String from, String to, String subject, String text, MimeMessage message, boolean isMultipart) throws MessagingException {
         MimeMessageHelper helper = new MimeMessageHelper(message);
         helper.setFrom(from);
         helper.setTo(to);

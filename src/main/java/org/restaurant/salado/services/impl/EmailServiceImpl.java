@@ -30,9 +30,6 @@ public class EmailServiceImpl implements EmailService {
     @Value("${mail.sender}")
     private String from;
 
-    @Autowired
-    private RestaurantUtils restaurantUtils;
-
     /**
      * Send simple email message implementation
      * @param to
@@ -67,7 +64,7 @@ public class EmailServiceImpl implements EmailService {
         try {
             MimeMessage message = this.mailSender.createMimeMessage();
             String templatedText = this.mailContentBuilder.buildActivationEmail(token);
-            MimeMessageHelper helper = this.restaurantUtils.buildMimeMessageHelper(this.from, to, subject, templatedText, message, true);
+            MimeMessageHelper helper = RestaurantUtils.buildMimeMessageHelper(this.from, to, subject, templatedText, message, true);
             this.mailSender.send(helper.getMimeMessage());
             return true;
         } catch (Exception ex) {
@@ -87,7 +84,7 @@ public class EmailServiceImpl implements EmailService {
         try {
             MimeMessage message = this.mailSender.createMimeMessage();
             String templatedText = this.mailContentBuilder.buildPasswordResetEmail(token);
-            MimeMessageHelper helper = this.restaurantUtils.buildMimeMessageHelper(this.from, to, subject, templatedText, message, true);
+            MimeMessageHelper helper = RestaurantUtils.buildMimeMessageHelper(this.from, to, subject, templatedText, message, true);
             this.mailSender.send(helper.getMimeMessage());
             return true;
         } catch (Exception ex) {
@@ -107,7 +104,7 @@ public class EmailServiceImpl implements EmailService {
         try {
             MimeMessage message = this.mailSender.createMimeMessage();
             String templatedText = this.mailContentBuilder.buildPasswordResetCompleteEmail();
-            MimeMessageHelper helper = this.restaurantUtils.buildMimeMessageHelper(this.from, to, subject, templatedText, message, true);
+            MimeMessageHelper helper = RestaurantUtils.buildMimeMessageHelper(this.from, to, subject, templatedText, message, true);
             this.mailSender.send(helper.getMimeMessage());
             return true;
         } catch (Exception ex) {
@@ -128,7 +125,7 @@ public class EmailServiceImpl implements EmailService {
         try {
             MimeMessage message = this.mailSender.createMimeMessage();
             String templatedText = this.mailContentBuilder.buildUpdateUserMailEmail(token);
-            MimeMessageHelper helper = this.restaurantUtils.buildMimeMessageHelper(this.from, to, subject, templatedText, message, true);
+            MimeMessageHelper helper = RestaurantUtils.buildMimeMessageHelper(this.from, to, subject, templatedText, message, true);
             this.mailSender.send(helper.getMimeMessage());
             return true;
         } catch (Exception ex) {
@@ -149,7 +146,7 @@ public class EmailServiceImpl implements EmailService {
         try {
             MimeMessage message = this.mailSender.createMimeMessage();
 
-            MimeMessageHelper helper = this.restaurantUtils.buildMimeMessageHelper(this.from, to, subject, text, message, true);
+            MimeMessageHelper helper = RestaurantUtils.buildMimeMessageHelper(this.from, to, subject, text, message, true);
             FileSystemResource file
                     = new FileSystemResource(new File(pathToAttachment));
             // Add file attachment
