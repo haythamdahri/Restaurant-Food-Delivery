@@ -1,5 +1,6 @@
 package org.restaurant.salado.services.impl;
 
+import org.apache.commons.io.FilenameUtils;
 import org.restaurant.salado.entities.RestaurantFile;
 import org.restaurant.salado.repositories.RestaurantFileRepository;
 import org.restaurant.salado.services.RestaurantFileService;
@@ -33,14 +34,14 @@ public class RestaurantFileServiceImpl implements RestaurantFileService {
 
     @Override
     public RestaurantFile saveRestaurantFile(MultipartFile file) throws IOException {
-        RestaurantFile restaurantFile = new RestaurantFile(null, file.getOriginalFilename(), RestaurantUtils.getExtensionByApacheCommonLib(file.getOriginalFilename()),  MediaType.valueOf(Objects.requireNonNull(file.getContentType())), file.getBytes(), null);
+        RestaurantFile restaurantFile = new RestaurantFile(null, FilenameUtils.removeExtension(file.getOriginalFilename()), RestaurantUtils.getExtensionByApacheCommonLib(file.getOriginalFilename()),  file.getContentType().toString(), file.getBytes(), null);
         return this.restaurantFileRepository.save(restaurantFile);
     }
 
     @Override
     public RestaurantFile saveRestaurantFile(MultipartFile file, RestaurantFile restaurantFile) throws IOException {
         // Update image data
-        restaurantFile.setName(file.getOriginalFilename());
+        restaurantFile.setName(FilenameUtils.removeExtension(file.getOriginalFilename()));
         restaurantFile.setExtension(RestaurantUtils.getExtensionByApacheCommonLib(file.getOriginalFilename()));
         restaurantFile.setFile(file.getBytes());
         return this.restaurantFileRepository.save(restaurantFile);

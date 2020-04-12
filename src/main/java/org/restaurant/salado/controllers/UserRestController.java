@@ -1,5 +1,6 @@
 package org.restaurant.salado.controllers;
 
+import org.apache.commons.io.FilenameUtils;
 import org.apache.commons.io.IOUtils;
 import org.restaurant.salado.entities.Meal;
 import org.restaurant.salado.entities.RestaurantFile;
@@ -59,20 +60,6 @@ public class UserRestController {
     @Value("${token_expiration}")
     private int tokenExpiration;
 
-    @RequestMapping(path = "/current", method = RequestMethod.GET)
-    public ResponseEntity<?> retrieveAuthenticatedUser(@AuthenticationPrincipal Authentication authentication) {
-        // Check if user is authenticated
-        if (authentication != null) {
-            // Fetch user using service tier and its image
-            User user = this.userService.getUser(authentication.getName());
-            return ResponseEntity.ok(user);
-            // Return Response
-        } else {
-            // Return unauthorized user response
-            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).build();
-        }
-    }
-
     /**
      * Retriebe all users endpoint
      *
@@ -96,7 +83,7 @@ public class UserRestController {
             // Add user role
             // Set user default image
             File file = new File("uploads/users/images/default.png");
-            RestaurantFile restaurantFile = new RestaurantFile(null, file.getName(), RestaurantUtils.getExtensionByApacheCommonLib(file.getName()), MediaType.IMAGE_PNG, IOUtils.toByteArray(new FileInputStream(file)), null);
+            RestaurantFile restaurantFile = new RestaurantFile(null, FilenameUtils.removeExtension(file.getName()), RestaurantUtils.getExtensionByApacheCommonLib(file.getName()), MediaType.IMAGE_PNG.toString(), IOUtils.toByteArray(new FileInputStream(file)), null);
             restaurantFile = this.restaurantFileService.saveRestaurantFile(restaurantFile);
             user.setImage(restaurantFile);
             user.setRoles(new ArrayList<>());
@@ -125,6 +112,26 @@ public class UserRestController {
             ex.printStackTrace();
         }
         return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).build();
+    }
+
+    /**
+     * Retrieve current authenticated user
+     * @param authentication
+     * @return ResponseEntity
+     */
+    @RequestMapping(path = "/current", method = RequestMethod.GET)
+    public ResponseEntity<?> retrieveAuthenticatedUser(@AuthenticationPrincipal Authentication authentication) {
+        // Check if user is authenticated
+        if (authentication != null) {
+            // Fetch user using service tier and its image
+            User user = this.userService.getUser(authentication.getName());
+            System.out.println(user.getImage().getMediaType().toString());
+            return ResponseEntity.ok(user);
+            // Return Response
+        } else {
+            // Return unauthorized user response
+            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).build();
+        }
     }
 
     /**

@@ -3,11 +3,9 @@ package org.restaurant.salado;
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import org.json.JSONObject;
-import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
-import org.mockito.internal.matchers.NotNull;
 import org.restaurant.salado.entities.Meal;
 import org.restaurant.salado.entities.User;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -22,7 +20,7 @@ import org.springframework.web.context.WebApplicationContext;
 
 import java.util.List;
 
-import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.*;
 import static org.springframework.security.test.web.servlet.setup.SecurityMockMvcConfigurers.springSecurity;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
@@ -69,6 +67,10 @@ public class UserRestIntegrationTest {
         data.put("status", true);
         // Retrieve users and assert not empty list
         String response = this.mockMvc.perform(get(USERS_URI).contentType(MediaType.APPLICATION_JSON).accept(MediaType.APPLICATION_JSON)).andReturn().getResponse().getContentAsString();
+        // Assert response to exist
+        assertNotNull(response);
+        assertTrue(response.toString().length() > 0);
+        // Map response to List<User>
         List<User> users = new ObjectMapper().readValue(response, new TypeReference<List<User>>() {
         });
         assertFalse(users.isEmpty());

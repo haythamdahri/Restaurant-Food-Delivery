@@ -6,6 +6,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
+import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
@@ -71,7 +72,7 @@ public class RestaurantFileRestController {
         // Check file existence
         if( restaurantFile != null ) {
             HttpHeaders headers = new HttpHeaders();
-            headers.setContentType(restaurantFile.getMediaType());
+            headers.setContentType(MediaType.valueOf(restaurantFile.getMediaType()));
             return new ResponseEntity<>(restaurantFile.getFile(), headers, HttpStatus.OK);
         }
         // Return 404 not found
