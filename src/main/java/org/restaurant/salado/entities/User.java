@@ -20,6 +20,7 @@ import java.util.*;
 @Data
 @AllArgsConstructor
 @NoArgsConstructor
+@JsonIgnoreProperties({"hibernateLazyInitializer", "handler"})
 public class User implements Serializable {
 
     @Id
@@ -62,7 +63,8 @@ public class User implements Serializable {
     private Collection<Role> roles;
 
     @ManyToMany(targetEntity = Meal.class)
-    @JoinTable(name="users_preferred_meals", joinColumns = @JoinColumn(name = "user_id"), inverseJoinColumns = @JoinColumn(name = "meal_id"))
+    @JoinTable(name = "users_preferred_meals", joinColumns = @JoinColumn(name = "user_id"), inverseJoinColumns = @JoinColumn(name = "meal_id"))
+    @JsonProperty(access = JsonProperty.Access.WRITE_ONLY)
     private List<Meal> preferredMeals;
 
     @OneToMany(fetch = FetchType.LAZY, mappedBy = "user")
@@ -71,10 +73,11 @@ public class User implements Serializable {
 
     /**
      * Convenient method to add new roles
+     *
      * @param role
      */
     public void addRole(Role role) {
-        if( this.roles == null ) {
+        if (this.roles == null) {
             this.roles = new ArrayList<>();
         }
         this.roles.add(role);
@@ -82,6 +85,7 @@ public class User implements Serializable {
 
     /**
      * Expiration calculator
+     *
      * @param expiryTimeInMinutes
      * @return
      */
@@ -94,6 +98,7 @@ public class User implements Serializable {
 
     /**
      * Token validation checker
+     *
      * @return
      */
     @JsonIgnore
@@ -103,10 +108,11 @@ public class User implements Serializable {
 
     /**
      * Convenient method to add meal to user preferences
+     *
      * @param meal
      */
     public boolean addOrRemoveMealFromUserPreferences(Meal meal) {
-        if( this.preferredMeals == null ) {
+        if (this.preferredMeals == null) {
             return false;
         } else {
             if (this.preferredMeals.contains(meal)) {

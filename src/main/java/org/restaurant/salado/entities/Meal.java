@@ -47,7 +47,6 @@ public class Meal implements Serializable {
     private BigDecimal salePrice;
 
     @OneToMany(fetch = FetchType.LAZY, mappedBy = "meal")
-    @JsonProperty(access = JsonProperty.Access.WRITE_ONLY)
     private List<Review> reviews;
 
     @JsonIgnore

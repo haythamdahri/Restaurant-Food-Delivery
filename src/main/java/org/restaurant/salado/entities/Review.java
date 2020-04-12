@@ -35,7 +35,7 @@ public class Review {
     @JsonIgnore
     private Meal meal;
 
-    @Column(name = "comment")
+    @Column(name = "comment", length = 1200)
     private String comment;
 
     @Column(name = "rating")
