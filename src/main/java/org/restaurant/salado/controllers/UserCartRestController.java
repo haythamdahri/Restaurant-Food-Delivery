@@ -39,15 +39,15 @@ public class UserCartRestController {
      * @return ResponseEntity
      */
     @RequestMapping(value = "/", method = RequestMethod.GET)
-    public ResponseEntity<?> getUserCart(Authentication authentication) {
+    public ResponseEntity<Map<String, Object>> getUserCart(Authentication authentication) {
         // Fetch connected user from database
         User user = this.userService.getUser(authentication.getName());
         // Create results data
-        Map<Object, Object> data = new HashMap<>();
+        Map<String, Object> data = new HashMap<>();
         // Get last active order
         Order userActiveOrder = this.orderService.getLastActiveOrder(user.getId());
         // Check if their is an active order
-        if (userActiveOrder == null) {
+        if (userActiveOrder == null || userActiveOrder.getMealOrders().isEmpty()) {
             data.put("status", true);
             data.put("activeOrder", null);
             data.put("noActiveOrder", true);
@@ -56,7 +56,7 @@ public class UserCartRestController {
             data.put("activeOrder", userActiveOrder);
             data.put("noActiveOrder", false);
         }
-        return new ResponseEntity<Map<Object, Object>>(data, HttpStatus.OK);
+        return ResponseEntity.ok(data);
     }
 
 }

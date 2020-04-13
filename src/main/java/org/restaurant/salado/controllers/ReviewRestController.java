@@ -38,9 +38,7 @@ public class ReviewRestController {
      */
     @RequestMapping(value = "/", method = RequestMethod.GET)
     public ResponseEntity<Page<Review>> retrieveReviewsEndPoint(@RequestParam(value = "meal", required = false) Long mealId, @RequestParam(value = "page", required = false, defaultValue = "0") int page, @RequestParam(value = "size", required = false, defaultValue = "${page.default_size}") int size) throws InterruptedException {
-        for( int i=0; i<125000; i++ ) {
-            System.out.println(i);
-        }
+        Thread.sleep(3500L);
         // Check if meal Id
         if( mealId != null ) {
             return ResponseEntity.ok(this.reviewService.getMealReviews(mealId, page, size));
@@ -58,8 +56,6 @@ public class ReviewRestController {
      */
     @RequestMapping(path = "/", method = RequestMethod.POST)
     public ResponseEntity<?> addReview(@RequestBody ReviewRequest reviewRequest, @AuthenticationPrincipal Authentication authentication) throws Exception{
-        System.out.println("REVIEW ============================> POST");
-        System.out.println(reviewRequest);
         // Check if user is authenticated
         if( authentication != null ) {
             // Retrieve current authenticated user
