@@ -33,8 +33,8 @@ public class OrderServiceImpl implements OrderService {
     }
 
     @Override
-    public Order getLastActiveOrder(Long id) {
-        return this.orderRepository.findByUserIdAndCancelledFalseAndDeliveredFalse(id)
+    public Order getLastActiveOrder(Long userId) {
+        return this.orderRepository.findByUserIdAndCancelledFalseAndDeliveredFalse(userId)
                 .map(order -> {
                     order.postLoad();
                     order.setShippingFees(Constants.SHIPPING_FEES);

@@ -6,6 +6,7 @@ import lombok.NoArgsConstructor;
 import org.restaurant.salado.entities.Currency;
 
 import java.io.Serializable;
+import java.math.BigDecimal;
 
 /**
  * @author Haytham DAHRI
@@ -16,7 +17,7 @@ import java.io.Serializable;
 public class ChargeRequest implements Serializable {
 
     private String description;
-    private int amount;
+    private BigDecimal amount;
     private Currency currency;
     private String stripeEmail;
     private String stripeToken;

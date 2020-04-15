@@ -2,56 +2,57 @@ package org.restaurant.salado.entities;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonProperty;
+import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
+import com.fasterxml.jackson.databind.annotation.JsonSerialize;
+import com.fasterxml.jackson.datatype.jsr310.deser.LocalDateDeserializer;
+import com.fasterxml.jackson.datatype.jsr310.ser.LocalDateSerializer;
+import com.stripe.model.Charge;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
 import javax.persistence.*;
-import javax.validation.constraints.Max;
-import javax.validation.constraints.Min;
+import java.io.Serializable;
+import java.time.LocalDate;
+import java.time.ZoneId;
 import java.util.Date;
 
 /**
  * @author Haytham DAHRI
  */
 @Entity
-@Table(name = "reviews")
+@Table(name = "payments")
 @Data
 @NoArgsConstructor
 @AllArgsConstructor
-public class Review {
+public class Payment implements Serializable {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "id")
     private Long id;
 
-    @ManyToOne
+    @ManyToOne(targetEntity = User.class)
     @JoinColumn(name = "user_id")
     private User user;
 
-    @ManyToOne
-    @JoinColumn(name = "meal_id")
-    @JsonIgnore
-    private Meal meal;
-
-    @Column(name = "comment", length = 1200)
-    private String comment;
-
-    @Column(name = "rating")
-    @Min(value = 0)
-    @Max(value = 5)
-    private int rating;
+    @Column(name = "cahrge_id")
+    private String chargeId;
 
     @Temporal(TemporalType.TIMESTAMP)
     @Column(name = "timestamp")
     @JsonProperty(access = JsonProperty.Access.READ_ONLY)
     private Date timestamp;
 
+    @Transient
+    private Charge charge;
+
+    /**
+     * Operations to execute before each persist
+     */
     @PrePersist
-    void createdAt() {
+    public void prePersist() {
         this.timestamp = new Date();
     }
-
 
 }

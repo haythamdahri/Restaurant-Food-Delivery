@@ -1,5 +1,6 @@
 package org.restaurant.salado.entities;
 
+import com.fasterxml.jackson.annotation.JsonProperty;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
@@ -49,6 +50,7 @@ public class Shipping {
     private String phone;
 
     @OneToOne(fetch = FetchType.EAGER, cascade = CascadeType.ALL, mappedBy = "shipping")
+    @JsonProperty(access = JsonProperty.Access.READ_ONLY)
     private Order order;
 
 }

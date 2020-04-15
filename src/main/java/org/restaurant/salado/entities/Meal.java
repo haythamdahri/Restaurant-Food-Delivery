@@ -81,4 +81,12 @@ public class Meal implements Serializable {
         this.reviews.add(review);
     }
 
+    /**
+     * Reduce quantity after payment charge
+     * @param quantity
+     */
+    public void reduceQuantity(int quantity) {
+        this.stock -= quantity;
+    }
+
 }

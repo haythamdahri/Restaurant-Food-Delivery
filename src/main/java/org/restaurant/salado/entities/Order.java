@@ -100,4 +100,14 @@ public class Order implements Serializable {
         this.totalPrice = this.price.add(shippingFees);
     }
 
+    /**
+     * Post charge method to update quantity of each meal after payment
+     */
+    public Order postCharge() {
+        if( this.mealOrders != null ) {
+            this.mealOrders.forEach(MealOrder::postChargeQuantity);
+        }
+        return this;
+    }
+
 }

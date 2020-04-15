@@ -14,6 +14,7 @@ import javax.persistence.*;
 import java.time.LocalDate;
 import java.time.ZoneId;
 import java.time.ZonedDateTime;
+import java.util.Date;
 
 /**
  * @author Haytham DAHRI
@@ -44,14 +45,14 @@ public class RestaurantFile {
     @JsonProperty(access = JsonProperty.Access.WRITE_ONLY)
     private byte[] file;
 
-    @JsonDeserialize(using = LocalDateDeserializer.class)
-    @JsonSerialize(using = LocalDateSerializer.class)
-    @Column(name = "timestamp", nullable = false)
-    private LocalDate timestamp;
+    @Temporal(TemporalType.TIMESTAMP)
+    @Column(name = "timestamp")
+    @JsonProperty(access = JsonProperty.Access.READ_ONLY)
+    private Date timestamp;
 
     @PrePersist
     public void prePersist() {
-        this.timestamp = LocalDate.now(ZoneId.of("UTC"));
+        this.timestamp = new Date();
     }
 
 }

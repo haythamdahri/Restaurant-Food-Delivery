@@ -19,7 +19,7 @@ public interface OrderService {
 
     List<Order> getUserOrdersOutOfShippingFees(String email);
 
-    Order getLastActiveOrder(Long id);
+    Order getLastActiveOrder(Long userId);
 
     Order getLastActiveOrderOutOfShippingFees(Long id);
 

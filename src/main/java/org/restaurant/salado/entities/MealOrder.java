@@ -60,7 +60,18 @@ public class MealOrder implements Serializable {
     }
 
     /**
-     * totalPrice getter
+     * Before Persisting operations
      */
+    @PrePersist
+    private void prePersist() {
+        BigDecimal totalPrice = BigDecimal.valueOf(this.getQuantity()).multiply(this.getMeal().getPrice());
+    }
+
+    /**
+     * Down quantity
+     */
+    public void postChargeQuantity() {
+        this.meal.reduceQuantity(this.quantity);
+    }
 
 }

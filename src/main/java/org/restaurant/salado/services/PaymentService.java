@@ -1,15 +1,20 @@
 package org.restaurant.salado.services;
 
-import com.stripe.exception.StripeException;
-import com.stripe.model.Charge;
-import org.restaurant.salado.entities.Currency;
-import org.restaurant.salado.models.ChargeRequest;
+import org.restaurant.salado.entities.Payment;
+
+import java.util.List;
 
 /**
  * @author Haytham DAHRI
  */
 public interface PaymentService {
 
-    Charge charge(ChargeRequest chargeRequest) throws Exception;
+    Payment savePayment(Payment payment);
+
+    Boolean deletePayment(Long id);
+
+    Payment getPayment(Long id);
+
+    List<Payment> getPayments();
 
 }

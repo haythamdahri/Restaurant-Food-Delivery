@@ -1,0 +1,14 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title>Post Payment</title>
+</head>
+<body>
+<div>
+    <p>Your payment has been passed successfully.</p>
+    <p th:text="${'Payment Track Number: ' + paymentId}"></p>
+</div>
+<a th:href="@{'http://localhost:4200/profile'}" target="_blank">View profile</a>
+</body>
+</html>
