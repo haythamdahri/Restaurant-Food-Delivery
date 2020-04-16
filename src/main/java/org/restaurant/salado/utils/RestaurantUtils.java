@@ -1,22 +1,34 @@
 package org.restaurant.salado.utils;
 
 import org.apache.commons.io.FilenameUtils;
-import org.restaurant.salado.services.UserService;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
+import org.springframework.core.env.Environment;
 import org.springframework.mail.javamail.MimeMessageHelper;
 import org.springframework.stereotype.Component;
 
 import javax.mail.MessagingException;
 import javax.mail.internet.MimeMessage;
-import javax.servlet.http.HttpSession;
+import javax.servlet.http.HttpServletRequest;
+import java.net.InetAddress;
+import java.net.UnknownHostException;
+import java.util.Objects;
 
 /**
  * @author Haytam DAHRI
  */
+@Component
 public class RestaurantUtils {
+
+    @Autowired
+    private static Environment environment;
+
+    @Value("${HOSTNAME}")
+    private static String HOSTNAME;
 
     /**
      * etrieve file extension from a file name
+     *
      * @param filename
      * @return String
      */
@@ -26,6 +38,7 @@ public class RestaurantUtils {
 
     /**
      * Mime message builder
+     *
      * @param from
      * @param to
      * @param subject

@@ -61,10 +61,8 @@ public class StripeChargeServiceImpl implements ChargeService {
         chargeParams.put("currency", Currency.MAD);
         chargeParams.put("source", token);
         Charge charge = Charge.create(chargeParams);
-        // Run post payment with other Thread
-        CompletableFuture<Payment> paymentCompletableFuture = this.postPaymentService.postCharge(charge.getId(), user);
         // Run Async post payment
-        this.postPaymentService.postCharge(charge.getId(), user);
+        CompletableFuture<Payment> paymentCompletableFuture = this.postPaymentService.postCharge(charge.getId(), user);
         // Return charge
         return charge;
     }

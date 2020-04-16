@@ -93,19 +93,11 @@ public class UserRestController {
             user.setExpiryDate(user.calculateExpiryDate(this.tokenExpiration));
             user.setEnabled(false);
             // Hash the password
-            System.out.println(user.getPassword());
             user.setPassword(this.bCryptPasswordEncoder.encode(user.getPassword()));
             // Create user account
             user = this.userService.saveUser(user);
-            User finalUser = user;
-            Thread t1 = new Thread() {
-                public void run() {
-                    // Send activation email
-                    emailService.sendActivationEmail(finalUser.getToken(), finalUser.getEmail(), "Account Activation");
-                }
-            };
-            // Start thread
-            t1.start();
+            // Send activation email
+            this.emailService.sendActivationEmail(user.getToken(), user.getEmail(), "Account Activation");
             // Return success message response
             return ResponseEntity.ok(user);
         } catch (Exception ex) {
@@ -153,16 +145,8 @@ public class UserRestController {
             user.setExpiryDate(user.calculateExpiryDate(this.tokenExpiration));
             // Save user
             user = this.userService.saveUser(user);
-            // Create final user
-            User finalUser = user;
-            Thread t1 = new Thread() {
-                public void run() {
-                    // Send password reset email
-                    emailService.sendResetPasswordEmail(finalUser.getToken(), finalUser.getEmail(), "Password Reset");
-                }
-            };
-            // Start thread
-            t1.start();
+            // Send password reset email
+            this.emailService.sendResetPasswordEmail(user.getToken(), user.getEmail(), "Password Reset");
             // Set response data
             data.put("status", true);
             data.put("message", "Password reset email has been sent to " + user.getEmail() + ".");
@@ -199,14 +183,8 @@ public class UserRestController {
                 user.setToken(null);
                 user.setExpiryDate(null);
                 this.userService.saveUser(user);
-                Thread t1 = new Thread() {
-                    public void run() {
-                        // Send email
-                        emailService.sendResetPasswordCompleteEmail(user.getEmail(), "Password Changed");
-                    }
-                };
-                // Start thread
-                t1.start();
+                // Send email
+                this.emailService.sendResetPasswordCompleteEmail(user.getEmail(), "Password Changed");
                 // Set success data
                 data.put("status", true);
                 data.put("message", "Password has been changed successfully");
@@ -369,8 +347,8 @@ public class UserRestController {
                 user.setEmail(newEmail);
                 // Save user
                 user = this.userService.saveUser(user);
-                // Send activation email
-                this.emailService.sendActivationEmail(token, user.getEmail(), "Email confirmation");
+                // Send user email update mail
+                this.emailService.sendUpdateUserMailEmail(token, user.getEmail(), "Email confirmation");
                 // Set message
                 status = true;
                 message = "Email has been updated successfully, please confirm your email via recieved mail";
