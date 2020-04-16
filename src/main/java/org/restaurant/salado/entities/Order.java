@@ -4,17 +4,16 @@ import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
+import org.restaurant.salado.providers.Constants;
 import org.springframework.beans.factory.annotation.Value;
-import org.springframework.security.access.prepost.PostAuthorize;
-import org.springframework.security.access.prepost.PostFilter;
 
-import javax.annotation.PostConstruct;
 import javax.persistence.*;
 import java.io.Serializable;
 import java.math.BigDecimal;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Date;
+import java.util.List;
 
 /**
  * @author Haytam DAHRI
@@ -36,15 +35,15 @@ public class Order implements Serializable {
     @JsonIgnoreProperties({"roles", "hibernateLazyInitializer"})
     private User user;
 
-    @ManyToMany(fetch = FetchType.EAGER)
+    @ManyToMany(fetch = FetchType.EAGER, cascade = CascadeType.ALL)
     @JoinTable(name = "orders_meal_orders", joinColumns = @JoinColumn(name = "order_id"), inverseJoinColumns = @JoinColumn(name = "meal_id"))
-    private Collection<MealOrder> mealOrders;
+    private List<MealOrder> mealOrders;
+
+    @Column(name = "price")
+    private BigDecimal price = BigDecimal.ZERO;
 
     @Transient
-    private BigDecimal price;
-
-    @Transient
-    private BigDecimal totalPrice;
+    private BigDecimal totalPrice = BigDecimal.ZERO;
 
     @Transient
     @Value("${shipping.price}")
@@ -82,12 +81,24 @@ public class Order implements Serializable {
     /**
      * Post Load calculations
      */
-    @PostConstruct
+    @PostLoad
     public void postLoad() {
-        if (this.mealOrders != null) {
+        this.totalPrice = this.shippingFees = BigDecimal.ZERO;
+        this.shippingFees = Constants.SHIPPING_FEES;    // TODO: Set SHipping Fees => Will Be calculated later
+        this.totalPrice = this.price.add(Constants.SHIPPING_FEES);  // Add Shipping Fees
+    }
+
+    /**
+     * Calculate price before each persist
+     */
+    @PrePersist
+    @PreUpdate
+    public void calculatePrice() {
+        if (this.mealOrders != null && !this.mealOrders.isEmpty()) {
+            this.price = BigDecimal.ZERO;
             this.price = this.mealOrders.stream()
-                    .map(MealOrder::getTotalPrice)    // map MealOrder
-                    .reduce(BigDecimal.ZERO, BigDecimal::add);      // reduce results
+                    .map(MealOrder::getTotalPrice)    // Map MealOrder
+                    .reduce(BigDecimal.ZERO, BigDecimal::add);      // Reduce results
         }
     }
 
@@ -104,7 +115,7 @@ public class Order implements Serializable {
      * Post charge method to update quantity of each meal after payment
      */
     public Order postCharge() {
-        if( this.mealOrders != null ) {
+        if (this.mealOrders != null) {
             this.mealOrders.forEach(MealOrder::postChargeQuantity);
         }
         return this;

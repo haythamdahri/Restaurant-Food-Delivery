@@ -60,7 +60,7 @@ public class User implements Serializable {
     @ManyToMany(fetch = FetchType.EAGER)
     @JoinTable(name = "users_roles", joinColumns = @JoinColumn(name = "user_id"), inverseJoinColumns = @JoinColumn(name = "role_id"))
     @JsonIgnoreProperties("users")
-    private Collection<Role> roles;
+    private Set<Role> roles;
 
     @ManyToMany(targetEntity = Meal.class)
     @JoinTable(name = "users_preferred_meals", joinColumns = @JoinColumn(name = "user_id"), inverseJoinColumns = @JoinColumn(name = "meal_id"))
@@ -78,7 +78,7 @@ public class User implements Serializable {
      */
     public void addRole(Role role) {
         if (this.roles == null) {
-            this.roles = new ArrayList<>();
+            this.roles = new HashSet<>();
         }
         this.roles.add(role);
     }

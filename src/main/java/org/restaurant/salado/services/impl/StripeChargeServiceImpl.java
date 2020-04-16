@@ -4,6 +4,7 @@ import com.stripe.Stripe;
 import com.stripe.exception.StripeException;
 import com.stripe.model.Charge;
 import org.restaurant.salado.entities.Currency;
+import org.restaurant.salado.entities.Payment;
 import org.restaurant.salado.entities.User;
 import org.restaurant.salado.models.ChargeRequest;
 import org.restaurant.salado.services.ChargeService;
@@ -23,7 +24,7 @@ import java.util.concurrent.CompletableFuture;
  * @author Haytham DAHRI
  */
 @Service
-public class StripePaymentServiceImpl implements ChargeService {
+public class StripeChargeServiceImpl implements ChargeService {
 
     @Value("${STRIPE_SECRET_KEY}")
     private String secretKey;
@@ -45,7 +46,7 @@ public class StripePaymentServiceImpl implements ChargeService {
         chargeParams.put("description", chargeRequest.getDescription());
         chargeParams.put("source", chargeRequest.getStripeToken());
         Charge charge = Charge.create(chargeParams);
-        // Run post payment with other Thread
+        // Run Async post payment
         this.postPaymentService.postCharge(charge.getId(), user);
         // Return charge
         return charge;
@@ -61,8 +62,9 @@ public class StripePaymentServiceImpl implements ChargeService {
         chargeParams.put("source", token);
         Charge charge = Charge.create(chargeParams);
         // Run post payment with other Thread
-        CompletableFuture<Boolean> done = this.postPaymentService.postCharge(charge.getId(), user);
-        System.out.println("Done: " + done.get());
+        CompletableFuture<Payment> paymentCompletableFuture = this.postPaymentService.postCharge(charge.getId(), user);
+        // Run Async post payment
+        this.postPaymentService.postCharge(charge.getId(), user);
         // Return charge
         return charge;
     }

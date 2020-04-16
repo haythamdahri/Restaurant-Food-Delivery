@@ -1,22 +1,34 @@
 package org.restaurant.salado;
 
+import org.apache.commons.io.IOUtils;
+import org.restaurant.salado.entities.Meal;
+import org.restaurant.salado.entities.RestaurantFile;
 import org.restaurant.salado.repositories.RoleRepository;
 import org.restaurant.salado.repositories.UserRepository;
 import org.restaurant.salado.services.MealService;
 import org.restaurant.salado.services.RestaurantFileService;
+import org.restaurant.salado.utils.RestaurantUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.CommandLineRunner;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
+import org.springframework.http.MediaType;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 
 import javax.transaction.Transactional;
+import java.io.File;
+import java.io.FileInputStream;
+import java.io.IOException;
+import java.math.BigDecimal;
+import java.util.stream.Stream;
 
 /**
  * @author Haytam DAHRI
  */
 @SpringBootApplication
 public class RestaurantDeliveryServiceBackendApplication implements CommandLineRunner {
+
+    // TODO: Implement After
 
     @Autowired
     private UserRepository userRepository;
@@ -71,10 +83,17 @@ public class RestaurantDeliveryServiceBackendApplication implements CommandLineR
         this.userRepository.save(user);
 
         // Persist Meals
-        file = new File("/home/haytham/Downloads/meal.jpg");
-        restaurantFile = new RestaurantFile(null, file.getName(), RestaurantUtils.getExtensionByApacheCommonLib(file.getName()), MediaType.IMAGE_PNG.toString(), IOUtils.toByteArray(new FileInputStream(file)), null);
-        Meal meal = new Meal(null, "Crispy Chicken Salad", restaurantFile, BigDecimal.valueOf(75L), 150L, 896L, BigDecimal.valueOf(70L), null, null);
-        meal = this.mealService.saveMeal(meal);*/
+        File file = new File("/home/haytham/Downloads/meal.jpg");
+        Stream.of("Beaf", "Chicken Breast", "Milkshake", "Meat", "Papay", "Orange Juice", "Big Mac", "Cheesy", "Coca Cola", "Fanta", "Riko").forEach(name -> {
+            RestaurantFile restaurantFile = null;
+            try {
+                restaurantFile = new RestaurantFile(null, file.getName(), RestaurantUtils.getExtensionByApacheCommonLib(file.getName()), MediaType.IMAGE_JPEG_VALUE, IOUtils.toByteArray(new FileInputStream(file)), null);
+                Meal meal = new Meal(null, name, restaurantFile, BigDecimal.valueOf(75L), 150L, 896L, BigDecimal.valueOf(70L), null, null);
+                this.mealService.saveMeal(meal);
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
+        });*/
     }
 
 }

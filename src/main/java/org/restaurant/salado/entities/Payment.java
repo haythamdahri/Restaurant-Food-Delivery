@@ -36,6 +36,10 @@ public class Payment implements Serializable {
     @JoinColumn(name = "user_id")
     private User user;
 
+    @ManyToOne(targetEntity = Order.class, fetch = FetchType.LAZY)
+    @JoinColumn(name = "order_id")
+    private Order order;
+
     @Column(name = "cahrge_id")
     private String chargeId;
 

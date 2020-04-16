@@ -45,7 +45,6 @@ public class Review {
 
     @Temporal(TemporalType.TIMESTAMP)
     @Column(name = "timestamp")
-    @JsonProperty(access = JsonProperty.Access.READ_ONLY)
     private Date timestamp;
 
     @PrePersist

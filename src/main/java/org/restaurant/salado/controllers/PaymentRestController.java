@@ -37,7 +37,7 @@ public class PaymentRestController {
     private String stripePublicKey;
 
     @Autowired
-    @Qualifier(value = "stripePaymentServiceImpl")
+    @Qualifier(value = "stripeChargeServiceImpl")
     private ChargeService chargeService;
 
     @Autowired
@@ -105,6 +105,7 @@ public class PaymentRestController {
             // Set successful data of successful transaction
             data.put("status", true);
             data.put("message", "Your order has been purchased successfully");
+            data.put("order", this.orderService.getLastActiveOrder(user.getId()));
             // Return response
             return ResponseEntity.ok(data);
         } catch (Exception ex) {

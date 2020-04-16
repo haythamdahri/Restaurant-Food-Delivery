@@ -48,44 +48,50 @@ public class MealOrderRestController {
      */
     @RequestMapping(path = "/", method = RequestMethod.POST)
     public ResponseEntity<Object> addUserOder(@RequestBody MealOrderRequest mealOrderRequest, Authentication authentication) throws InterruptedException {
-        // Response data
-        Map<String, Object> responseData = new HashMap<>();
-        // Create MealOrder object
-        MealOrder mealOrder = new MealOrder(null, null, this.mealService.getMeal(mealOrderRequest.getMealId()), mealOrderRequest.getQuantity(), BigDecimal.ZERO);
-        // Fetch connected user from database
-        User user = this.userService.getUser(authentication.getName());
-        // Get or create user order cart
-        Collection<Order> userOrders = this.orderService.getUserOrders(user.getId());
-        // Get last order
-        Optional<Order> optionalOrder = userOrders.stream().filter(order -> !order.isCancelled() && !order.isDelivered()).findFirst();
-        // Create a new user order
-        // Check if user has already a waiting order
-        Order userOrder = optionalOrder.orElseGet(() -> new Order(null, user, null, BigDecimal.valueOf(0), BigDecimal.valueOf(0), BigDecimal.valueOf(0), "", new Date(), false, false, null));
-        // Check if meal already exists in cart or meal stock is empty
-        if (userOrder.getMealOrders() != null) {
-            if( userOrder.getMealOrders().stream().anyMatch(ml -> ml.getMeal().getId() == mealOrder.getMeal().getId()) ) {
-                responseData.put("error", true);
-                responseData.put("message", "Meal already exists in your cart!");
-                return ResponseEntity.ok(responseData);
-            }
-        }
-        // Check if meal stock is available
-        if( mealOrder.getMeal().getStock() == 0 ) {
-            responseData.put("error", true);
-            responseData.put("message", "No stock available for the selected meal!");
-            return ResponseEntity.ok(responseData);
-        }
-        // Save order in case everything is ok
-        userOrder.setCancelled(false);
-        userOrder.setDelivered(false);
-        userOrder = this.orderService.saveOrder(userOrder);
-        // Save mealOrder
-        mealOrder.setOrder(userOrder);
-        this.mealOrderService.saveMealOrder(mealOrder);
-        // Build success response data ned Return response entity
-        responseData.put("error", false);
-        responseData.put("message", "Meal has been added to your cart successfully");
-        return ResponseEntity.ok(responseData);
+       try {
+           // Response data
+           Map<String, Object> responseData = new HashMap<>();
+           // Create MealOrder object
+           MealOrder mealOrder = new MealOrder(null, null, this.mealService.getMeal(mealOrderRequest.getMealId()), mealOrderRequest.getQuantity(), BigDecimal.ZERO);
+           // Fetch connected user from database
+           User user = this.userService.getUser(authentication.getName());
+           // Get or create user order cart
+           List<Order> userOrders = this.orderService.getUserOrders(user.getId());
+           // Get last order
+           Optional<Order> optionalOrder = userOrders.stream().filter(order -> !order.isCancelled() && !order.isDelivered()).findFirst();
+           // Create a new user order
+           // Check if user has already a waiting order
+           Order userOrder = optionalOrder.orElseGet(() -> new Order(null, user, null, BigDecimal.valueOf(0), BigDecimal.valueOf(0), BigDecimal.valueOf(0), "", new Date(), false, false, null));
+           // Check if meal already exists in cart or meal stock is empty
+           if (userOrder.getMealOrders() != null) {
+               if( userOrder.getMealOrders().stream().anyMatch(ml -> ml.getMeal().getId().equals(mealOrder.getMeal().getId())) ) {
+                   responseData.put("error", true);
+                   responseData.put("message", "Meal already exists in your cart!");
+                   return ResponseEntity.ok(responseData);
+               }
+           }
+           // Check if meal stock is available
+           if( mealOrder.getMeal().getStock() == 0 ) {
+               responseData.put("error", true);
+               responseData.put("message", "No stock available for the selected meal!");
+               return ResponseEntity.ok(responseData);
+           }
+           // Save mealOrder
+           mealOrder.setOrder(userOrder);
+           this.mealOrderService.saveMealOrder(mealOrder);
+           // Save order in case everything is ok
+           userOrder.setCancelled(false);
+           userOrder.setDelivered(false);
+           this.orderService.saveOrder(userOrder);
+           // Build success response data ned Return response entity
+           responseData.put("error", false);
+           responseData.put("message", "Meal has been added to your cart successfully");
+           return ResponseEntity.ok(responseData);
+       } catch(Exception ex) {
+           ex.printStackTrace();
+           return null;
+       }
+
     }
 
     /**
@@ -103,14 +109,18 @@ public class MealOrderRestController {
         try {
             // Retrieve Order And MealOrder
             MealOrder mealOrder = this.mealOrderService.getMealOrder(mealOrderId);
-            Order order = mealOrder.getOrder();
             // Delete meal order
             boolean isMealOrderDeleted = this.mealOrderService.deleteMealOrder(mealOrderId);
+            // Retrieve order
+            Order order = mealOrder.getOrder();
             // Check if meal order is delete
             if (isMealOrderDeleted) {
-                // Set order as to set it as cancelled
-                order.setCancelled(true);
-                this.orderService.saveOrder(order);
+                // Set order as to set it as cancelled if no mealOrder remain
+                if( order.getMealOrders().isEmpty() ) {
+                    // Set order as cancelled
+                    order.setCancelled(true);
+                    this.orderService.saveOrder(order);
+                }
                 data.put("status", true);
                 data.put("message", "Meal order has been deleted from your cart successfully");
             } else {

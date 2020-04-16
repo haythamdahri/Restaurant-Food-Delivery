@@ -5,6 +5,7 @@ import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
+import javax.annotation.PostConstruct;
 import javax.persistence.*;
 import java.io.Serializable;
 import java.math.BigDecimal;
@@ -24,7 +25,7 @@ public class MealOrder implements Serializable {
     @Column(name = "id")
     private Long id;
 
-    @ManyToOne(fetch = FetchType.EAGER)
+    @ManyToOne(fetch = FetchType.EAGER, cascade = {CascadeType.DETACH, CascadeType.MERGE, CascadeType.PERSIST, CascadeType.REFRESH})
     @JoinColumn(name = "order_id")
     @JsonIgnore
     private Order order;
@@ -36,8 +37,8 @@ public class MealOrder implements Serializable {
     @Column(name = "quantity")
     private int quantity;
 
-    @Transient
-    private BigDecimal totalPrice;
+    @Column(name = "total_price")
+    private BigDecimal totalPrice = BigDecimal.ZERO;
 
     public void setOrder(Order order) {
         this.order = order;
@@ -53,18 +54,14 @@ public class MealOrder implements Serializable {
 
     /**
      * Calculate total price method
-     */
-    @PostLoad
-    public void postLoad() {
-        this.totalPrice = BigDecimal.valueOf(this.quantity).multiply(this.meal.getPrice());
-    }
-
-    /**
      * Before Persisting operations
      */
     @PrePersist
+    @PreUpdate
+    @PreRemove
     private void prePersist() {
-        BigDecimal totalPrice = BigDecimal.valueOf(this.getQuantity()).multiply(this.getMeal().getPrice());
+        this.totalPrice = BigDecimal.valueOf(this.quantity).multiply(this.meal.getPrice());
+        this.order.calculatePrice();
     }
 
     /**

@@ -17,17 +17,9 @@ public interface OrderService {
 
     List<Order> getUserOrders(String email);
 
-    List<Order> getUserOrdersOutOfShippingFees(String email);
-
     Order getLastActiveOrder(Long userId);
 
-    Order getLastActiveOrderOutOfShippingFees(Long id);
-
     Order getOrder(Long id);
-
-    Order getOrderOutOfShippingFees(Long id);
-
-    List<Order> getOrdersOutOfShippingFees();
 
     List<Order> getOrders();
 

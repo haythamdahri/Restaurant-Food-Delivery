@@ -45,7 +45,7 @@ public class PostPaymentServiceImpl implements PostPaymentService {
     @Override
     @Transactional
     @Async
-    public CompletableFuture<Boolean> postCharge(String chargeId, User user) throws Exception {
+    public CompletableFuture<Payment> postCharge(String chargeId, User user) throws Exception {
         /**
          * Modify products stock of last active order and save order
          * Set order as delivered
@@ -56,12 +56,12 @@ public class PostPaymentServiceImpl implements PostPaymentService {
         order.setCancelled(false);
         order = this.orderService.saveOrder(order);
         // Create payment
-        Payment payment = new Payment(null, user, chargeId, null, null);
+        Payment payment = new Payment(null, user, order, chargeId, null, null);
         payment = this.paymentService.savePayment(payment);
         // Send Post Payment Email
         this.emailService.sendPostPaymentEmail(user.getEmail(), "Payment Notification", payment.getId(), payment.getTimestamp());
         // Return
-        return CompletableFuture.completedFuture(true);
+        return CompletableFuture.completedFuture(payment);
     }
 
 }

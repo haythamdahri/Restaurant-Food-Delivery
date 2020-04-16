@@ -86,7 +86,7 @@ public class UserRestController {
             RestaurantFile restaurantFile = new RestaurantFile(null, FilenameUtils.removeExtension(file.getName()), RestaurantUtils.getExtensionByApacheCommonLib(file.getName()), MediaType.IMAGE_PNG.toString(), IOUtils.toByteArray(new FileInputStream(file)), null);
             restaurantFile = this.restaurantFileService.saveRestaurantFile(restaurantFile);
             user.setImage(restaurantFile);
-            user.setRoles(new ArrayList<>());
+            user.setRoles(new HashSet<>());
             user.addRole(this.roleService.getRole(RoleType.ROLE_USER));
             String token = UUID.randomUUID().toString();
             user.setToken(token);

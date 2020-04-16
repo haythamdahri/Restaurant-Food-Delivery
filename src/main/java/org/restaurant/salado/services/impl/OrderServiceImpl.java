@@ -34,51 +34,19 @@ public class OrderServiceImpl implements OrderService {
 
     @Override
     public Order getLastActiveOrder(Long userId) {
-        return this.orderRepository.findByUserIdAndCancelledFalseAndDeliveredFalse(userId)
-                .map(order -> {
-                    order.postLoad();
-                    order.setShippingFees(Constants.SHIPPING_FEES);
-                    return order;
-                }).orElse(null);
+        return this.orderRepository.findByUserIdAndCancelledFalseAndDeliveredFalse(userId).orElse(null);
     }
-
-    @Override
-    public Order getLastActiveOrderOutOfShippingFees(Long id) {
-        return this.orderRepository.findByUserIdAndCancelledFalseAndDeliveredFalse(id)
-                .map(order -> {
-                    order.postLoad();
-                    return order;
-                }).orElse(null);
-    }
-
 
     @Override
     public Order getOrder(Long id) {
-        return this.orderRepository.findById(id)
-                .map(order -> {
-                    order.setShippingFees(Constants.SHIPPING_FEES);
-                    return order;
-                }).orElse(null);
-    }
-
-    @Override
-    public Order getOrderOutOfShippingFees(Long id) {
-        return this.orderRepository.findById(id)
-                .map(order -> {
-                    order.postLoad();
-                    return order;
-                }).orElse(null);
+        return this.orderRepository.findById(id).orElse(null);
     }
 
     @Override
     public List<Order> getOrders() {
-        return this.postLoadExecute(this.orderRepository.findAll(), true);
+        return this.orderRepository.findAll();
     }
 
-    @Override
-    public List<Order> getOrdersOutOfShippingFees() {
-        return this.postLoadExecute(this.orderRepository.findAll(), false);
-    }
 
     @Override
     public List<Order> getUserOrders(Long id) {
@@ -86,25 +54,8 @@ public class OrderServiceImpl implements OrderService {
     }
 
     @Override
-    public List<Order> getUserOrdersOutOfShippingFees(String email) {
-        return this.postLoadExecute(this.orderRepository.findByUserEmail(email), false);
-    }
-
-    @Override
     public List<Order> getUserOrders(String email) {
-        return this.postLoadExecute(this.orderRepository.findByUserEmail(email), true);
+        return this.orderRepository.findByUserEmail(email);
     }
 
-    private List<Order> postLoadExecute(List<Order> orders, Boolean isFeesIncluded) {
-        return isFeesIncluded ?
-                orders.stream()
-                        .peek(Order::postLoad)
-                        .peek(order -> order.setShippingFees(Constants.SHIPPING_FEES))
-                        .collect(Collectors.toList())
-                :
-                orders.stream()
-                        .peek(Order::postLoad)
-                        .collect(Collectors.toList());
-
-    }
 }
