@@ -18,7 +18,9 @@ import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.setup.MockMvcBuilders;
 import org.springframework.web.context.WebApplicationContext;
 
+import java.io.File;
 import java.util.List;
+import java.util.Map;
 
 import static org.junit.Assert.*;
 import static org.springframework.security.test.web.servlet.setup.SecurityMockMvcConfigurers.springSecurity;
@@ -54,7 +56,7 @@ public class UserRestIntegrationTest {
      */
     @WithMockUser(value = "haytham.dahri@gmail.com")
     @Test
-    public void toggleProductFromUserPreferences_shouldSucceedWith200AndExpectResults() throws Exception {
+    public void toggleProductFromUserPreferences_shouldSucceedWith200AndExpectSameResults() throws Exception {
         // FINAL URIs
         String USERS_URI = "/api/v1/users/";
         String USER_PREFERENCES_URI = "/api/v1/users/preferences";
@@ -67,7 +69,7 @@ public class UserRestIntegrationTest {
         data.put("status", true);
         // Retrieve users and assert not empty list
         String response = this.mockMvc.perform(get(USERS_URI).contentType(MediaType.APPLICATION_JSON).accept(MediaType.APPLICATION_JSON)).andReturn().getResponse().getContentAsString();
-        // Assert response to exist
+        // Assert response not null
         assertNotNull(response);
         assertTrue(response.toString().length() > 0);
         // Map response to List<User>
@@ -82,11 +84,20 @@ public class UserRestIntegrationTest {
         // POST to preferences endpoint, put expected response and assert response
         data.put("preferred", true);
         data.put("message", addedMessage);
-        this.mockMvc.perform(post(USER_PREFERENCES_URI + "?id=" + meal.getId()).contentType(MediaType.APPLICATION_JSON)).andExpect(status().is(HttpStatus.OK.value())).andExpect(content().json(data.toString()));
-        // POST to preferences endpoint, put expected response and assert response
-        data.put("preferred", false);
-        data.put("message", removedMessage);
-        this.mockMvc.perform(post(USER_PREFERENCES_URI + "?id=" + meal.getId()).contentType(MediaType.APPLICATION_JSON)).andExpect(status().is(HttpStatus.OK.value())).andExpect(content().json(data.toString()));
+        response = this.mockMvc.perform(post(USER_PREFERENCES_URI).param("id", meal.getId().toString()).contentType(MediaType.APPLICATION_JSON)).andExpect(status().is(HttpStatus.OK.value())).andReturn().getResponse().getContentAsString();
+        Map<String, Object> responseData = new ObjectMapper().readValue(response, new TypeReference<Map<String, Object>>(){});
+        // POST to preferences endpoint, put expected response and assert the whole response data
+        data.put("preferred", !(boolean)responseData.get("preferred"));
+        data.put("message", responseData.get("message").toString().equalsIgnoreCase(removedMessage) ? addedMessage : removedMessage);
+        this.mockMvc.perform(post(USER_PREFERENCES_URI).param("id", meal.getId().toString()).contentType(MediaType.APPLICATION_JSON)).andExpect(status().is(HttpStatus.OK.value())).andExpect(content().json(data.toString()));
     }
+
+//    public void registerUserAndEnableAccountAndLogin__shouldSucceedWith200AndExpectSameResults() throws Exception {
+//        // Construct user to sign up with
+//        File file = new File("uploads/users/images/default.png");
+//        RestaurantFile restaurantFile = new RestaurantFile(null, file.getName(), RestaurantUtils.getExtensionByApacheCommonLib(file.getName()), MediaType.IMAGE_PNG.toString(), IOUtils.toByteArray(new FileInputStream(file)), null);
+//        restaurantFile = this.restaurantFileService.saveRestaurantFile(restaurantFile);
+//        User user = new User(null, "marakechatlas@gmail.com", "toortoor", "intg user", false, )
+//    }
 
 }

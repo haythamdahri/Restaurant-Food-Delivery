@@ -1,5 +1,6 @@
 package org.restaurant.salado.controllers;
 
+import com.sun.mail.iap.Response;
 import org.restaurant.salado.entities.RestaurantFile;
 import org.restaurant.salado.services.RestaurantFileService;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -9,6 +10,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.multipart.MultipartFile;
 
 import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
@@ -40,7 +42,6 @@ public class RestaurantFileRestController {
         // Return response with RestaurantFile based on search
         return ResponseEntity.ok(this.restaurantFileService.searchRestaurantFiles(page, size, search));
     }
-
 
     /**
      * Retrieve RestaurantFile using Identifier
@@ -79,5 +80,38 @@ public class RestaurantFileRestController {
         return ResponseEntity.notFound().build();
     }
 
+    /**
+     * Upload restaurant file
+     * @param file
+     * @return ResponseEntity<RestaurantFile>
+     * @throws IOException
+     */
+    @RequestMapping(path = "/", method = RequestMethod.POST)
+    public ResponseEntity<RestaurantFile> uploadRestaurantFile(@RequestParam(value = "restaurantfile") MultipartFile file) throws IOException {
+        // Save Restaurant file
+        RestaurantFile restaurantFile = this.restaurantFileService.saveRestaurantFile(file);
+        // Create response and return it
+        return ResponseEntity.ok(restaurantFile);
+    }
+
+    /**
+     * Update restaurant file
+     * @param restaurantFile
+     * @return ResponseEntity<RestaurantFile>
+     * @throws IOException
+     */
+    @RequestMapping(path = "/", method = RequestMethod.PUT)
+    public ResponseEntity<RestaurantFile> updateRestaurantFile(@RequestBody RestaurantFile restaurantFile) throws IOException {
+        // Save Restaurant file
+        restaurantFile = this.restaurantFileService.saveRestaurantFile(restaurantFile);
+        // Create response and return it
+        return ResponseEntity.ok(restaurantFile);
+    }
+
+    @RequestMapping(path = "/{id}", method = RequestMethod.DELETE)
+    public ResponseEntity<?> deleteRestaurantFileEndpoint(@PathVariable(value = "id") Long id) {
+        this.restaurantFileService.deleteRestaurantFile(id);
+        return ResponseEntity.ok().build();
+    }
 
 }

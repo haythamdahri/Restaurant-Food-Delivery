@@ -34,7 +34,7 @@ public class RestaurantFileServiceImpl implements RestaurantFileService {
 
     @Override
     public RestaurantFile saveRestaurantFile(MultipartFile file) throws IOException {
-        RestaurantFile restaurantFile = new RestaurantFile(null, FilenameUtils.removeExtension(file.getOriginalFilename()), RestaurantUtils.getExtensionByApacheCommonLib(file.getOriginalFilename()),  file.getContentType().toString(), file.getBytes(), null);
+        RestaurantFile restaurantFile = new RestaurantFile(null, FilenameUtils.removeExtension(file.getOriginalFilename()), RestaurantUtils.getExtensionByApacheCommonLib(file.getOriginalFilename()),  file.getContentType(), file.getBytes(), null);
         return this.restaurantFileRepository.save(restaurantFile);
     }
 
