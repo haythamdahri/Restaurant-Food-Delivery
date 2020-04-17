@@ -70,7 +70,7 @@ public class RestaurantFileRestIntegrationTest {
         String RESTAURANT_FILES_FILE_URI = "/api/v1/restaurantfiles/file/{id}";
         // Retrieve file
         File file = new File("");
-        Path path = Paths.get("uploads/users/images/default.png");
+        Path path = Paths.get(System.getProperty("user.dir") + "/uploads/users/images/default.png");
         String originalFileName = "default.png";
         String name = "default";
         String contentType = MediaType.IMAGE_PNG_VALUE;
