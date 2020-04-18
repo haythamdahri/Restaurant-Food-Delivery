@@ -13,10 +13,14 @@ import java.util.List;
  * @author Haytam DAHRI
  */
 @Service
-public class RoleServideImpl implements RoleService {
+public class RoleServiceImpl implements RoleService {
+
+    private RoleRepository roleRepository;
 
     @Autowired
-    private RoleRepository roleRepository;
+    public void setRoleRepository(RoleRepository roleRepository) {
+        this.roleRepository = roleRepository;
+    }
 
     @Override
     public Role saveRole(Role role) {

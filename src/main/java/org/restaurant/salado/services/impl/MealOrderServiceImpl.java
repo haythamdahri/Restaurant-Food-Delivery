@@ -14,8 +14,12 @@ import java.util.List;
 @Service
 public class MealOrderServiceImpl implements MealOrderService {
 
-    @Autowired
     private MealOrderRepository mealOrderRepository;
+
+    @Autowired
+    public void setMealOrderRepository(MealOrderRepository mealOrderRepository) {
+        this.mealOrderRepository = mealOrderRepository;
+    }
 
     @Override
     public MealOrder saveMealOrder(MealOrder mealOrder) {
@@ -23,7 +27,7 @@ public class MealOrderServiceImpl implements MealOrderService {
     }
 
     @Override
-    public boolean deleteMealOrder(Long id) throws Exception {
+    public boolean deleteMealOrder(Long id) {
         MealOrder mealOrder = this.mealOrderRepository.findById(id).orElse(null);
         // Check if mealOrder exists
         if (mealOrder != null) {
@@ -33,8 +37,8 @@ public class MealOrderServiceImpl implements MealOrderService {
             this.mealOrderRepository.deleteById(id);
             return this.mealOrderRepository.findById(id).orElse(null) == null;
         }
-        // throw exception if mealOrder does not exist
-        throw new Exception();
+        // Return false in case MealOrder not found
+        return false;
     }
 
     @Override

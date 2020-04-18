@@ -45,7 +45,6 @@ public class RestaurantRestIntegrationTest {
      */
     @WithMockUser(value = "spring")
     @Test
-
     public void givenAuthRequestOnRestaurantRestService_shouldSucceedWith200AndExpectSameContent() throws Exception {
         // Build expected data
         JSONObject data = new JSONObject();

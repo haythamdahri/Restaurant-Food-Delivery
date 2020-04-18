@@ -11,10 +11,13 @@ import javax.mail.internet.MimeMessage;
  */
 public class RestaurantUtils {
 
+    private RestaurantUtils() {
+    }
+
     /**
-     * etrieve file extension from a file name
+     * Retrieve file extension from a file name
      *
-     * @param filename
+     * @param filename: File name
      * @return String
      */
     public static String getExtensionByApacheCommonLib(String filename) {
@@ -24,14 +27,14 @@ public class RestaurantUtils {
     /**
      * Mime message builder
      *
-     * @param from
-     * @param to
-     * @param subject
-     * @param text
-     * @param message
-     * @param isMultipart
+     * @param from:        Email Sender
+     * @param to:          Email Receiver
+     * @param subject:     Email Subject
+     * @param text:        Email Text Content
+     * @param message:     Email Message
+     * @param isMultipart: Boolean to check if Multipart Exists
      * @return MimeMessageHelper
-     * @throws MessagingException
+     * @throws MessagingException: Thrown on unhandled error
      */
     public static MimeMessageHelper buildMimeMessageHelper(String from, String to, String subject, String text, MimeMessage message, boolean isMultipart) throws MessagingException {
         MimeMessageHelper helper = new MimeMessageHelper(message);

@@ -1,6 +1,5 @@
 package org.restaurant.salado.services.impl;
 
-import org.restaurant.salado.entities.Payment;
 import org.restaurant.salado.services.EmailService;
 import org.restaurant.salado.services.MailContentBuilder;
 import org.restaurant.salado.utils.RestaurantUtils;
@@ -15,7 +14,6 @@ import org.springframework.stereotype.Service;
 
 import javax.mail.internet.MimeMessage;
 import java.io.File;
-import java.time.LocalDate;
 import java.util.Date;
 import java.util.Objects;
 import java.util.concurrent.CompletableFuture;
@@ -27,20 +25,29 @@ import java.util.concurrent.CompletableFuture;
 @Async
 public class EmailServiceImpl implements EmailService {
 
-    @Autowired
     private MailContentBuilder mailContentBuilder;
 
-    @Autowired
     private JavaMailSender mailSender;
 
     @Value("${mail.sender}")
     private String from;
 
+    @Autowired
+    public void setMailContentBuilder(MailContentBuilder mailContentBuilder) {
+        this.mailContentBuilder = mailContentBuilder;
+    }
+
+    @Autowired
+    public void setMailSender(JavaMailSender mailSender) {
+        this.mailSender = mailSender;
+    }
+
     /**
      * Send simple email message implementation
-     * @param to
-     * @param subject
-     * @param text
+     *
+     * @param to:      Email receiver
+     * @param subject: Email Subject
+     * @param text:    Email Text
      * @return CompletableFuture<Boolean>
      */
     @Override
@@ -60,9 +67,10 @@ public class EmailServiceImpl implements EmailService {
 
     /**
      * Send professional email message with template implementation
-     * @param token
-     * @param to
-     * @param subject
+     *
+     * @param token:   Token to send with email as link
+     * @param to:      Email receiver
+     * @param subject: Email Subject
      * @return CompletableFuture<Boolean>
      */
     @Override
@@ -80,9 +88,10 @@ public class EmailServiceImpl implements EmailService {
 
     /**
      * Send professional email message with template implementation
-     * @param token
-     * @param to
-     * @param subject
+     *
+     * @param token:   Token to send with email as link
+     * @param to:      Email receiver
+     * @param subject: Email Subject
      * @return CompletableFuture<Boolean>
      */
     @Override
@@ -94,15 +103,15 @@ public class EmailServiceImpl implements EmailService {
             this.mailSender.send(helper.getMimeMessage());
             return CompletableFuture.completedFuture(true);
         } catch (Exception ex) {
-            ex.printStackTrace();
             return CompletableFuture.completedFuture(false);
         }
     }
 
     /**
      * Send professional email message with template implementation
-     * @param to
-     * @param subject
+     *
+     * @param to:      Email receiver
+     * @param subject: Email Subject
      * @return CompletableFuture<Boolean>
      */
     @Override
@@ -121,9 +130,10 @@ public class EmailServiceImpl implements EmailService {
     /**
      * Send user email update
      * Provide update token
-     * @param token
-     * @param to
-     * @param subject
+     *
+     * @param token:   Token to send with email as link
+     * @param to:      Email receiver
+     * @param subject: Email Subject
      * @return CompletableFuture<Boolean>
      */
     @Override
@@ -141,10 +151,11 @@ public class EmailServiceImpl implements EmailService {
 
     /**
      * Send post email to user
-     * @param to
-     * @param subject
-     * @param paymentId
-     * @param timestamp
+     *
+     * @param to:        Email receiver
+     * @param subject:   Email Subject
+     * @param paymentId: Payment Identifier to send with Email
+     * @param timestamp: Date Of Sending The EMail
      * @return CompletableFuture<Boolean>
      */
     @Override
@@ -162,10 +173,11 @@ public class EmailServiceImpl implements EmailService {
 
     /**
      * Send email with attachment implementation
-     * @param to
-     * @param subject
-     * @param text
-     * @param pathToAttachment
+     *
+     * @param to:               Email receiver
+     * @param subject:          Email Subject
+     * @param text:             Email Text
+     * @param pathToAttachment: Attachments to send with Email: Files
      * @return CompletableFuture<Boolean>
      */
     @Override

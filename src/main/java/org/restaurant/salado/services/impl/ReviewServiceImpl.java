@@ -1,15 +1,11 @@
 package org.restaurant.salado.services.impl;
 
-import org.restaurant.salado.entities.Meal;
 import org.restaurant.salado.entities.Review;
-import org.restaurant.salado.repositories.MealRepository;
 import org.restaurant.salado.repositories.ReviewRepository;
-import org.restaurant.salado.services.MealService;
 import org.restaurant.salado.services.ReviewService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
-import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
@@ -20,8 +16,12 @@ import java.util.List;
 @Service
 public class ReviewServiceImpl implements ReviewService {
 
-    @Autowired
     private ReviewRepository reviewRepository;
+
+    @Autowired
+    public void setReviewRepository(ReviewRepository reviewRepository) {
+        this.reviewRepository = reviewRepository;
+    }
 
     @Override
     public Review saveReview(Review review) {
@@ -36,12 +36,12 @@ public class ReviewServiceImpl implements ReviewService {
 
     @Override
     public Review getReview(Long id) {
-        return null;
+        return this.reviewRepository.findById(id).orElse(null);
     }
 
     @Override
     public List<Review> getReviews() {
-        return null;
+        return this.reviewRepository.findAll();
     }
 
     @Override

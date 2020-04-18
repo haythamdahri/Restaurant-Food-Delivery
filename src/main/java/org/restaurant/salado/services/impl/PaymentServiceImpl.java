@@ -4,6 +4,8 @@ import org.restaurant.salado.entities.Payment;
 import org.restaurant.salado.repositories.PaymentRepository;
 import org.restaurant.salado.services.PaymentService;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
@@ -14,8 +16,12 @@ import java.util.List;
 @Service
 public class PaymentServiceImpl implements PaymentService {
 
-    @Autowired
     private PaymentRepository paymentRepository;
+
+    @Autowired
+    public void setPaymentRepository(PaymentRepository paymentRepository) {
+        this.paymentRepository = paymentRepository;
+    }
 
     @Override
     public Payment savePayment(Payment payment) {
@@ -31,6 +37,11 @@ public class PaymentServiceImpl implements PaymentService {
     @Override
     public Payment getPayment(Long id) {
         return this.paymentRepository.findById(id).orElse(null);
+    }
+
+    @Override
+    public Page<Payment> getUserPayments(String userEmail, int page, int size) {
+        return this.paymentRepository.findByUserUserIdEmail(PageRequest.of(page, size), userEmail);
     }
 
     @Override

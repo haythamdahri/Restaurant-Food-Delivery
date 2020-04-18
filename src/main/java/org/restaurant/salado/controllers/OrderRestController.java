@@ -1,17 +1,13 @@
 package org.restaurant.salado.controllers;
 
-import org.restaurant.salado.entities.Meal;
 import org.restaurant.salado.entities.Order;
-import org.restaurant.salado.services.MealService;
+import org.restaurant.salado.facades.IAuthenticationFacade;
 import org.restaurant.salado.services.OrderService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.security.core.Authentication;
-import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.*;
 
-import javax.transaction.Transactional;
 import java.util.List;
 
 /**
@@ -22,17 +18,28 @@ import java.util.List;
 @CrossOrigin(value = "*")
 public class OrderRestController {
 
-    @Autowired
     private OrderService orderService;
+
+    private IAuthenticationFacade authenticationFacade;
+
+    @Autowired
+    public void setOrderService(OrderService orderService) {
+        this.orderService = orderService;
+    }
+
+    @Autowired
+    public void setAuthenticationFacade(IAuthenticationFacade authenticationFacade) {
+        this.authenticationFacade = authenticationFacade;
+    }
 
     /**
      * Retrieve authenticated user order Endpoint
      *
-     * @return ResponseEntity<List <Order>>
+     * @return ResponseEntity<List < Order>>
      */
-    @RequestMapping(value = "/authuser", method = RequestMethod.GET)
-    public ResponseEntity<List<Order>> getUserOrdersEndPoint(@AuthenticationPrincipal Authentication authentication) {
-        String email = authentication.getName();
+    @GetMapping(value = "/authuser")
+    public ResponseEntity<List<Order>> getUserOrdersEndPoint() {
+        String email = this.authenticationFacade.getAuthentication().getName();
         return new ResponseEntity<>(this.orderService.getUserOrders(email), HttpStatus.OK);
     }
 
@@ -41,7 +48,7 @@ public class OrderRestController {
      *
      * @return ResponseEntity<List < Meal>>
      */
-    @RequestMapping(value = "/", method = RequestMethod.GET)
+    @GetMapping(value = "/")
     public ResponseEntity<List<Order>> getUserOrdersEndPoint(@RequestParam(value = "email") String email) {
         return new ResponseEntity<>(this.orderService.getUserOrders(email), HttpStatus.OK);
     }

@@ -19,8 +19,12 @@ import java.util.List;
 @Transactional
 public class MealServiceImpl implements MealService {
 
-    @Autowired
     private MealRepository mealRepository;
+
+    @Autowired
+    public void setMealRepository(MealRepository mealRepository) {
+        this.mealRepository = mealRepository;
+    }
 
     @Override
     public Meal saveMeal(Meal meal) {
@@ -50,6 +54,7 @@ public class MealServiceImpl implements MealService {
 
     /**
      * Get popular meals list
+     *
      * @return List<Meal>
      */
     @Override
@@ -59,6 +64,6 @@ public class MealServiceImpl implements MealService {
 
     @Override
     public List<Meal> getUserPreferredMeals(String email) {
-        return this.mealRepository.findMealByUsersPreferences_Email(email);
+        return this.mealRepository.findMealByUsersPreferences_UserIdEmail(email);
     }
 }

@@ -1,6 +1,5 @@
 package org.restaurant.salado.providers;
 
-import nz.net.ultraq.thymeleaf.LayoutDialect;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.web.client.RestTemplateBuilder;
 import org.springframework.context.annotation.Bean;
@@ -12,8 +11,6 @@ import org.springframework.web.client.RestTemplate;
 import org.springframework.web.servlet.config.annotation.CorsRegistry;
 import org.springframework.web.servlet.config.annotation.ResourceHandlerRegistry;
 import org.springframework.web.servlet.config.annotation.WebMvcConfigurer;
-import org.springframework.web.servlet.config.annotation.WebMvcConfigurerAdapter;
-import org.thymeleaf.spring5.SpringTemplateEngine;
 
 import java.util.Properties;
 
@@ -38,7 +35,7 @@ public class BeansProvider {
     /**
      * Configure JavaMailSender
      *
-     * @return
+     * @return JavaMailSender
      */
     @Bean
     public JavaMailSender getJavaMailSender() {
@@ -61,7 +58,7 @@ public class BeansProvider {
     /**
      * Provide BCryptPasswordEncoder instance
      *
-     * @return
+     * @return BCryptPasswordEncoder
      */
     @Bean
     public BCryptPasswordEncoder bCryptPasswordEncoder() {
@@ -71,7 +68,7 @@ public class BeansProvider {
     /**
      * Cors configuration
      *
-     * @return
+     * @return WebMvcConfigurer
      */
     @Bean
     public WebMvcConfigurer corsConfigurer() {
@@ -94,7 +91,8 @@ public class BeansProvider {
 
     /**
      * Provide Rest template bean
-     * @param builder
+     *
+     * @param builder: RestTemplateBuilder
      * @return RestTemplate
      */
     @Bean

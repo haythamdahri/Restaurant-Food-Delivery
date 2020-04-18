@@ -19,19 +19,23 @@ import java.util.Set;
 @Service
 public class UserDetailsServiceImpl implements UserDetailsService {
 
-    @Autowired
     private UserService userService;
 
+    @Autowired
+    public void setUserService(UserService userService) {
+        this.userService = userService;
+    }
+
     @Override
-    public UserDetails loadUserByUsername(String email) throws UsernameNotFoundException {
+    public UserDetails loadUserByUsername(String email) {
         // Fetch user from database using his email
         User user = this.userService.getEnabledUser(email);
         Set<GrantedAuthority> grantedAuthorities = new HashSet<>();
         if (user != null) {
-            user.getRoles().forEach(role -> {
-                grantedAuthorities.add(new SimpleGrantedAuthority(role.getRoleName().name()));
-            });
-            return new org.springframework.security.core.userdetails.User(user.getEmail(), user.getPassword(), grantedAuthorities);
+            user.getRoles().forEach(role ->
+                    grantedAuthorities.add(new SimpleGrantedAuthority(role.getRoleName().name()))
+            );
+            return new org.springframework.security.core.userdetails.User(user.getUserId().getEmail(), user.getPassword(), grantedAuthorities);
         }
         throw new UsernameNotFoundException("No user found with " + email);
     }

@@ -14,8 +14,12 @@ import java.util.List;
 @Service
 public class MessageServiceImpl implements MessageService {
 
-    @Autowired
     private MessageRepository messageRepository;
+
+    @Autowired
+    public void setMessageRepository(MessageRepository messageRepository) {
+        this.messageRepository = messageRepository;
+    }
 
     @Override
     public Message saveMessage(Message message) {

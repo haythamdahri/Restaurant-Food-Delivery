@@ -4,6 +4,7 @@ import org.restaurant.salado.configuration.JwtTokenUtil;
 import org.restaurant.salado.models.JwtRequest;
 import org.restaurant.salado.models.JwtResponse;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.BadCredentialsException;
@@ -21,22 +22,33 @@ import org.springframework.web.bind.annotation.*;
 @CrossOrigin("*")
 public class JwtAuthenticationController {
 
-    @Autowired
     private AuthenticationManager authenticationManager;
 
-    @Autowired
     private JwtTokenUtil jwtTokenUtil;
 
-    @Autowired
     private UserDetailsService userDetailsService;
 
+    @Autowired
+    public void setAuthenticationManager(AuthenticationManager authenticationManager) {
+        this.authenticationManager = authenticationManager;
+    }
+
+    @Autowired
+    public void setJwtTokenUtil(JwtTokenUtil jwtTokenUtil) {
+        this.jwtTokenUtil = jwtTokenUtil;
+    }
+
+    @Autowired
+    public void setUserDetailsService(@Qualifier("userDetailsServiceImpl") UserDetailsService userDetailsService) {
+        this.userDetailsService = userDetailsService;
+    }
+
     /**
-     * @param authenticationRequest
-     * @return ResponseEntity
-     * @throws Exception
+     * @param authenticationRequest: Authentication request body for JWT
+     * @return ResponseEntity<JwtResponse>
      */
-    @RequestMapping(value = "/", method = RequestMethod.POST)
-    public ResponseEntity<?> createAuthenticationToken(@RequestBody JwtRequest authenticationRequest) throws Exception {
+    @PostMapping(value = "/")
+    public ResponseEntity<JwtResponse> createAuthenticationToken(@RequestBody JwtRequest authenticationRequest) {
         authenticate(authenticationRequest.getEmail(), authenticationRequest.getPassword());
         final UserDetails userDetails = userDetailsService
                 .loadUserByUsername(authenticationRequest.getEmail());
@@ -45,17 +57,16 @@ public class JwtAuthenticationController {
     }
 
     /**
-     * @param email
-     * @param password
-     * @throws Exception
+     * @param email:    User email
+     * @param password: User Password
      */
-    private void authenticate(String email, String password) throws Exception {
+    private void authenticate(String email, String password) {
         try {
             authenticationManager.authenticate(new UsernamePasswordAuthenticationToken(email, password));
         } catch (DisabledException e) {
-            throw new Exception("USER_DISABLED", e);
+            throw new DisabledException("USER_DISABLED", e);
         } catch (BadCredentialsException e) {
-            throw new Exception("INVALID_CREDENTIALS", e);
+            throw new BadCredentialsException("INVALID_CREDENTIALS", e);
         }
     }
 }

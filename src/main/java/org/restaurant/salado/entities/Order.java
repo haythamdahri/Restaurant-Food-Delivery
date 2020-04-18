@@ -31,7 +31,7 @@ public class Order implements Serializable {
     private Long id;
 
     @ManyToOne(cascade = {CascadeType.DETACH, CascadeType.MERGE, CascadeType.PERSIST, CascadeType.REFRESH}, fetch = FetchType.LAZY)
-    @JoinColumn(name = "user_id")
+    @JoinColumns(value = {@JoinColumn(name = "user_id", referencedColumnName = "id"), @JoinColumn(name = "user_email", referencedColumnName = "email")})
     @JsonIgnoreProperties({"roles", "hibernateLazyInitializer"})
     private User user;
 
@@ -84,7 +84,7 @@ public class Order implements Serializable {
     @PostLoad
     public void postLoad() {
         this.totalPrice = this.shippingFees = BigDecimal.ZERO;
-        this.shippingFees = Constants.SHIPPING_FEES;    // TODO: Set SHipping Fees => Will Be calculated later
+        this.shippingFees = Constants.SHIPPING_FEES;
         this.totalPrice = this.price.add(Constants.SHIPPING_FEES);  // Add Shipping Fees
     }
 
@@ -97,8 +97,8 @@ public class Order implements Serializable {
         if (this.mealOrders != null && !this.mealOrders.isEmpty()) {
             this.price = BigDecimal.ZERO;
             this.price = this.mealOrders.stream()
-                    .map(MealOrder::getTotalPrice)    // Map MealOrder
-                    .reduce(BigDecimal.ZERO, BigDecimal::add);      // Reduce results
+                        .map(MealOrder::getTotalPrice)    // Map MealOrder
+                        .reduce(BigDecimal.ZERO, BigDecimal::add);      // Reduce results
         }
     }
 

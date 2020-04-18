@@ -2,15 +2,14 @@ package org.restaurant.salado.controllers;
 
 import org.restaurant.salado.entities.Order;
 import org.restaurant.salado.entities.User;
+import org.restaurant.salado.facades.IAuthenticationFacade;
 import org.restaurant.salado.services.OrderService;
 import org.restaurant.salado.services.UserService;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.security.core.Authentication;
 import org.springframework.web.bind.annotation.CrossOrigin;
+import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RestController;
 
 import javax.transaction.Transactional;
@@ -26,26 +25,40 @@ import java.util.Map;
 @Transactional
 public class UserCartRestController {
 
-    @Autowired
     private UserService userService;
 
-    @Autowired
     private OrderService orderService;
 
+    private IAuthenticationFacade authenticationFacade;
+
+    @Autowired
+    public void setUserService(UserService userService) {
+        this.userService = userService;
+    }
+
+    @Autowired
+    public void setOrderService(OrderService orderService) {
+        this.orderService = orderService;
+    }
+
+    @Autowired
+    public void setAuthenticationFacade(IAuthenticationFacade authenticationFacade) {
+        this.authenticationFacade = authenticationFacade;
+    }
+
     /**
-     * User cart
+     * User carT
      *
-     * @param authentication
      * @return ResponseEntity
      */
-    @RequestMapping(value = "/", method = RequestMethod.GET)
-    public ResponseEntity<Map<String, Object>> getUserCart(Authentication authentication) {
+    @GetMapping(value = "/")
+    public ResponseEntity<Map<String, Object>> getUserCart() {
         // Fetch connected user from database
-        User user = this.userService.getUser(authentication.getName());
+        User user = this.userService.getUser(this.authenticationFacade.getAuthentication().getName());
         // Create results data
         Map<String, Object> data = new HashMap<>();
         // Get last active order
-        Order userActiveOrder = this.orderService.getLastActiveOrder(user.getId());
+        Order userActiveOrder = this.orderService.getLastActiveOrder(user.getUserId().getId());
         // Check if their is an active order
         if (userActiveOrder == null || userActiveOrder.getMealOrders().isEmpty()) {
             data.put("status", true);
@@ -54,9 +67,9 @@ public class UserCartRestController {
         } else {
             data.put("status", true);
             data.put("activeOrder", userActiveOrder);
-            System.out.println("Total Price: " + userActiveOrder.getTotalPrice());
             data.put("noActiveOrder", false);
         }
+        // Return response
         return ResponseEntity.ok(data);
     }
 

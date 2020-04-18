@@ -1,6 +1,6 @@
 package org.restaurant.salado.controllers;
 
-import com.sun.mail.iap.Response;
+import org.restaurant.salado.dtos.RestaurantFileDTO;
 import org.restaurant.salado.entities.RestaurantFile;
 import org.restaurant.salado.services.RestaurantFileService;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -12,7 +12,6 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
-import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
 
 /**
@@ -22,21 +21,24 @@ import java.io.IOException;
 @RequestMapping(path = "/api/v1/restaurantfiles")
 public class RestaurantFileRestController {
 
-    @Autowired
     private RestaurantFileService restaurantFileService;
+
+    @Autowired
+    public void setRestaurantFileService(RestaurantFileService restaurantFileService) {
+        this.restaurantFileService = restaurantFileService;
+    }
 
     /**
      * Retrieve paged RestaurantFile
      *
-     * @param page
-     * @param size
-     * @return ResponseEntity<Page<RestaurantFile>>
-     * @throws InterruptedException
+     * @param page: Request Page
+     * @param size: Request Page Size
+     * @return ResponseEntity<Page < RestaurantFile>>
      */
-    @RequestMapping(value = "/", method = RequestMethod.GET)
-    public ResponseEntity<Page<RestaurantFile>> fetchRestaurantFilesEndPoint(@RequestParam(value = "page", required = false, defaultValue = "0") int page, @RequestParam(value = "size", required = false, defaultValue = "${page.default_size}") int size, @RequestParam(value = "search", required = false) String search) throws InterruptedException {
+    @GetMapping(value = "/")
+    public ResponseEntity<Page<RestaurantFile>> fetchRestaurantFilesEndPoint(@RequestParam(value = "page", required = false, defaultValue = "0") int page, @RequestParam(value = "size", required = false, defaultValue = "${page.default_size}") int size, @RequestParam(value = "search", required = false) String search) {
         // Check if search exists
-        if( search == null ) {
+        if (search == null) {
             return ResponseEntity.ok(this.restaurantFileService.getRestaurantFiles(page, size));
         }
         // Return response with RestaurantFile based on search
@@ -45,15 +47,16 @@ public class RestaurantFileRestController {
 
     /**
      * Retrieve RestaurantFile using Identifier
-     * @param id
+     *
+     * @param id: RestaurntFile Identifier
      * @return RestaurantFile
      */
-    @RequestMapping(value = "/{id}", method = RequestMethod.GET)
+    @GetMapping(value = "/{id}")
     public ResponseEntity<RestaurantFile> fetchRestaurantFileWithNameEndPoint(@PathVariable(value = "id") Long id) {
         // Retrieve RestaurantFile using service tier
         RestaurantFile restaurantFile = this.restaurantFileService.getRestaurantFile(id);
         // Check RestaurantFile existence
-        if( restaurantFile != null ) {
+        if (restaurantFile != null) {
             return ResponseEntity.ok(restaurantFile);
         }
         // Return 4040 not found
@@ -62,16 +65,16 @@ public class RestaurantFileRestController {
 
     /**
      * Retrieve Blob file only
-     * @param id
-     * @return ResponseEntity<byte[]>
-     * @throws IOException
+     *
+     * @param id: RestaurantFile Identifier
+     * @return ResponseEntity<byte [ ]>
      */
-    @RequestMapping(value = "/file/{id}")
-    public ResponseEntity<byte[]> showProductImage(@PathVariable(value = "id", required = true) Long id) throws IOException {
+    @GetMapping(value = "/file/{id}")
+    public ResponseEntity<byte[]> showProductImage(@PathVariable(value = "id") Long id) {
         // Retrieve RestaurantFile
         RestaurantFile restaurantFile = this.restaurantFileService.getRestaurantFile(id);
         // Check file existence
-        if( restaurantFile != null ) {
+        if (restaurantFile != null) {
             HttpHeaders headers = new HttpHeaders();
             headers.setContentType(MediaType.valueOf(restaurantFile.getMediaType()));
             return new ResponseEntity<>(restaurantFile.getFile(), headers, HttpStatus.OK);
@@ -82,12 +85,13 @@ public class RestaurantFileRestController {
 
     /**
      * Upload restaurant file
-     * @param file
+     *
+     * @param file: MultipartFile to upload
      * @return ResponseEntity<RestaurantFile>
-     * @throws IOException
+     * @throws IOException: Thrown when having error in file
      */
-    @RequestMapping(path = "/", method = RequestMethod.POST)
-    public ResponseEntity<RestaurantFile> uploadRestaurantFile(@RequestParam(value = "restaurantfile") MultipartFile file) throws IOException {
+    @PostMapping(path = "/")
+    public ResponseEntity<RestaurantFile> uploadRestaurantFile(@RequestParam(value = "restaurantFile") MultipartFile file) throws IOException {
         // Save Restaurant file
         RestaurantFile restaurantFile = this.restaurantFileService.saveRestaurantFile(file);
         // Create response and return it
@@ -95,21 +99,25 @@ public class RestaurantFileRestController {
     }
 
     /**
-     * Update restaurant file
-     * @param restaurantFile
+     * Save restaurant file (Insert Or Update)
+     *
+     * @param restaurantFileDTO: RestaurantFileDTO Data Transfer  Object
      * @return ResponseEntity<RestaurantFile>
-     * @throws IOException
      */
-    @RequestMapping(path = "/", method = RequestMethod.PUT)
-    public ResponseEntity<RestaurantFile> updateRestaurantFile(@RequestBody RestaurantFile restaurantFile) throws IOException {
-        // Save Restaurant file
-        restaurantFile = this.restaurantFileService.saveRestaurantFile(restaurantFile);
-        // Create response and return it
-        return ResponseEntity.ok(restaurantFile);
+    @PutMapping(path = "/")
+    public ResponseEntity<RestaurantFile> updateRestaurantFile(@RequestBody RestaurantFileDTO restaurantFileDTO) {
+        // Save RestaurantFile And Create response then return it
+        return ResponseEntity.ok(this.restaurantFileService.saveRestaurantFile(restaurantFileDTO));
     }
 
-    @RequestMapping(path = "/{id}", method = RequestMethod.DELETE)
-    public ResponseEntity<?> deleteRestaurantFileEndpoint(@PathVariable(value = "id") Long id) {
+    /**
+     * Delete RestaurantFile endpoint
+     *
+     * @param id: RestaurantFile Identifier
+     * @return ResponseEntity<Object>
+     */
+    @DeleteMapping(path = "/{id}")
+    public ResponseEntity<Object> deleteRestaurantFileEndpoint(@PathVariable(value = "id") Long id) {
         this.restaurantFileService.deleteRestaurantFile(id);
         return ResponseEntity.ok().build();
     }

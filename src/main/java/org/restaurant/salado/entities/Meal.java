@@ -72,7 +72,7 @@ public class Meal implements Serializable {
 
     /**
      * Convenient method to add a new to the current meal
-     * @param review
+     * @param review: Review Object to add to current meal reviews list
      */
     public void addReview(Review review) {
         if( this.reviews == null ) {
@@ -83,7 +83,7 @@ public class Meal implements Serializable {
 
     /**
      * Reduce quantity after payment charge
-     * @param quantity
+     * @param quantity: current meal stock
      */
     public void reduceQuantity(int quantity) {
         this.stock -= quantity;

@@ -14,8 +14,12 @@ import java.util.List;
 @Service
 public class ShippingServiceImpl implements ShippingService {
 
-    @Autowired
     private ShippingRepository shippingRepository;
+
+    @Autowired
+    public void setShippingRepository(ShippingRepository shippingRepository) {
+        this.shippingRepository = shippingRepository;
+    }
 
     @Override
     public Shipping saveShipping(Shipping shipping) {

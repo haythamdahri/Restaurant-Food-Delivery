@@ -1,7 +1,6 @@
 package org.restaurant.salado.services.impl;
 
 import org.restaurant.salado.entities.Order;
-import org.restaurant.salado.providers.Constants;
 import org.restaurant.salado.repositories.OrderRepository;
 import org.restaurant.salado.services.OrderService;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -9,7 +8,6 @@ import org.springframework.stereotype.Service;
 
 import javax.transaction.Transactional;
 import java.util.List;
-import java.util.stream.Collectors;
 
 /**
  * @author Haytam DAHRI
@@ -18,8 +16,12 @@ import java.util.stream.Collectors;
 @Transactional
 public class OrderServiceImpl implements OrderService {
 
-    @Autowired
     private OrderRepository orderRepository;
+
+    @Autowired
+    public void setOrderRepository(OrderRepository orderRepository) {
+        this.orderRepository = orderRepository;
+    }
 
     @Override
     public Order saveOrder(Order order) {
@@ -34,7 +36,7 @@ public class OrderServiceImpl implements OrderService {
 
     @Override
     public Order getLastActiveOrder(Long userId) {
-        return this.orderRepository.findByUserIdAndCancelledFalseAndDeliveredFalse(userId).orElse(null);
+        return this.orderRepository.findByUserUserIdIdAndCancelledFalseAndDeliveredFalse(userId).orElse(null);
     }
 
     @Override
@@ -50,12 +52,12 @@ public class OrderServiceImpl implements OrderService {
 
     @Override
     public List<Order> getUserOrders(Long id) {
-        return this.orderRepository.findByUserId(id);
+        return this.orderRepository.findByUserUserIdId(id);
     }
 
     @Override
     public List<Order> getUserOrders(String email) {
-        return this.orderRepository.findByUserEmail(email);
+        return this.orderRepository.findByUserUserIdEmail(email);
     }
 
 }

@@ -1,21 +1,21 @@
 package org.restaurant.salado.services.impl;
 
 import org.apache.commons.io.FilenameUtils;
+import org.restaurant.salado.dtos.RestaurantFileDTO;
 import org.restaurant.salado.entities.RestaurantFile;
+import org.restaurant.salado.mappers.RestaurantFileMapper;
 import org.restaurant.salado.repositories.RestaurantFileRepository;
 import org.restaurant.salado.services.RestaurantFileService;
 import org.restaurant.salado.utils.RestaurantUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
-import org.springframework.http.MediaType;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 
 import javax.transaction.Transactional;
 import java.io.IOException;
 import java.util.List;
-import java.util.Objects;
 
 /**
  * @author Haytham DAHRI
@@ -24,8 +24,19 @@ import java.util.Objects;
 @Transactional
 public class RestaurantFileServiceImpl implements RestaurantFileService {
 
-    @Autowired
     private RestaurantFileRepository restaurantFileRepository;
+
+    private RestaurantFileMapper restaurantFileMapper;
+
+    @Autowired
+    public void setRestaurantFileRepository(RestaurantFileRepository restaurantFileRepository) {
+        this.restaurantFileRepository = restaurantFileRepository;
+    }
+
+    @Autowired
+    public void setRestaurantFileMapper(RestaurantFileMapper restaurantFileMapper) {
+        this.restaurantFileMapper = restaurantFileMapper;
+    }
 
     @Override
     public RestaurantFile saveRestaurantFile(RestaurantFile file) {
@@ -33,8 +44,14 @@ public class RestaurantFileServiceImpl implements RestaurantFileService {
     }
 
     @Override
+    public RestaurantFile saveRestaurantFile(RestaurantFileDTO file) {
+        // Map DTO to Entity And Persist entity
+        return this.restaurantFileRepository.save(this.restaurantFileMapper.toModel(file));
+    }
+
+    @Override
     public RestaurantFile saveRestaurantFile(MultipartFile file) throws IOException {
-        RestaurantFile restaurantFile = new RestaurantFile(null, FilenameUtils.removeExtension(file.getOriginalFilename()), RestaurantUtils.getExtensionByApacheCommonLib(file.getOriginalFilename()),  file.getContentType(), file.getBytes(), null);
+        RestaurantFile restaurantFile = new RestaurantFile(null, FilenameUtils.removeExtension(file.getOriginalFilename()), RestaurantUtils.getExtensionByApacheCommonLib(file.getOriginalFilename()), file.getContentType(), file.getBytes(), null);
         return this.restaurantFileRepository.save(restaurantFile);
     }
 

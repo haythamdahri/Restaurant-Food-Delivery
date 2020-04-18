@@ -7,7 +7,7 @@ import lombok.NoArgsConstructor;
 
 import javax.persistence.*;
 import java.io.Serializable;
-import java.util.Collection;
+import java.util.Set;
 
 /**
  * @author Haytam DAHRI
@@ -28,9 +28,9 @@ public class Role implements Serializable {
     @Column(name = "role_name", unique = true, updatable = false)
     private RoleType roleName;
 
-    @ManyToMany(mappedBy = "roles")
+    @ManyToMany(targetEntity = User.class, cascade = {CascadeType.DETACH, CascadeType.MERGE, CascadeType.PERSIST, CascadeType.REFRESH})
     @JsonIgnore
-    private Collection<User> users;
+    private Set<User> users;
 
 
 }

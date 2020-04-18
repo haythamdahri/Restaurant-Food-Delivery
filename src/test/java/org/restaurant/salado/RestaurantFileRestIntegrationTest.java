@@ -70,12 +70,13 @@ public class RestaurantFileRestIntegrationTest {
         String RESTAURANT_FILES_FILE_URI = "/api/v1/restaurantfiles/file/{id}";
         // Retrieve file
         File file = new File("");
+        System.out.println("Path: " + Paths.get(System.getProperty("user.dir") + "/uploads/users/images/default.png"));
         Path path = Paths.get(System.getProperty("user.dir") + "/uploads/users/images/default.png");
         String originalFileName = "default.png";
         String name = "default";
         String contentType = MediaType.IMAGE_PNG_VALUE;
         byte[] content = Files.readAllBytes(path);
-        MockMultipartFile multipartFile = new MockMultipartFile("restaurantfile", originalFileName, contentType, content);
+        MockMultipartFile multipartFile = new MockMultipartFile("restaurantFile", originalFileName, contentType, content);
         // Create Expected RestaurantFile
         RestaurantFile expectedRestaurantFile = new RestaurantFile(null, originalFileName, RestaurantUtils.getExtensionByApacheCommonLib(originalFileName), contentType, multipartFile.getBytes(), null);
         // Upload multipart file

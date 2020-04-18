@@ -1,6 +1,7 @@
 package org.restaurant.salado.entities;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
 import com.fasterxml.jackson.databind.annotation.JsonSerialize;
@@ -33,11 +34,12 @@ public class Payment implements Serializable {
     private Long id;
 
     @ManyToOne(targetEntity = User.class)
-    @JoinColumn(name = "user_id")
+    @JoinColumns(value = {@JoinColumn(name = "user_id", referencedColumnName = "id"), @JoinColumn(name = "user_email", referencedColumnName = "email")})
     private User user;
 
     @ManyToOne(targetEntity = Order.class, fetch = FetchType.LAZY)
     @JoinColumn(name = "order_id")
+    @JsonIgnoreProperties({"hibernateLazyInitializer", "handler"})
     private Order order;
 
     @Column(name = "cahrge_id")

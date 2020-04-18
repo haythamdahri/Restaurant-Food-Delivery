@@ -18,16 +18,16 @@ import java.util.Optional;
 @CrossOrigin(value = "*")
 public interface OrderRepository extends JpaRepository<Order, Long> {
 
-    List<Order> findByUserId(@Param("id") Long id);
+    List<Order> findByUserUserIdId(@Param("id") Long id);
 
-    List<Order> findByUserEmail(@Param("email") String email);
+    List<Order> findByUserUserIdEmail(@Param("email") String email);
 
     /**
      * Fetch last active order for a given user id
      *
-     * @param userId
+     * @param userId: Use
      * @return Order
      */
-    Optional<Order> findByUserIdAndCancelledFalseAndDeliveredFalse(@Param("userId") Long userId);
+    Optional<Order> findByUserUserIdIdAndCancelledFalseAndDeliveredFalse(@Param("id") Long userId);
 
 }

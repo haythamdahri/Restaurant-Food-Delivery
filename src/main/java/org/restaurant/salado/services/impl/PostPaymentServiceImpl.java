@@ -3,8 +3,10 @@ package org.restaurant.salado.services.impl;
 import org.restaurant.salado.entities.Order;
 import org.restaurant.salado.entities.Payment;
 import org.restaurant.salado.entities.User;
-import org.restaurant.salado.facades.AuthenticationFacade;
-import org.restaurant.salado.services.*;
+import org.restaurant.salado.services.EmailService;
+import org.restaurant.salado.services.OrderService;
+import org.restaurant.salado.services.PaymentService;
+import org.restaurant.salado.services.PostPaymentService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.scheduling.annotation.Async;
 import org.springframework.stereotype.Service;
@@ -18,20 +20,26 @@ import java.util.concurrent.CompletableFuture;
 @Service
 public class PostPaymentServiceImpl implements PostPaymentService {
 
-    @Autowired
     private OrderService orderService;
 
-    @Autowired
     private EmailService emailService;
 
-    @Autowired
-    private UserService userService;
-
-    @Autowired
     private PaymentService paymentService;
 
     @Autowired
-    private AuthenticationFacade authenticationFacade;
+    public void setOrderService(OrderService orderService) {
+        this.orderService = orderService;
+    }
+
+    @Autowired
+    public void setEmailService(EmailService emailService) {
+        this.emailService = emailService;
+    }
+
+    @Autowired
+    public void setPaymentService(PaymentService paymentService) {
+        this.paymentService = paymentService;
+    }
 
     /**
      * Run post payment actions
@@ -39,18 +47,15 @@ public class PostPaymentServiceImpl implements PostPaymentService {
      * Invoke post payment service
      * Send email to user about successful purchase
      *
-     * @return Boolean
-     * TODO: COMPLETE METHOD
+     * @return CompletableFuture<Payment>
      */
     @Override
     @Transactional
     @Async
-    public CompletableFuture<Payment> postCharge(String chargeId, User user) throws Exception {
-        /**
-         * Modify products stock of last active order and save order
-         * Set order as delivered
-         */
-        Order order = this.orderService.getLastActiveOrder(user.getId());
+    public CompletableFuture<Payment> postCharge(String chargeId, User user) {
+        // Modify products stock of last active order and save order
+        // Set order as delivered
+        Order order = this.orderService.getLastActiveOrder(user.getUserId().getId());
         order.postCharge();
         order.setDelivered(true);
         order.setCancelled(false);
@@ -59,7 +64,7 @@ public class PostPaymentServiceImpl implements PostPaymentService {
         Payment payment = new Payment(null, user, order, chargeId, null, null);
         payment = this.paymentService.savePayment(payment);
         // Send Post Payment Email
-        this.emailService.sendPostPaymentEmail(user.getEmail(), "Payment Notification", payment.getId(), payment.getTimestamp());
+        this.emailService.sendPostPaymentEmail(user.getUserId().getEmail(), "Payment Notification", payment.getId(), payment.getTimestamp());
         // Return
         return CompletableFuture.completedFuture(payment);
     }

@@ -11,6 +11,7 @@ import lombok.NoArgsConstructor;
 import org.springframework.http.MediaType;
 
 import javax.persistence.*;
+import java.io.Serializable;
 import java.time.LocalDate;
 import java.time.ZoneId;
 import java.time.ZonedDateTime;
@@ -24,7 +25,7 @@ import java.util.Date;
 @Data
 @NoArgsConstructor
 @AllArgsConstructor
-public class RestaurantFile {
+public class RestaurantFile implements Serializable {
 
     @Id
     @GeneratedValue(strategy = GenerationType.AUTO)

@@ -23,13 +23,8 @@ import java.util.*;
 @JsonIgnoreProperties({"hibernateLazyInitializer", "handler"})
 public class User implements Serializable {
 
-    @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
-    @Column(name = "id")
-    private Long id;
-
-    @Column(name = "email", unique = true, insertable = true, updatable = true)
-    private String email;
+    @EmbeddedId
+    private UserId userId;
 
     @JsonProperty(access = JsonProperty.Access.WRITE_ONLY)
     @Column(name = "password")
@@ -58,12 +53,12 @@ public class User implements Serializable {
     private Date expiryDate;
 
     @ManyToMany(fetch = FetchType.EAGER)
-    @JoinTable(name = "users_roles", joinColumns = @JoinColumn(name = "user_id"), inverseJoinColumns = @JoinColumn(name = "role_id"))
-    @JsonIgnoreProperties("users")
+    @JoinTable(name = "users_roles", joinColumns = {@JoinColumn(name = "user_id"), @JoinColumn(name = "user_email")}, inverseJoinColumns = @JoinColumn(name = "role_id"))
+    @JsonIgnoreProperties(value = {"users"})
     private Set<Role> roles;
 
     @ManyToMany(targetEntity = Meal.class)
-    @JoinTable(name = "users_preferred_meals", joinColumns = @JoinColumn(name = "user_id"), inverseJoinColumns = @JoinColumn(name = "meal_id"))
+    @JoinTable(name = "users_preferred_meals", joinColumns = {@JoinColumn(name = "user_id", referencedColumnName = "id"), @JoinColumn(name = "user_email", referencedColumnName = "email")}, inverseJoinColumns = @JoinColumn(name = "meal_id"))
     @JsonProperty(access = JsonProperty.Access.WRITE_ONLY)
     private List<Meal> preferredMeals;
 
@@ -74,7 +69,7 @@ public class User implements Serializable {
     /**
      * Convenient method to add new roles
      *
-     * @param role
+     * @param role: Role to be added to the current user
      */
     public void addRole(Role role) {
         if (this.roles == null) {
@@ -86,8 +81,8 @@ public class User implements Serializable {
     /**
      * Expiration calculator
      *
-     * @param expiryTimeInMinutes
-     * @return
+     * @param expiryTimeInMinutes: Time taken before expiration
+     * @return Date
      */
     public Date calculateExpiryDate(int expiryTimeInMinutes) {
         Calendar cal = Calendar.getInstance();
@@ -99,7 +94,7 @@ public class User implements Serializable {
     /**
      * Token validation checker
      *
-     * @return
+     * @return boolean
      */
     @JsonIgnore
     public boolean isValidToken() {
@@ -109,7 +104,8 @@ public class User implements Serializable {
     /**
      * Convenient method to add meal to user preferences
      *
-     * @param meal
+     * @param meal: Meal Object
+     * @return boolean
      */
     public boolean addOrRemoveMealFromUserPreferences(Meal meal) {
         if (this.preferredMeals == null) {
@@ -122,6 +118,16 @@ public class User implements Serializable {
                 this.preferredMeals.add(meal);
                 return true;
             }
+        }
+    }
+
+    /**
+     * Before persisting operations
+     */
+    @PrePersist
+    private void prePersist() {
+        if( this.userId.getId() == null ) {
+            this.userId.setId(UUID.randomUUID().getMostSignificantBits() & Long.MAX_VALUE);
         }
     }
 

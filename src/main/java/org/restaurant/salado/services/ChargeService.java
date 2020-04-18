@@ -1,19 +1,19 @@
 package org.restaurant.salado.services;
 
+import com.stripe.exception.StripeException;
 import com.stripe.model.Charge;
 import org.restaurant.salado.entities.User;
 import org.restaurant.salado.models.ChargeRequest;
 
 import java.math.BigDecimal;
-import java.util.Map;
 
 /**
  * @author Haytham DAHRI
  */
 public interface ChargeService {
 
-    Charge chargeCreditCard(ChargeRequest chargeRequest, User user) throws Exception;
+    Charge chargeCreditCard(ChargeRequest chargeRequest, User user) throws StripeException;
 
-    Charge chargeCreditCard(String token, BigDecimal amount, User user) throws Exception;
+    void chargeCreditCard(String token, BigDecimal amount, User user) throws StripeException;
 
 }

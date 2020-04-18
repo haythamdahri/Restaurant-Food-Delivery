@@ -1,5 +1,6 @@
 package org.restaurant.salado.services;
 
+import org.restaurant.salado.dtos.RestaurantFileDTO;
 import org.restaurant.salado.entities.RestaurantFile;
 import org.springframework.data.domain.Page;
 import org.springframework.web.multipart.MultipartFile;
@@ -14,6 +15,8 @@ public interface RestaurantFileService {
 
     RestaurantFile saveRestaurantFile(RestaurantFile file);
 
+    RestaurantFile saveRestaurantFile(RestaurantFileDTO file);
+
     RestaurantFile saveRestaurantFile(MultipartFile file) throws IOException;
 
     RestaurantFile saveRestaurantFile(MultipartFile file, RestaurantFile restaurantFile) throws IOException;
@@ -26,7 +29,6 @@ public interface RestaurantFileService {
 
     Page<RestaurantFile> getRestaurantFiles(int page, int size);
 
-    // TODO: Implement method on IMPL class
     Page<RestaurantFile> searchRestaurantFiles(int page, int size, String search);
 
     List<RestaurantFile> getRestaurantFiles();
