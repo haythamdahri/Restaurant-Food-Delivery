@@ -11,7 +11,6 @@ import javax.persistence.*;
 import java.io.Serializable;
 import java.math.BigDecimal;
 import java.util.ArrayList;
-import java.util.Collection;
 import java.util.Date;
 import java.util.List;
 
@@ -31,7 +30,7 @@ public class Order implements Serializable {
     private Long id;
 
     @ManyToOne(cascade = {CascadeType.DETACH, CascadeType.MERGE, CascadeType.PERSIST, CascadeType.REFRESH}, fetch = FetchType.LAZY)
-    @JoinColumns(value = {@JoinColumn(name = "user_id", referencedColumnName = "id"), @JoinColumn(name = "user_email", referencedColumnName = "email")})
+    @JoinColumns(value = {@JoinColumn(name = "user_id", referencedColumnName = "id")})
     @JsonIgnoreProperties({"roles", "hibernateLazyInitializer"})
     private User user;
 
@@ -62,14 +61,14 @@ public class Order implements Serializable {
     @Column(name = "cancelled")
     private boolean cancelled;
 
-    @OneToOne(fetch = FetchType.EAGER, optional = true, cascade = CascadeType.ALL, targetEntity = Shipping.class, orphanRemoval = true)
+    @OneToOne(fetch = FetchType.EAGER, cascade = CascadeType.ALL, targetEntity = Shipping.class, orphanRemoval = true)
     @JoinColumn(name = "shipping_id")
     private Shipping shipping;
 
     /**
      * Convenient method to add a new meal to the current order
      *
-     * @param mealOrder
+     * @param mealOrder: MealOrder object
      */
     public void addMeal(MealOrder mealOrder) {
         if (this.mealOrders == null) {
@@ -97,28 +96,24 @@ public class Order implements Serializable {
         if (this.mealOrders != null && !this.mealOrders.isEmpty()) {
             this.price = BigDecimal.ZERO;
             this.price = this.mealOrders.stream()
-                        .map(MealOrder::getTotalPrice)    // Map MealOrder
-                        .reduce(BigDecimal.ZERO, BigDecimal::add);      // Reduce results
+                    .map(MealOrder::getTotalPrice)    // Map MealOrder
+                    .reduce(BigDecimal.ZERO, BigDecimal::add);      // Reduce results
         }
-    }
-
-    /**
-     * shipping fees setter
-     * Calculate total price
-     */
-    public void setShippingFees(BigDecimal shippingFees) {
-        this.shippingFees = shippingFees;
-        this.totalPrice = this.price.add(shippingFees);
     }
 
     /**
      * Post charge method to update quantity of each meal after payment
      */
-    public Order postCharge() {
+    public void postCharge() {
         if (this.mealOrders != null) {
             this.mealOrders.forEach(MealOrder::postChargeQuantity);
         }
-        return this;
+    }
+
+    public boolean checkMealOrder(Long mealOrderId) {
+        if (this.mealOrders == null)
+            return false;
+        return this.mealOrders.stream().anyMatch(ml -> ml.getMeal().getId().equals(mealOrderId));
     }
 
 }

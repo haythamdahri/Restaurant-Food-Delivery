@@ -1,6 +1,7 @@
 package org.restaurant.salado.services;
 
 import org.restaurant.salado.entities.Order;
+import org.restaurant.salado.models.MealOrderRequest;
 
 import java.util.List;
 
@@ -18,6 +19,8 @@ public interface OrderService {
     List<Order> getUserOrders(String email);
 
     Order getLastActiveOrder(Long userId);
+
+    Order getLastActiveOrder(String userEmail);
 
     Order getOrder(Long id);
 

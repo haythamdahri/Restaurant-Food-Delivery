@@ -10,7 +10,6 @@ import org.restaurant.salado.services.ReviewService;
 import org.restaurant.salado.services.UserService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
-import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
@@ -51,6 +50,7 @@ public class ReviewRestController {
 
     /**
      * Get all reviews Endpoint
+     *
      * @param mealId: Meal Identifier
      * @param page:   Requested Page
      * @param size:   Requested Page Size
@@ -74,18 +74,14 @@ public class ReviewRestController {
      */
     @PostMapping(path = "/")
     public ResponseEntity<Review> addReview(@RequestBody ReviewRequest reviewRequest) {
+        // Retrieve Meal
+        Meal meal = this.mealService.getMeal(reviewRequest.getMealId());
+        // Create a new review object
         User user = this.userService.getUser(this.authenticationFacade.getAuthentication().getName());
-        if (user != null) {
-            // Retrieve Meal
-            Meal meal = this.mealService.getMeal(reviewRequest.getMealId());
-            // Create a new review object
-            Review review = new Review(null, user, meal, reviewRequest.getComment(), reviewRequest.getRating(), null);
-            // Save Review
-            review = this.reviewService.saveReview(review);
-            // Return success response
-            return ResponseEntity.ok(review);
-        }
-        // Return unauthorized response
-        return ResponseEntity.status(HttpStatus.UNAUTHORIZED).build();
+        Review review = new Review(null, user, meal, reviewRequest.getComment(), reviewRequest.getRating(), null);
+        // Save Review
+        review = this.reviewService.saveReview(review);
+        // Return success response
+        return ResponseEntity.ok(review);
     }
 }

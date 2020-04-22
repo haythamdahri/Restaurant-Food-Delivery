@@ -5,8 +5,7 @@ import org.restaurant.salado.entities.Meal;
 import org.restaurant.salado.entities.User;
 import org.restaurant.salado.facades.IAuthenticationFacade;
 import org.restaurant.salado.models.PasswordReset;
-import org.restaurant.salado.models.ResponseData;
-import org.restaurant.salado.models.MessageType;
+import org.restaurant.salado.providers.Constants;
 import org.restaurant.salado.services.UserService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
@@ -15,7 +14,9 @@ import org.springframework.web.multipart.MultipartFile;
 
 import javax.transaction.Transactional;
 import java.io.IOException;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 /**
  * @author Haytam DAHRI
@@ -25,6 +26,11 @@ import java.util.List;
 @CrossOrigin(value = "*")
 @Transactional
 public class UserRestController {
+
+    private static final String STATUS = "status";
+    private static final String MESSAGE = "message";
+    private static final String PREFERRED = "preferred";
+    private static final String USER = "user";
 
     private UserService userService;
 
@@ -74,87 +80,153 @@ public class UserRestController {
     }
 
     /**
-     * Password Rset Request Endpoint
+     * Password Reset Request Endpoint
      *
      * @param email: User Email
      * @return ResponseEntity<ResponseData>
      */
     @GetMapping(path = "/passwordreset")
-    public ResponseEntity<ResponseData> resetPasswordRequest(@RequestParam(value = "email") String email) {
-        // Use service to request user password email
-        MessageType messageType = this.userService.requestUserPasswordReset(email);
+    public ResponseEntity<Map<String, Object>> resetPasswordRequest(@RequestParam(value = "email") String email) {
+        // Create response data
+        Map<String, Object> data = new HashMap<>();
+        try {
+            // Use service to reset user password
+            this.userService.requestUserPasswordReset(email);
+            // In case of unsuccessful password reset email, a BusinessException will be thrown
+            data.put(STATUS, true);
+            data.put(MESSAGE, Constants.PASSWORD_RESET_EMAIL_SENT);
+        } catch (Exception ex) {
+            // Set error response data
+            data.put(STATUS, false);
+            data.put(MESSAGE, ex.getMessage());
+        }
         // Create Response Data And Return response
-        return ResponseEntity.ok(ResponseData.getInstance(messageType.getMessage(), messageType.getStatus()));
+        return ResponseEntity.ok(data);
     }
 
     /**
      * Password Reset Post Endpoint
      *
      * @param passwordReset: PasswordReset Object
-     * @return ResponseEntity<ResponseData>
+     * @return ResponseEntity<Map < String, Object>>
      */
     @PostMapping(path = "/passwordreset")
-    public ResponseEntity<ResponseData> performResetPassword(@RequestBody PasswordReset passwordReset) {
-        // Use service to perform user password email
-        MessageType messageType = this.userService.resetUserPassword(passwordReset);
+    public ResponseEntity<Map<String, Object>> performResetPassword(@RequestBody PasswordReset passwordReset) {
+        // Create response data
+        Map<String, Object> data = new HashMap<>();
+        try {
+            // Use service to reset user password
+            this.userService.resetUserPassword(passwordReset);
+            // In case of unsuccessful activation, a BusinessException will be thrown
+            data.put(STATUS, true);
+            data.put(MESSAGE, Constants.PASSWORD_CHANGED_SUCCESSFULLY);
+        } catch (Exception ex) {
+            // Set error response data
+            data.put(STATUS, false);
+            data.put(MESSAGE, ex.getMessage());
+        }
         // Create Response Data And Return response
-        return ResponseEntity.ok(ResponseData.getInstance(messageType.getMessage(), messageType.getStatus()));
+        return ResponseEntity.ok(data);
     }
 
     /**
      * Account activation Endpoint
      *
      * @param token: User token
-     * @return ResponseEntity<ResponseData>
+     * @return ResponseEntity<Map < String, Object>>
      */
     @GetMapping(path = "/activation/{token}")
-    public ResponseEntity<ResponseData> activateAccount(@PathVariable(name = "token") String token) {
-        // Use service to activate account
-        MessageType messageType = this.userService.activateAccount(token);
+    public ResponseEntity<Map<String, Object>> activateAccount(@PathVariable(name = "token") String token) {
+        // Create response data
+        Map<String, Object> data = new HashMap<>();
+        try {
+            // Use service to activate account
+            this.userService.activateAccount(token);
+            // In case of unsuccessful activation, a BusinessException will be thrown
+            data.put(STATUS, true);
+            data.put(MESSAGE, Constants.ACCOUNT_ENABLED_SUCCESSFULLY);
+        } catch (Exception ex) {
+            // Set error response data
+            data.put(STATUS, false);
+            data.put(MESSAGE, ex.getMessage());
+        }
         // Create Response Data And Return response
-        return ResponseEntity.ok(ResponseData.getInstance(messageType.getMessage(), messageType.getStatus()));
+        return ResponseEntity.ok(data);
     }
 
     /**
      * Token validity check Endpoint
      *
      * @param token: User Token
-     * @return ResponseEntity<ResponseData>
+     * @return ResponseEntity<Map<String, Object>>
      */
     @GetMapping(path = "/tokens/{token}/check")
-    public ResponseEntity<ResponseData> checkToken(@PathVariable(name = "token") String token) {
-        // Use service to check token validity
-        MessageType messageType = this.userService.CheckUserTokenValidity(token);
+    public ResponseEntity<Map<String, Object>> checkToken(@PathVariable(name = "token") String token) {
+        // Create response data
+        Map<String, Object> data = new HashMap<>();
+        try {
+            // Use service to check token validity
+            Boolean isValidToken = this.userService.checkUserTokenValidity(token);
+            data.put(STATUS, isValidToken);
+            data.put(MESSAGE, Constants.VALID_TOKEN);
+        } catch (Exception ex) {
+            // Invalid token
+            data.put(STATUS, false);
+            data.put(MESSAGE, ex.getMessage());
+        }
         // Create Response Data And Return response
-        return ResponseEntity.ok(ResponseData.getInstance(messageType.getMessage(), messageType.getStatus()));
+        return ResponseEntity.ok(data);
     }
 
     /**
      * User image upload Endpoint
      *
      * @param file: User image
-     * @return ResponseEntity<ResponseData>
+     * @return ResponseEntity<Map < String, Object>>
      */
     @PostMapping(path = "/image")
-    public ResponseEntity<ResponseData> uploadUserImage(@RequestParam(name = "image") MultipartFile file) throws IOException {
-        // Use service to upload user image
-        MessageType messageType = this.userService.updateUserImage(file, this.authenticationFacade.getAuthentication().getName());
-        // Create Response Data And Return response
-        return ResponseEntity.ok(ResponseData.getInstance(messageType.getMessage(), messageType.getStatus()));
+    public ResponseEntity<Map<String, Object>> uploadUserImage(@RequestParam(name = "image") MultipartFile file) {
+        // Create response data
+        Map<String, Object> data = new HashMap<>();
+        try {
+            // Use service to upload user image
+            User user = this.userService.updateUserImage(file, this.authenticationFacade.getAuthentication().getName());
+            // Create Response Data
+            data.put(STATUS, true);
+            data.put(MESSAGE, Constants.USER_IMAGE_UPDATED_SUCCESSFULLY);
+            data.put(USER, user);
+        } catch (Exception ex) {
+            // Set error response data
+            data.put(STATUS, false);
+            data.put(MESSAGE, ex.getMessage());
+        }
+        // Return Response
+        return ResponseEntity.ok(data);
     }
 
     /**
      * User email updaye Endpoint
      *
      * @param newEmail: New user email
-     * @return ResponseEntity<ResponseData>
+     * @return ResponseEntity<Map < String, Object>>
      */
     @PostMapping(path = "/email")
-    public ResponseEntity<ResponseData> updateUserEmail(@RequestParam(name = "email") String newEmail) {
-        // Use service to check token validity
-        MessageType messageType = this.userService.updateUserEmail(this.authenticationFacade.getAuthentication().getName(), newEmail);
-        // Create Response Data And Return response
-        return ResponseEntity.ok(ResponseData.getInstance(messageType.getMessage(), messageType.getStatus()));
+    public ResponseEntity<Map<String, Object>> updateUserEmail(@RequestParam(name = "email") String newEmail) {
+        // Create response data
+        Map<String, Object> data = new HashMap<>();
+        try {
+            // Use service to update user email
+            this.userService.updateUserEmail(this.authenticationFacade.getAuthentication().getName(), newEmail);
+            // Create Response Data
+            data.put(STATUS, true);
+            data.put(MESSAGE, Constants.USER_IMAGE_UPDATED_SUCCESSFULLY);
+        } catch (Exception ex) {
+            // Set error response data
+            data.put(STATUS, false);
+            data.put(MESSAGE, ex.getMessage());
+        }
+        // Return Response
+        return ResponseEntity.ok(data);
     }
 
     /**
@@ -173,15 +245,27 @@ public class UserRestController {
     /**
      * Add or Remove product from User preferences Endpoint
      *
-     * @return ResponseEntity<ResponseData>
+     * @return ResponseEntity<Map < String, Object>>
      */
     @Transactional
     @PostMapping(path = "/preferences")
-    public ResponseEntity<ResponseData> toggleProductFromUserPreferences(@RequestParam(value = "id") Long mealId) {
-        // Use service to check token validity
-        MessageType messageType = this.userService.addOrRemoveMealFromUserPreferences(this.authenticationFacade.getAuthentication().getName(), mealId);
-        // Create Response Data And Return response
-        return ResponseEntity.ok(ResponseData.getInstance(messageType.getMessage(), messageType.getStatus(), messageType.getExtra()));
+    public ResponseEntity<Map<String, Object>> toggleProductFromUserPreferences(@RequestParam(value = "id") Long mealId) {
+        // Create response data
+        Map<String, Object> data = new HashMap<>();
+        try {
+            // Use service to add or remove meal from user preferences
+            User user = this.userService.addOrRemoveMealFromUserPreferences(this.authenticationFacade.getAuthentication().getName(), mealId);
+            // Create Response Data And Return response
+            data.put(STATUS, true);
+            data.put(MESSAGE, user.isMealPreferred(mealId) ? Constants.MEAL_ADDED_TO_PREFERENCES : Constants.MEAL_REMOVED_FROM_PREFERENCES);
+            data.put(PREFERRED, user.isMealPreferred(mealId));
+        } catch (Exception ex) {
+            // Set error response data
+            data.put(STATUS, false);
+            data.put(MESSAGE, ex.getMessage());
+        }
+        // Return Response
+        return ResponseEntity.ok(data);
     }
 
 }

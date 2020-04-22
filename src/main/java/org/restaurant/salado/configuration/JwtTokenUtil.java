@@ -8,6 +8,8 @@ import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.stereotype.Component;
 
 import java.io.Serializable;
+import java.time.LocalDate;
+import java.time.Period;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.Map;
@@ -20,7 +22,7 @@ import java.util.function.Function;
 @Component
 public class JwtTokenUtil implements Serializable {
 
-    public static final long JWT_TOKEN_VALIDITY = 30 * 24 * 60 * 60;
+    public static final long JWT_TOKEN_VALIDITY = 60 * 60 * 24 * 30;
     private static final long serialVersionUID = -2550185165626007488L;
 
     @Value("${jwt.secret}")
@@ -29,7 +31,7 @@ public class JwtTokenUtil implements Serializable {
     /**
      * retrieve email from jwt token
      *
-     * @param token
+     * @param token: User token
      * @return String
      */
     public String getEmailFromToken(String token) {
@@ -39,7 +41,7 @@ public class JwtTokenUtil implements Serializable {
     /**
      * retrieve expiration date from jwt token
      *
-     * @param token
+     * @param token: User token
      * @return Date
      */
     public Date getExpirationDateFromToken(String token) {
@@ -52,9 +54,10 @@ public class JwtTokenUtil implements Serializable {
     }
 
     /**
-     * for retrieveing any information from token we will need the secret key
+     * Allows to retrieve any information from token
+     * The secret key is required to proceed
      *
-     * @param token
+     * @param token: User token
      * @return Claims
      */
     private Claims getAllClaimsFromToken(String token) {
@@ -64,7 +67,7 @@ public class JwtTokenUtil implements Serializable {
     /**
      * check if the token has expired
      *
-     * @param token
+     * @param token: User token
      * @return Boolean
      */
     private Boolean isTokenExpired(String token) {
@@ -75,7 +78,7 @@ public class JwtTokenUtil implements Serializable {
     /**
      * generate token for user
      *
-     * @param userDetails
+     * @param userDetails: User details
      * @return String
      */
     public String generateToken(UserDetails userDetails) {
@@ -91,8 +94,8 @@ public class JwtTokenUtil implements Serializable {
      * 3. According to JWS Compact Serialization(https://tools.ietf.org/html/draft-ietf-jose-json-web-signature-41#section-3.1)
      * compaction of the JWT to a URL-safe string
      *
-     * @param claims
-     * @param subject
+     * @param claims:  User claims
+     * @param subject: Token subject
      * @return String
      */
     private String doGenerateToken(Map<String, Object> claims, String subject) {
@@ -104,11 +107,11 @@ public class JwtTokenUtil implements Serializable {
     /**
      * validate token
      *
-     * @param token
-     * @param userDetails
+     * @param token:       User token
+     * @param userDetails: UserDetails object
      * @return Boolean
      */
-    public Boolean validateToken(String token, UserDetails userDetails) {
+    public boolean validateToken(String token, UserDetails userDetails) {
         final String email = getEmailFromToken(token);
         return (email.equals(userDetails.getUsername()) && !isTokenExpired(token));
     }

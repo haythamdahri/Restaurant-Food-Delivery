@@ -2,18 +2,34 @@ package org.restaurant.salado.services;
 
 import com.stripe.exception.StripeException;
 import com.stripe.model.Charge;
-import org.restaurant.salado.entities.User;
+import org.restaurant.salado.dtos.ShippingDTO;
 import org.restaurant.salado.models.ChargeRequest;
 
-import java.math.BigDecimal;
+import java.util.concurrent.CompletableFuture;
 
 /**
  * @author Haytham DAHRI
  */
 public interface ChargeService {
 
-    Charge chargeCreditCard(ChargeRequest chargeRequest, User user) throws StripeException;
+    /**
+     * Charge user
+     * @param chargeRequest: Object contains charge details
+     * @param email: User email to charge
+     * @param shippingDTO: ShippingDTO object
+     * @return  CompletableFuture<Charge>
+     * @throws StripeException: Thrown on unhandled payment exception
+     */
+    CompletableFuture<Charge> chargeCreditCard(ChargeRequest chargeRequest, String email, ShippingDTO shippingDTO) throws StripeException;
 
-    void chargeCreditCard(String token, BigDecimal amount, User user) throws StripeException;
+    /**
+     *
+     * @param token : Payment token sent from client application
+     * @param email : User email to charge
+     * @param shippingDTO : ShippingDTO object
+     * @return CompletableFuture<Charge>
+     * @throws StripeException: Thrown on unhandled payment exception
+     */
+    CompletableFuture<Charge> chargeCreditCard(String token, String email, ShippingDTO shippingDTO) throws StripeException;
 
 }

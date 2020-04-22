@@ -3,20 +3,23 @@ package org.restaurant.salado.services.impl;
 import com.stripe.Stripe;
 import com.stripe.exception.StripeException;
 import com.stripe.model.Charge;
+import org.restaurant.salado.dtos.ShippingDTO;
 import org.restaurant.salado.entities.Currency;
-import org.restaurant.salado.entities.User;
+import org.restaurant.salado.entities.Order;
+import org.restaurant.salado.exceptions.BusinessException;
 import org.restaurant.salado.models.ChargeRequest;
+import org.restaurant.salado.providers.Constants;
 import org.restaurant.salado.services.ChargeService;
+import org.restaurant.salado.services.OrderService;
 import org.restaurant.salado.services.PostPaymentService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
-import org.springframework.scheduling.annotation.Async;
 import org.springframework.stereotype.Service;
 
 import javax.annotation.PostConstruct;
-import java.math.BigDecimal;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.concurrent.CompletableFuture;
 
 /**
  * @author Haytham DAHRI
@@ -25,12 +28,14 @@ import java.util.Map;
 public class StripeChargeServiceImpl implements ChargeService {
 
     @Value("${STRIPE_SECRET_KEY}")
-    private static String secretKey;
+    private String secretKey;
 
     private PostPaymentService postPaymentService;
 
+    private OrderService orderService;
+
     @PostConstruct
-    public static void init() {
+    public void init() {
         Stripe.apiKey = secretKey;
     }
 
@@ -39,8 +44,21 @@ public class StripeChargeServiceImpl implements ChargeService {
         this.postPaymentService = postPaymentService;
     }
 
+    @Autowired
+    public void setOrderService(OrderService orderService) {
+        this.orderService = orderService;
+    }
+
     @Override
-    public Charge chargeCreditCard(ChargeRequest chargeRequest, User user) throws StripeException {
+    public CompletableFuture<Charge> chargeCreditCard(ChargeRequest chargeRequest, String email, ShippingDTO shippingDTO) throws StripeException {
+        // Retrieve last order
+        Order userActiveOrder = this.orderService.getLastActiveOrder(email);
+        // Check if there is an order in place
+        if (userActiveOrder == null) {
+            // Throw exception for no order in progress
+            throw new BusinessException(Constants.NO_ORDER_IN_PROGRESS);
+        }
+        // Proceed to payment
         Map<String, Object> chargeParams = new HashMap<>();
         chargeParams.put("amount", chargeRequest.getAmount());
         chargeParams.put("currency", chargeRequest.getCurrency());
@@ -48,20 +66,28 @@ public class StripeChargeServiceImpl implements ChargeService {
         chargeParams.put("source", chargeRequest.getStripeToken());
         Charge charge = Charge.create(chargeParams);
         // Run Async post payment
-        this.postPaymentService.postCharge(charge.getId(), user);
-        // Return charge
-        return charge;
+        this.postPaymentService.postCharge(charge.getId(), email, shippingDTO);
+        // Return Charge
+        return CompletableFuture.completedFuture(charge);
     }
 
     @Override
-    @Async
-    public void chargeCreditCard(String token, BigDecimal amount, User user) throws StripeException {
+    public CompletableFuture<Charge> chargeCreditCard(String token, String email, ShippingDTO shippingDTO) throws StripeException {
+        // Retrieve last order
+        Order userActiveOrder = this.orderService.getLastActiveOrder(email);
+        // Check if there is an order in place
+        if (userActiveOrder == null) {
+            // Throw exception for no order in progress
+            throw new BusinessException(Constants.NO_ORDER_IN_PROGRESS);
+        }
         Map<String, Object> chargeParams = new HashMap<>();
-        chargeParams.put("amount", amount.intValue() * 100);
+        chargeParams.put("amount", userActiveOrder.getTotalPrice().intValue() * 100);
         chargeParams.put("currency", Currency.MAD);
         chargeParams.put("source", token);
         Charge charge = Charge.create(chargeParams);
         // Run Async post payment
-        this.postPaymentService.postCharge(charge.getId(), user);
+        this.postPaymentService.postCharge(charge.getId(), email, shippingDTO);
+        // Return Charge
+        return CompletableFuture.completedFuture(charge);
     }
 }

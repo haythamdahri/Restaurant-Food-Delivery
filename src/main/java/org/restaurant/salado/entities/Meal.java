@@ -1,7 +1,6 @@
 package org.restaurant.salado.entities;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
-import com.fasterxml.jackson.annotation.JsonProperty;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
@@ -27,7 +26,7 @@ public class Meal implements Serializable {
     @Column(name = "id")
     private Long id;
 
-    @Column(name = "name", unique = true, insertable = true, updatable = true)
+    @Column(name = "name", unique = true)
     private String name;
 
     @OneToOne(cascade = CascadeType.ALL, fetch = FetchType.EAGER, targetEntity = RestaurantFile.class)
@@ -72,10 +71,11 @@ public class Meal implements Serializable {
 
     /**
      * Convenient method to add a new to the current meal
+     *
      * @param review: Review Object to add to current meal reviews list
      */
     public void addReview(Review review) {
-        if( this.reviews == null ) {
+        if (this.reviews == null) {
             this.reviews = new ArrayList<>();
         }
         this.reviews.add(review);

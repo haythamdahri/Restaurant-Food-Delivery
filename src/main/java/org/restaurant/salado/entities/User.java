@@ -16,15 +16,20 @@ import java.util.*;
  * @author Haytam DAHRI
  */
 @Entity
-@Table(name = "users")
+@Table(name = "users", uniqueConstraints = {@UniqueConstraint(columnNames = {"id", "email"})})
 @Data
 @AllArgsConstructor
 @NoArgsConstructor
 @JsonIgnoreProperties({"hibernateLazyInitializer", "handler"})
 public class User implements Serializable {
 
-    @EmbeddedId
-    private UserId userId;
+    @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @Column(name = "id")
+    private Long id;
+
+    @Column(name = "email", unique = true)
+    private String email;
 
     @JsonProperty(access = JsonProperty.Access.WRITE_ONLY)
     @Column(name = "password")
@@ -43,7 +48,7 @@ public class User implements Serializable {
     @Column(name = "location")
     private String location;
 
-    @Column(name = "token", unique = true, insertable = true, updatable = true)
+    @Column(name = "token", unique = true)
     @JsonIgnore
     private String token;
 
@@ -53,12 +58,12 @@ public class User implements Serializable {
     private Date expiryDate;
 
     @ManyToMany(fetch = FetchType.EAGER)
-    @JoinTable(name = "users_roles", joinColumns = {@JoinColumn(name = "user_id"), @JoinColumn(name = "user_email")}, inverseJoinColumns = @JoinColumn(name = "role_id"))
+    @JoinTable(name = "users_roles", joinColumns = {@JoinColumn(name = "user_id")}, inverseJoinColumns = @JoinColumn(name = "role_id"))
     @JsonIgnoreProperties(value = {"users"})
     private Set<Role> roles;
 
     @ManyToMany(targetEntity = Meal.class)
-    @JoinTable(name = "users_preferred_meals", joinColumns = {@JoinColumn(name = "user_id", referencedColumnName = "id"), @JoinColumn(name = "user_email", referencedColumnName = "email")}, inverseJoinColumns = @JoinColumn(name = "meal_id"))
+    @JoinTable(name = "users_preferred_meals", joinColumns = {@JoinColumn(name = "user_id", referencedColumnName = "id")}, inverseJoinColumns = @JoinColumn(name = "meal_id"))
     @JsonProperty(access = JsonProperty.Access.WRITE_ONLY)
     private List<Meal> preferredMeals;
 
@@ -98,37 +103,29 @@ public class User implements Serializable {
      */
     @JsonIgnore
     public boolean isValidToken() {
-        return this.expiryDate != null && this.expiryDate.getTime() > new Date().getTime();
+        return this.expiryDate == null || this.expiryDate.getTime() <= new Date().getTime();
     }
 
     /**
      * Convenient method to add meal to user preferences
      *
-     * @param meal: Meal Object
-     * @return boolean
+     * @param meal : Meal Object
      */
-    public boolean addOrRemoveMealFromUserPreferences(Meal meal) {
-        if (this.preferredMeals == null) {
-            return false;
-        } else {
+    public void addOrRemoveMealFromUserPreferences(Meal meal) {
+        if (this.preferredMeals != null) {
             if (this.preferredMeals.contains(meal)) {
                 this.preferredMeals.remove(meal);
-                return false;
             } else {
                 this.preferredMeals.add(meal);
-                return true;
             }
         }
     }
 
-    /**
-     * Before persisting operations
-     */
-    @PrePersist
-    private void prePersist() {
-        if( this.userId.getId() == null ) {
-            this.userId.setId(UUID.randomUUID().getMostSignificantBits() & Long.MAX_VALUE);
-        }
+    public boolean isMealPreferred(Long mealId) {
+        // Check if preferredMeals exists
+        if (this.preferredMeals == null)
+            return false;
+        return this.preferredMeals.stream().anyMatch(meal -> meal.getId().equals(mealId));
     }
 
 

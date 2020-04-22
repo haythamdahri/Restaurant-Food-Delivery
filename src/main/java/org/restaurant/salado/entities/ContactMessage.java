@@ -12,11 +12,11 @@ import java.util.Date;
  * @author Haytam DAHRI
  */
 @Entity
-@Table(name = "messages")
+@Table(name = "contact_messages")
 @Data
 @AllArgsConstructor
 @NoArgsConstructor
-public class Message implements Serializable {
+public class ContactMessage implements Serializable {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -35,8 +35,8 @@ public class Message implements Serializable {
     @Column(name = "phone")
     private String phone;
 
-    @Column(name = "message", length = 15000)
-    private String message;
+    @Column(name = "content", length = 15000)
+    private String content;
 
     @Temporal(TemporalType.TIMESTAMP)
     @Column(name = "time")

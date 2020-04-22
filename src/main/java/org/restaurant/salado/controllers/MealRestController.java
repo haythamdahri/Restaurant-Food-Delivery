@@ -79,7 +79,7 @@ public class MealRestController {
                 meal = this.mealService.saveMeal(meal.incrementViews());
                 // Check meal preferences if user is authenticated
                 if (this.authenticationFacade.getAuthentication() != null) {
-                    mealPreferred = meal.getUsersPreferences().stream().anyMatch(user -> user.getUserId().getEmail().equalsIgnoreCase(this.authenticationFacade.getAuthentication().getName()));
+                    mealPreferred = meal.getUsersPreferences().stream().anyMatch(user -> user.getEmail().equalsIgnoreCase(this.authenticationFacade.getAuthentication().getName()));
                 }
                 // Set response object
                 data.put("meal", meal);
@@ -102,7 +102,7 @@ public class MealRestController {
      * @return ResponseEntity<List < Meal>>
      */
     @GetMapping(value = "/popular")
-    public ResponseEntity<List<Meal>> getPopularMealsEndpoint(@RequestParam(value = "page", required = false, defaultValue = "0") int page, @RequestParam(value = "size", required = false, defaultValue = "${page.default_size}") int size) {
+    public ResponseEntity<List<Meal>> getPopularMealsEndpoint(@RequestParam(value = "page", required = false, defaultValue = "0") int page, @RequestParam(value = "size", required = false, defaultValue = "${page.default-size}") int size) {
         return new ResponseEntity<>(this.mealService.getPopularMeals(page, size), HttpStatus.OK);
     }
 

@@ -23,7 +23,7 @@ public enum MessageType {
 
     private final String message;
     private final boolean status;
-    private final Object extra;
+    private Object extra;
 
     MessageType(String message, boolean status, Object extra) {
         this.status = status;
@@ -41,5 +41,10 @@ public enum MessageType {
 
     public Object getExtra() {
         return this.extra;
+    }
+
+    MessageType setExtra(Object extra) {
+        this.extra = extra;
+        return this;
     }
 }

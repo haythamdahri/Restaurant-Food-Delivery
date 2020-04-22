@@ -2,7 +2,9 @@ package org.restaurant.salado.services.impl;
 
 import org.restaurant.salado.entities.Order;
 import org.restaurant.salado.entities.Payment;
-import org.restaurant.salado.entities.User;
+import org.restaurant.salado.entities.Shipping;
+import org.restaurant.salado.dtos.ShippingDTO;
+import org.restaurant.salado.mappers.ShippingMapper;
 import org.restaurant.salado.services.EmailService;
 import org.restaurant.salado.services.OrderService;
 import org.restaurant.salado.services.PaymentService;
@@ -26,6 +28,8 @@ public class PostPaymentServiceImpl implements PostPaymentService {
 
     private PaymentService paymentService;
 
+    private ShippingMapper shippingMapper;
+
     @Autowired
     public void setOrderService(OrderService orderService) {
         this.orderService = orderService;
@@ -41,6 +45,11 @@ public class PostPaymentServiceImpl implements PostPaymentService {
         this.paymentService = paymentService;
     }
 
+    @Autowired
+    public void setShippingMapper(ShippingMapper shippingMapper) {
+        this.shippingMapper = shippingMapper;
+    }
+
     /**
      * Run post payment actions
      * Modify products stock
@@ -52,19 +61,25 @@ public class PostPaymentServiceImpl implements PostPaymentService {
     @Override
     @Transactional
     @Async
-    public CompletableFuture<Payment> postCharge(String chargeId, User user) {
+    public CompletableFuture<Payment> postCharge(String chargeId, String email, ShippingDTO shippingDTO) {
+        // Map ShippingDTO to Shipping
+        Shipping shipping = this.shippingMapper.toModel(shippingDTO);
         // Modify products stock of last active order and save order
         // Set order as delivered
-        Order order = this.orderService.getLastActiveOrder(user.getUserId().getId());
+        // Set shipping details
+        Order order = this.orderService.getLastActiveOrder(email);
+        // Assert order not null
+        assert order != null;
         order.postCharge();
         order.setDelivered(true);
         order.setCancelled(false);
+        order.setShipping(shipping);
         order = this.orderService.saveOrder(order);
         // Create payment
-        Payment payment = new Payment(null, user, order, chargeId, null, null);
+        Payment payment = new Payment(null, order.getUser(), order, chargeId, null, null);
         payment = this.paymentService.savePayment(payment);
         // Send Post Payment Email
-        this.emailService.sendPostPaymentEmail(user.getUserId().getEmail(), "Payment Notification", payment.getId(), payment.getTimestamp());
+        this.emailService.sendPostPaymentEmail(email, "Payment Notification", payment.getId(), payment.getTimestamp());
         // Return
         return CompletableFuture.completedFuture(payment);
     }

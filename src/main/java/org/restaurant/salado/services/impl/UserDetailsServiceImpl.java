@@ -35,7 +35,7 @@ public class UserDetailsServiceImpl implements UserDetailsService {
             user.getRoles().forEach(role ->
                     grantedAuthorities.add(new SimpleGrantedAuthority(role.getRoleName().name()))
             );
-            return new org.springframework.security.core.userdetails.User(user.getUserId().getEmail(), user.getPassword(), grantedAuthorities);
+            return new org.springframework.security.core.userdetails.User(user.getEmail(), user.getPassword(), grantedAuthorities);
         }
         throw new UsernameNotFoundException("No user found with " + email);
     }

@@ -58,7 +58,7 @@ public class UserCartRestController {
         // Create results data
         Map<String, Object> data = new HashMap<>();
         // Get last active order
-        Order userActiveOrder = this.orderService.getLastActiveOrder(user.getUserId().getId());
+        Order userActiveOrder = this.orderService.getLastActiveOrder(user.getId());
         // Check if their is an active order
         if (userActiveOrder == null || userActiveOrder.getMealOrders().isEmpty()) {
             data.put("status", true);

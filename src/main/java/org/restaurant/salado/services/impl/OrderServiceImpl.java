@@ -36,7 +36,12 @@ public class OrderServiceImpl implements OrderService {
 
     @Override
     public Order getLastActiveOrder(Long userId) {
-        return this.orderRepository.findByUserUserIdIdAndCancelledFalseAndDeliveredFalse(userId).orElse(null);
+        return this.orderRepository.findByUserIdAndCancelledFalseAndDeliveredFalse(userId).orElse(null);
+    }
+
+    @Override
+    public Order getLastActiveOrder(String userEmail) {
+        return this.orderRepository.findByUserEmailAndCancelledFalseAndDeliveredFalse(userEmail).orElse(null);
     }
 
     @Override
@@ -52,12 +57,12 @@ public class OrderServiceImpl implements OrderService {
 
     @Override
     public List<Order> getUserOrders(Long id) {
-        return this.orderRepository.findByUserUserIdId(id);
+        return this.orderRepository.findByUserId(id);
     }
 
     @Override
     public List<Order> getUserOrders(String email) {
-        return this.orderRepository.findByUserUserIdEmail(email);
+        return this.orderRepository.findByUserEmail(email);
     }
 
 }

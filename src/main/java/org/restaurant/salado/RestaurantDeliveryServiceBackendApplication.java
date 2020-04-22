@@ -1,10 +1,7 @@
 package org.restaurant.salado;
 
 import org.apache.commons.io.IOUtils;
-import org.restaurant.salado.entities.Meal;
-import org.restaurant.salado.entities.RestaurantFile;
-import org.restaurant.salado.entities.User;
-import org.restaurant.salado.entities.UserId;
+import org.restaurant.salado.entities.*;
 import org.restaurant.salado.repositories.RoleRepository;
 import org.restaurant.salado.repositories.UserRepository;
 import org.restaurant.salado.services.MealService;
@@ -59,17 +56,17 @@ public class RestaurantDeliveryServiceBackendApplication implements CommandLineR
     @Override
     @Transactional
     public void run(String... args) throws Exception {
-        // Save default image
-        File file = new File("uploads/users/images/default.png");
-        RestaurantFile restaurantFile = new RestaurantFile(null, file.getName(), RestaurantUtils.getExtensionByApacheCommonLib(file.getName()), MediaType.IMAGE_PNG.toString(), IOUtils.toByteArray(new FileInputStream(file)), null);
-        restaurantFile = this.restaurantFileService.saveRestaurantFile(restaurantFile);
-        // Save users
-        UserId userId = new UserId(4301155381458518414L, "haytham.dahri@gmail.com");
-        User user = new User(userId, this.passwordEncoder.encode("toortoor"),
-                "haytham_dahri", true, restaurantFile, "Casablanca, Morocco", "", new Date(), null, null, null);
-
-        user = this.userRepository.save(user);
-
+//        // Save default image
+//        File file = new File("uploads/users/images/default.png");
+//        RestaurantFile restaurantFile = new RestaurantFile(null, file.getName(), RestaurantUtils.getExtensionByApacheCommonLib(file.getName()), MediaType.IMAGE_PNG.toString(), IOUtils.toByteArray(new FileInputStream(file)), null);
+//        restaurantFile = this.restaurantFileService.saveRestaurantFile(restaurantFile);
+//        // Save users
+//        User user = new User(null, "haytham.dahri@gmail.com", this.passwordEncoder.encode("toortoor"),
+//                "haytham_dahri", true, restaurantFile, "Casablanca, Morocco", "", new Date(), null, null, null);
+//
+//        user = this.userRepository.save(user);
+//
+//
 //        // Save roles
 //        Role roleUser = this.roleRepository.save(new Role(null, RoleType.ROLE_USER, null));
 //        Role roleEmployee = this.roleRepository.save(new Role(null, RoleType.ROLE_EMPLOYEE, null));

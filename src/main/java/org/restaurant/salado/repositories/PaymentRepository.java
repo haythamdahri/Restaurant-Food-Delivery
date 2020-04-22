@@ -18,6 +18,6 @@ import org.springframework.web.bind.annotation.CrossOrigin;
 @CrossOrigin(value = "*")
 public interface PaymentRepository extends JpaRepository<Payment, Long> {
 
-    Page<Payment> findByUserUserIdEmail(@PageableDefault Pageable pageable, @Param(value = "email") String email);
+    Page<Payment> findByUserEmail(@PageableDefault Pageable pageable, @Param(value = "email") String email);
 
 }

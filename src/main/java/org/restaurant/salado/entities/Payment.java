@@ -1,12 +1,7 @@
 package org.restaurant.salado.entities;
 
-import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.fasterxml.jackson.annotation.JsonProperty;
-import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
-import com.fasterxml.jackson.databind.annotation.JsonSerialize;
-import com.fasterxml.jackson.datatype.jsr310.deser.LocalDateDeserializer;
-import com.fasterxml.jackson.datatype.jsr310.ser.LocalDateSerializer;
 import com.stripe.model.Charge;
 import lombok.AllArgsConstructor;
 import lombok.Data;
@@ -14,8 +9,6 @@ import lombok.NoArgsConstructor;
 
 import javax.persistence.*;
 import java.io.Serializable;
-import java.time.LocalDate;
-import java.time.ZoneId;
 import java.util.Date;
 
 /**
@@ -34,7 +27,7 @@ public class Payment implements Serializable {
     private Long id;
 
     @ManyToOne(targetEntity = User.class)
-    @JoinColumns(value = {@JoinColumn(name = "user_id", referencedColumnName = "id"), @JoinColumn(name = "user_email", referencedColumnName = "email")})
+    @JoinColumns(value = {@JoinColumn(name = "user_id", referencedColumnName = "id")})
     private User user;
 
     @ManyToOne(targetEntity = Order.class, fetch = FetchType.LAZY)

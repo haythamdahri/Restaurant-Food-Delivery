@@ -1,6 +1,7 @@
 package org.restaurant.salado.configuration;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.http.HttpMethod;
@@ -16,8 +17,6 @@ import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
 
-import javax.sql.DataSource;
-
 /**
  * @author Haytham DAHRI
  */
@@ -26,23 +25,39 @@ import javax.sql.DataSource;
 @EnableGlobalMethodSecurity(prePostEnabled = true, securedEnabled = true)
 public class WebSecurityConfiguration extends WebSecurityConfigurerAdapter {
 
-    @Autowired
-    private BCryptPasswordEncoder bCryptPasswordEncoder;
+    private BCryptPasswordEncoder passwordEncoder;
 
-    @Autowired
     private JwtAuthenticationEntryPoint jwtAuthenticationEntryPoint;
 
-    @Autowired
     private UserDetailsService userDetailsService;
 
-    @Autowired
     private JwtRequestFilter jwtRequestFilter;
+
+    @Autowired
+    public void setPasswordEncoder(BCryptPasswordEncoder passwordEncoder) {
+        this.passwordEncoder = passwordEncoder;
+    }
+
+    @Autowired
+    public void setJwtAuthenticationEntryPoint(JwtAuthenticationEntryPoint jwtAuthenticationEntryPoint) {
+        this.jwtAuthenticationEntryPoint = jwtAuthenticationEntryPoint;
+    }
+
+    @Autowired
+    public void setUserDetailsService(@Qualifier("userDetailsServiceImpl") UserDetailsService userDetailsService) {
+        this.userDetailsService = userDetailsService;
+    }
+
+    @Autowired
+    public void setJwtRequestFilter(JwtRequestFilter jwtRequestFilter) {
+        this.jwtRequestFilter = jwtRequestFilter;
+    }
 
     @Autowired
     public void configureGlobal(AuthenticationManagerBuilder auth) throws Exception {
         /* configure AuthenticationManager so that it knows from where to load user for matching credentials
         Use BCryptPasswordEncoder */
-        auth.userDetailsService(userDetailsService).passwordEncoder(this.bCryptPasswordEncoder);
+        auth.userDetailsService(userDetailsService).passwordEncoder(this.passwordEncoder);
     }
 
     @Bean
@@ -52,7 +67,7 @@ public class WebSecurityConfiguration extends WebSecurityConfigurerAdapter {
     }
 
     @Override
-    public void configure(WebSecurity web) throws Exception {
+    public void configure(WebSecurity web) {
         web.ignoring().antMatchers("/static/**", "/uploads/**");
     }
 
@@ -67,11 +82,12 @@ public class WebSecurityConfiguration extends WebSecurityConfigurerAdapter {
                 "/api/meals",
                 "/api/v1/meals/**",
                 "/api/v1/reviews/**",
-                "/api/messages",
+                "/api/contactmessages",
                 "/api/users/search/existsByEmail",
-                "/api/v1/users/**"
-        ).permitAll().
-                antMatchers(HttpMethod.OPTIONS, "/**").permitAll()
+                "/api/v1/users/**").permitAll()
+                // Allow POST request for password request
+                .antMatchers(HttpMethod.POST, "/api/v1/users/passwordreset").permitAll()
+                .antMatchers(HttpMethod.OPTIONS, "/**").permitAll()
                 // Allow POST for authentication
                 .antMatchers(
                         "/auth/**",
@@ -79,9 +95,7 @@ public class WebSecurityConfiguration extends WebSecurityConfigurerAdapter {
                 ).permitAll()
                 // all other requests need to be authenticated
                 .anyRequest().authenticated().and().
-                /**
-                 * make sure we use stateless session; session won't be used to store user's state.
-                 */
+                // make sure we use stateless session; session won't be used to store user's state.
                         exceptionHandling().authenticationEntryPoint(jwtAuthenticationEntryPoint).and().sessionManagement()
                 .sessionCreationPolicy(SessionCreationPolicy.STATELESS);
         // Add a filter to validate the tokens with every request

@@ -13,9 +13,10 @@ import org.springframework.web.servlet.config.annotation.WebMvcConfigurationSupp
 @Configuration
 @EnableWebMvc
 public class WebConfig extends WebMvcConfigurationSupport {
+
     @Bean
     public MultipartResolver multipartResolver() {
-        CommonsMultipartResolver multipartResolver = new CommonsMultipartResolver();
-        return multipartResolver;
+        return new CommonsMultipartResolver();
     }
+
 }

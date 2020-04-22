@@ -9,6 +9,7 @@ import org.junit.runner.RunWith;
 import org.restaurant.salado.entities.Meal;
 import org.restaurant.salado.entities.User;
 import org.restaurant.salado.models.ResponseData;
+import org.restaurant.salado.providers.Constants;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.http.HttpStatus;
@@ -20,6 +21,7 @@ import org.springframework.test.web.servlet.setup.MockMvcBuilders;
 import org.springframework.web.context.WebApplicationContext;
 
 import java.io.File;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
@@ -53,7 +55,7 @@ public class UserRestIntegrationTest {
     /**
      * Test RestaurantRestController endpoint: /api/v1/
      *
-     * @throws Exception
+     * @throws Exception: On thrown exception
      */
     @WithMockUser(value = "haytham.dahri@gmail.com")
     @Test
@@ -62,9 +64,14 @@ public class UserRestIntegrationTest {
         String USERS_URI = "/api/v1/users/";
         String USER_PREFERENCES_URI = "/api/v1/users/preferences";
         String MEALS_URI = "/api/v1/meals/test";
+        // Mapper
+        ObjectMapper objectMapper = new ObjectMapper();
         // Build expected data
-        String addedMessage = "Meal has been added to your preferences successfully";
-        String removedMessage = "Meal has been removed from your preferences successfully";
+        String STATUS = "status";
+        String MESSAGE = "message";
+        String PREFERRED = "preferred";
+        Map<String, Object> data = new HashMap<>();
+        data.put(STATUS, true);
         // Retrieve users and assert not empty list
         String response = this.mockMvc.perform(get(USERS_URI).contentType(MediaType.APPLICATION_JSON).accept(MediaType.APPLICATION_JSON)).andReturn().getResponse().getContentAsString();
         // Assert response not null
@@ -82,12 +89,14 @@ public class UserRestIntegrationTest {
         Meal meal = meals.get(0);
         // POST to preferences endpoint, put expected response and assert response
         response = this.mockMvc.perform(post(USER_PREFERENCES_URI).param("id", meal.getId().toString()).contentType(MediaType.APPLICATION_JSON)).andExpect(status().is(HttpStatus.OK.value())).andReturn().getResponse().getContentAsString();
-        ResponseData responseData = new ObjectMapper().readValue(response, ResponseData.class);
+        data = objectMapper.readValue(response, Map.class);
         // POST to preferences endpoint, put expected response and assert the whole response data
-        Object expectedExtra = !(boolean)responseData.getExtra();
-        String expectedMessage = responseData.getMessage().equalsIgnoreCase(removedMessage) ? addedMessage : removedMessage;
-        ResponseData expectedResponseData = ResponseData.getInstance(expectedMessage, true, expectedExtra);
-        this.mockMvc.perform(post(USER_PREFERENCES_URI).param("id", meal.getId().toString()).contentType(MediaType.APPLICATION_JSON)).andExpect(status().is(HttpStatus.OK.value())).andExpect(content().string(response));
+        System.out.println(data.toString());
+        boolean expectedPreferred = !(boolean)data.get(PREFERRED);
+        String expectedMessage = data.get(MESSAGE).toString().equalsIgnoreCase(Constants.MEAL_REMOVED_FROM_PREFERENCES) ? Constants.MEAL_ADDED_TO_PREFERENCES : Constants.MEAL_REMOVED_FROM_PREFERENCES;
+        data.put(MESSAGE, expectedMessage);
+        data.put(PREFERRED, expectedPreferred);
+        this.mockMvc.perform(post(USER_PREFERENCES_URI).param("id", meal.getId().toString()).contentType(MediaType.APPLICATION_JSON)).andExpect(status().is(HttpStatus.OK.value())).andExpect(content().string(objectMapper.writeValueAsString(data)));
     }
 
 //    public void registerUserAndEnableAccountAndLogin__shouldSucceedWith200AndExpectSameResults() throws Exception {

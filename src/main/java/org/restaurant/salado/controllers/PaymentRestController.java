@@ -3,8 +3,8 @@ package org.restaurant.salado.controllers;
 import org.restaurant.salado.entities.Currency;
 import org.restaurant.salado.entities.Order;
 import org.restaurant.salado.entities.Payment;
-import org.restaurant.salado.entities.User;
 import org.restaurant.salado.facades.IAuthenticationFacade;
+import org.restaurant.salado.dtos.ShippingDTO;
 import org.restaurant.salado.services.ChargeService;
 import org.restaurant.salado.services.OrderService;
 import org.restaurant.salado.services.PaymentService;
@@ -28,8 +28,8 @@ import java.util.Map;
 @Transactional
 public class PaymentRestController {
 
-    private static final String STATUS = "STATUS";
-    private static final String MESSAGE = "MESSAGE";
+    private static final String STATUS = "status";
+    private static final String MESSAGE = "message";
     private static final String NO_ACTIVE_ORDER = "noActiveOrder";
 
     @Value("${STRIPE_PUBLIC_KEY}")
@@ -79,9 +79,9 @@ public class PaymentRestController {
     public ResponseEntity<Map<String, Object>> checkout() {
         Map<String, Object> data = new HashMap<>();
         // Get last active order
-        Order userActiveOrder = this.orderService.getLastActiveOrder(this.userService.getUser(this.authenticationFacade.getAuthentication().getName()).getUserId().getId());
+        Order userActiveOrder = this.orderService.getLastActiveOrder(this.userService.getUser(this.authenticationFacade.getAuthentication().getName()).getId());
         // Check if an order is in progress
-        if (userActiveOrder == null || userActiveOrder.getMealOrders().isEmpty()) {
+        if (userActiveOrder.getMealOrders().isEmpty()) {
             data.put(STATUS, true);
             data.put(NO_ACTIVE_ORDER, true);
         } else {
@@ -101,30 +101,23 @@ public class PaymentRestController {
      *
      * @param headers: HttpHeader Map
      * @return ResponseEntity<Map < String, Object>>
-     * @throws Exception: Thrown exception when charge is not passed successfully
      */
     @PostMapping(path = "/charge")
-    public ResponseEntity<Map<String, Object>> chargeCard(@RequestHeader Map<String, String> headers) throws Exception {
+    public ResponseEntity<Map<String, Object>> chargeCard(@RequestHeader Map<String, String> headers, @RequestBody ShippingDTO shippingDTO) {
         Map<String, Object> data = new HashMap<>();
-        // Retrieve current user
-        User user = this.userService.getUser(this.authenticationFacade.getAuthentication().getName());
-        // Retrieve last order
-        Order userActiveOrder = this.orderService.getLastActiveOrder(user.getUserId().getId());
-        // Check if there is an order in place
-        if (userActiveOrder == null) {
-            // Return no order in progress
+        try {
+            // Create charge
+            String token = headers.get("token");
+            // Charge credit and wait until complete to get the charge
+            this.chargeService.chargeCreditCard(token, this.authenticationFacade.getAuthentication().getName(), shippingDTO).join();
+            // Set successful data of successful transaction
+            data.put(STATUS, true);
+            data.put(MESSAGE, "Your payment has been processed successfully");
+        } catch (Exception ex) {
+            // Set response data
             data.put(STATUS, false);
-            data.put(NO_ACTIVE_ORDER, false);
-            return ResponseEntity.ok(data);
+            data.put(MESSAGE, ex.getMessage());
         }
-        // Create charge
-        String token = headers.get("token");
-        this.chargeService.chargeCreditCard(token, userActiveOrder.getTotalPrice(), user);
-        // Set successful data of successful transaction
-        data.put(STATUS, true);
-        data.put(MESSAGE, "Your order has been purchased successfully");
-        data.put("order", this.orderService.getLastActiveOrder(user.getUserId().getId()));
-        // Return response
         return ResponseEntity.ok(data);
     }
 

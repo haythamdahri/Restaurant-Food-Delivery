@@ -26,6 +26,7 @@ public class MealServiceImpl implements MealService {
         this.mealRepository = mealRepository;
     }
 
+
     @Override
     public Meal saveMeal(Meal meal) {
         return this.mealRepository.save(meal);
@@ -64,6 +65,6 @@ public class MealServiceImpl implements MealService {
 
     @Override
     public List<Meal> getUserPreferredMeals(String email) {
-        return this.mealRepository.findMealByUsersPreferences_UserIdEmail(email);
+        return this.mealRepository.findMealByUsersPreferences_Email(email);
     }
 }

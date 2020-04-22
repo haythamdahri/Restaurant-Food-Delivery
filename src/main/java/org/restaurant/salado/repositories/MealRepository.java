@@ -21,6 +21,6 @@ public interface MealRepository extends JpaRepository<Meal, Long> {
 
     Page<Meal> findTop10ByOrderByViewsDesc(@PageableDefault Pageable pageable);
 
-    List<Meal> findMealByUsersPreferences_UserIdEmail(String email);
+    List<Meal> findMealByUsersPreferences_Email(String email);
 
 }

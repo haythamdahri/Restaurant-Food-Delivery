@@ -41,7 +41,7 @@ public class PaymentServiceImpl implements PaymentService {
 
     @Override
     public Page<Payment> getUserPayments(String userEmail, int page, int size) {
-        return this.paymentRepository.findByUserUserIdEmail(PageRequest.of(page, size), userEmail);
+        return this.paymentRepository.findByUserEmail(PageRequest.of(page, size), userEmail);
     }
 
     @Override

@@ -14,11 +14,16 @@ import javax.persistence.metamodel.Type;
 @Configuration
 public class RepositoryConfig implements RepositoryRestConfigurer {
 
-    @Autowired
     private EntityManager entityManager;
+
+    @Autowired
+    public void setEntityManager(EntityManager entityManager) {
+        this.entityManager = entityManager;
+    }
 
     @Override
     public void configureRepositoryRestConfiguration(RepositoryRestConfiguration config) {
         config.exposeIdsFor(entityManager.getMetamodel().getEntities().stream().map(Type::getJavaType).toArray(Class[]::new));
     }
+
 }
