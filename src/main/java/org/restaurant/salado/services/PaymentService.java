@@ -18,6 +18,8 @@ public interface PaymentService {
 
     Page<Payment> getUserPayments(String userEmail, int page, int size);
 
+    Page<Payment> getUserPayments(String userEmail, String search, int page, int size);
+
     List<Payment> getPayments();
 
 }

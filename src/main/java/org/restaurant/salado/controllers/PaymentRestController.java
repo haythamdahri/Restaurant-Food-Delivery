@@ -1,10 +1,10 @@
 package org.restaurant.salado.controllers;
 
+import org.restaurant.salado.dtos.ShippingDTO;
 import org.restaurant.salado.entities.Currency;
 import org.restaurant.salado.entities.Order;
 import org.restaurant.salado.entities.Payment;
 import org.restaurant.salado.facades.IAuthenticationFacade;
-import org.restaurant.salado.dtos.ShippingDTO;
 import org.restaurant.salado.services.ChargeService;
 import org.restaurant.salado.services.OrderService;
 import org.restaurant.salado.services.PaymentService;
@@ -13,6 +13,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.data.domain.Page;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
@@ -30,6 +31,7 @@ public class PaymentRestController {
 
     private static final String STATUS = "status";
     private static final String MESSAGE = "message";
+    private static final String PAYMENT = "payment";
     private static final String NO_ACTIVE_ORDER = "noActiveOrder";
 
     @Value("${STRIPE_PUBLIC_KEY}")
@@ -124,13 +126,39 @@ public class PaymentRestController {
     /**
      * Retrieve current user payments page
      *
-     * @param page: Requested page
-     * @param size: Request Page Size
+     * @param search: Search criteria
+     * @param page:   Requested page
+     * @param size:   Request Page Size
      * @return ResponseEntity<Page < Payment>>
      */
     @GetMapping(path = "/")
-    public ResponseEntity<Page<Payment>> retrieveUserPaymentsEndpoint(@RequestParam(value = "page", required = false, defaultValue = "0") int page, @RequestParam(value = "size", required = false, defaultValue = "${page.default-size}") int size) {
+    public ResponseEntity<Page<Payment>> retrieveUserPaymentsEndpoint(@RequestParam(value = "search", required = false) String search, @RequestParam(value = "page", required = false, defaultValue = "0") int page, @RequestParam(value = "size", required = false, defaultValue = "${page.default-size}") int size) {
+
         return ResponseEntity.ok(this.paymentService.getUserPayments(this.authenticationFacade.getAuthentication().getName(), page, size));
+    }
+
+    /**
+     * Retrieve payment details for the current authenticated user
+     *
+     * @param id: Payment Identifier
+     * @return ResponseEntity<Payment>
+     */
+    @GetMapping(path = "/{id}")
+    public ResponseEntity<?> retrievePaymentDetails(@PathVariable(value = "id") Long id) {
+        // Retrieve payment
+        Payment payment = this.paymentService.getPayment(id);
+        // Check if payment exists
+        if (payment != null) {
+            // Check if user is the owner of the payment
+            if (payment.getUser().equals(this.userService.getUser(this.authenticationFacade.getAuthentication().getName()))) {
+                // Return response
+                return ResponseEntity.ok(payment);
+            }
+            // Return unauthorized response
+            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body("You are not authorized to access this payment");
+        }
+        // Return no payment found
+        return ResponseEntity.notFound().build();
     }
 
 }
