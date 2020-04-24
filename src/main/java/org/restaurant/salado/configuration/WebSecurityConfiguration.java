@@ -68,7 +68,7 @@ public class WebSecurityConfiguration extends WebSecurityConfigurerAdapter {
 
     @Override
     public void configure(WebSecurity web) {
-        web.ignoring().antMatchers("/static/**", "/uploads/**");
+        web.ignoring().antMatchers("/static/**", "/uploads/**", "/images/**");
     }
 
     @Override

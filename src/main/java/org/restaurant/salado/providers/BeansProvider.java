@@ -73,6 +73,11 @@ public class BeansProvider {
     @Bean
     public WebMvcConfigurer corsConfigurer() {
         return new WebMvcConfigurer() {
+            private final String[] CLASSPATH_RESOURCE_LOCATIONS = {
+                    "classpath:/META-INF/resources/", "classpath:/resources/",
+                    "classpath:/static/", "classpath:/public/"
+            };
+
             @Override
             public void addCorsMappings(CorsRegistry registry) {
                 registry.addMapping("/**").allowCredentials(true).allowedOrigins("http://localhost:8080")
@@ -84,6 +89,7 @@ public class BeansProvider {
             @Override
             public void addResourceHandlers(ResourceHandlerRegistry registry) {
                 registry.addResourceHandler("/uploads/**").addResourceLocations("file:uploads/");
+                registry.addResourceHandler("/static/**").addResourceLocations(CLASSPATH_RESOURCE_LOCATIONS);
             }
 
         };

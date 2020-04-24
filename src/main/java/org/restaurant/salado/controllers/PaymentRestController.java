@@ -14,10 +14,12 @@ import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.data.domain.Page;
 import org.springframework.http.HttpStatus;
+import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import javax.transaction.Transactional;
+import java.io.IOException;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -141,7 +143,7 @@ public class PaymentRestController {
      * Retrieve payment details for the current authenticated user
      *
      * @param id: Payment Identifier
-     * @return ResponseEntity<Payment>
+     * @return ResponseEntity<?>
      */
     @GetMapping(path = "/{id}")
     public ResponseEntity<?> retrievePaymentDetails(@PathVariable(value = "id") Long id) {
@@ -156,6 +158,29 @@ public class PaymentRestController {
             }
             // Return unauthorized response
             return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body("You are not authorized to access this payment");
+        }
+        // Return no payment found
+        return ResponseEntity.notFound().build();
+    }
+
+    /**
+     * Download payment details file
+     * @param id: Payment Identifier
+     * @return ResponseEntity<?>
+     */
+    @GetMapping(path = "/download/{id}", produces = MediaType.APPLICATION_PDF_VALUE)
+    public ResponseEntity<?> downloadPaymentDetailsFile(@PathVariable(value = "id") Long id) throws IOException {
+        // Retrieve payment
+        Payment payment = this.paymentService.getPayment(id);
+        // Check if payment exists
+        if (payment != null) {
+            // Check if user is the owner of the payment
+            if (payment.getUser().equals(this.userService.getUser(this.authenticationFacade.getAuthentication().getName()))) {
+                // Download file
+                return ResponseEntity.ok(this.paymentService.getPaymentFile(id));
+            }
+            // Return unauthorized response
+            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body("You are not authorized to download the payment file!");
         }
         // Return no payment found
         return ResponseEntity.notFound().build();

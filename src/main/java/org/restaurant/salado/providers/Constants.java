@@ -34,6 +34,9 @@ public class Constants {
     public static final String MEAL_ORDER_QUANTITY_UPDATED_SUCCESSFULLY = "Meal order has been removed from your cart successfully";
     public static final String NO_ORDER_IN_PROGRESS = "No order in place, please add products to your cart!";
 
+
+    public static final String PDF_OUTPUT_DIRECTORY = "target/payment-ID.pdf";
+
     private Constants() {
 
     }
