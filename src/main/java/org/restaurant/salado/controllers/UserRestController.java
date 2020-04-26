@@ -9,6 +9,7 @@ import org.restaurant.salado.providers.Constants;
 import org.restaurant.salado.services.UserService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
@@ -48,9 +49,11 @@ public class UserRestController {
 
     /**
      * Retrieve all users endpoint
+     * Authorize only employees and admins to access this endpoint
      *
      * @return ResponseEntity<List < User>>
      */
+    @PreAuthorize("hasRole('ROLE_EMPLOYEE') or hasRole('ROLE_ADMIN')")
     @GetMapping(path = "/")
     public ResponseEntity<List<User>> retrieveAllUsers() {
         return ResponseEntity.ok(this.userService.getUsers());
@@ -74,7 +77,7 @@ public class UserRestController {
      * @return ResponseEntity<User>
      */
     @GetMapping(path = "/current")
-    public ResponseEntity<User> retrieveAuthenticatedUser() {
+    public ResponseEntity<User> retrieveAuthenticatedUser(){
         // Fetch user using service tier and Return Response
         return ResponseEntity.ok(this.userService.getUser(this.authenticationFacade.getAuthentication().getName()));
     }
@@ -158,7 +161,7 @@ public class UserRestController {
      * Token validity check Endpoint
      *
      * @param token: User Token
-     * @return ResponseEntity<Map<String, Object>>
+     * @return ResponseEntity<Map < String, Object>>
      */
     @GetMapping(path = "/tokens/{token}/check")
     public ResponseEntity<Map<String, Object>> checkToken(@PathVariable(name = "token") String token) {
