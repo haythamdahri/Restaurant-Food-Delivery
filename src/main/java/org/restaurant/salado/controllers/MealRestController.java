@@ -8,6 +8,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
 import javax.transaction.Transactional;
@@ -39,16 +40,18 @@ public class MealRestController {
 
     /**
      * Retrieve all meals Endpoint
+     * Authorize Only Employees And Admins
      *
      * @return ResponseEntity<List < Meal>>
      */
-    @GetMapping(value = "/test")
-    public ResponseEntity<List<Meal>> fetchMealsEndPoint(@RequestParam(value = "page", required = false, defaultValue = "0") int page, @RequestParam(value = "size", required = false, defaultValue = "${page.default-size}") int size) {
-        return ResponseEntity.ok(this.mealService.getMeals(page, size).getContent());
+    @PreAuthorize("hasRole('ROLE_EMPLOYEE') or hasRole('ROLE_ADMIN')")
+    @GetMapping(value = "/all")
+    public ResponseEntity<List<Meal>> fetchMealsEndPoint() {
+        return ResponseEntity.ok(this.mealService.getMeals());
     }
 
     /**
-     * Retrieve all meals Endpoint
+     * Retrieve meals Page Endpoint
      *
      * @return ResponseEntity<Page < Meal>>
      */

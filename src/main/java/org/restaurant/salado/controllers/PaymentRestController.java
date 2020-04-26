@@ -16,11 +16,13 @@ import org.springframework.data.domain.Page;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
 import javax.transaction.Transactional;
 import java.io.IOException;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 /**
@@ -72,6 +74,18 @@ public class PaymentRestController {
     @Autowired
     public void setAuthenticationFacade(IAuthenticationFacade authenticationFacade) {
         this.authenticationFacade = authenticationFacade;
+    }
+
+    /**
+     * Retrieve all payments
+     * Authorize only Employees And Admins
+     *
+     * @return ResponseEntity<List < Payment>>
+     */
+    @PreAuthorize("hasRole('ROLE_EMPLOYEE') or hasRole('ROLE_ADMIN')")
+    @GetMapping(path = "/all")
+    public ResponseEntity<List<Payment>> retrieveAllPayments() {
+        return ResponseEntity.ok(this.paymentService.getPayments());
     }
 
     /**
@@ -165,6 +179,7 @@ public class PaymentRestController {
 
     /**
      * Download payment details file
+     *
      * @param id: Payment Identifier
      * @return ResponseEntity<?>
      */

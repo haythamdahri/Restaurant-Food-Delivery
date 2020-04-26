@@ -11,7 +11,10 @@ import org.restaurant.salado.services.UserService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
+
+import java.util.List;
 
 /**
  * @author Haytham DAHRI
@@ -46,6 +49,18 @@ public class ReviewRestController {
     @Autowired
     public void setAuthenticationFacade(IAuthenticationFacade authenticationFacade) {
         this.authenticationFacade = authenticationFacade;
+    }
+
+    /**
+     * Retrieve all reviews
+     * Allow only Employees Or Admins to access this resources
+     *
+     * @return ResponseEntity<List < Review>>
+     */
+    @PreAuthorize("hasRole('ROLE_EMPLOYEE') or hasRole('ROLE_ADMIN')")
+    @GetMapping(path = "/all")
+    public ResponseEntity<List<Review>> retrieveAllReviews() {
+        return ResponseEntity.ok(this.reviewService.getReviews());
     }
 
     /**

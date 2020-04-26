@@ -6,6 +6,7 @@ import org.restaurant.salado.services.OrderService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
@@ -30,6 +31,18 @@ public class OrderRestController {
     @Autowired
     public void setAuthenticationFacade(IAuthenticationFacade authenticationFacade) {
         this.authenticationFacade = authenticationFacade;
+    }
+
+    /**
+     * Retrieve all orders
+     * Authorize Only Employees And Admins
+     *
+     * @return ResponseEntity<List < Order>>
+     */
+    @PreAuthorize("hasRole('ROLE_EMPLOYEE') or hasRole('ROLE_ADMIN')")
+    @GetMapping(path = "/all")
+    public ResponseEntity<List<Order>> retrieveAllOrders() {
+        return ResponseEntity.ok(this.orderService.getOrders());
     }
 
     /**
