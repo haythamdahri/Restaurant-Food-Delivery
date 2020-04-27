@@ -41,7 +41,7 @@ public class RestaurantRestIntegrationTest {
     /**
      * Test RestaurantRestController endpoint: /api/v1/
      *
-     * @throws Exception
+     * @throws Exception: Thrown exception on unexpected error
      */
     @WithMockUser(value = "spring")
     @Test

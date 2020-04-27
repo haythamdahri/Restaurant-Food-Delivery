@@ -61,9 +61,9 @@ public class UserRestIntegrationTest {
     @Test
     public void toggleProductFromUserPreferences_shouldSucceedWith200AndExpectSameResults() throws Exception {
         // FINAL URIs
-        String USERS_URI = "/api/v1/users/";
+        String USERS_URI = "/api/v1/users/all";
         String USER_PREFERENCES_URI = "/api/v1/users/preferences";
-        String MEALS_URI = "/api/v1/meals/test";
+        String MEALS_URI = "/api/v1/meals/all";
         // Mapper
         ObjectMapper objectMapper = new ObjectMapper();
         // Build expected data
@@ -91,7 +91,6 @@ public class UserRestIntegrationTest {
         response = this.mockMvc.perform(post(USER_PREFERENCES_URI).param("id", meal.getId().toString()).contentType(MediaType.APPLICATION_JSON)).andExpect(status().is(HttpStatus.OK.value())).andReturn().getResponse().getContentAsString();
         data = objectMapper.readValue(response, Map.class);
         // POST to preferences endpoint, put expected response and assert the whole response data
-        System.out.println(data.toString());
         boolean expectedPreferred = !(boolean)data.get(PREFERRED);
         String expectedMessage = data.get(MESSAGE).toString().equalsIgnoreCase(Constants.MEAL_REMOVED_FROM_PREFERENCES) ? Constants.MEAL_ADDED_TO_PREFERENCES : Constants.MEAL_REMOVED_FROM_PREFERENCES;
         data.put(MESSAGE, expectedMessage);

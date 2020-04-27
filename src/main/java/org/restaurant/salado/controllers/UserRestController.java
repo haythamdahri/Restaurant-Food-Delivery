@@ -50,7 +50,7 @@ public class UserRestController {
     }
 
     /**
-     * Retrieve all users endpoint | Only users with ROLE_USER
+     * Retrieve Basic users endpoint | Only users with ROLE_USER
      * Authorize only employees and admins to access this endpoint
      * Exclude current authenticated user
      *
@@ -58,7 +58,7 @@ public class UserRestController {
      */
     @PreAuthorize("hasRole('ROLE_EMPLOYEE') or hasRole('ROLE_ADMIN')")
     @GetMapping(path = "/")
-    public ResponseEntity<List<User>> retrieveAllUsers() {
+    public ResponseEntity<List<User>> retrieveBasicUsers() {
         return ResponseEntity.ok(this.userService.getBasicUsers());
     }
 
@@ -72,6 +72,19 @@ public class UserRestController {
     public ResponseEntity<User> registerUser(@RequestBody UserDTO userDTO) throws IOException {
         // Create User Account And Return success message response
         return ResponseEntity.ok(this.userService.registerUser(userDTO));
+    }
+
+    /**
+     * Retrieve all users endpoint | Only users with ROLE_USER
+     * Authorize only Admins to access this endpoint
+     * Exclude current authenticated user
+     *
+     * @return ResponseEntity<List < User>>
+     */
+    @PreAuthorize("hasRole('ROLE_ADMIN')")
+    @GetMapping(path = "/all")
+    public ResponseEntity<List<User>> retrieveAllUsers() {
+        return ResponseEntity.ok(this.userService.getUsers());
     }
 
     /**
