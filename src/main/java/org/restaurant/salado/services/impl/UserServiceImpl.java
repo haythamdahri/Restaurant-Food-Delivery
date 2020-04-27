@@ -25,10 +25,7 @@ import javax.transaction.Transactional;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.IOException;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Optional;
-import java.util.UUID;
+import java.util.*;
 
 /**
  * @author Haytam DAHRI
@@ -192,6 +189,26 @@ public class UserServiceImpl implements UserService {
     }
 
     @Override
+    public User enableAccount(Long id) throws BusinessException {
+        // Get user
+        User user = this.userRepository.findById(id).orElseThrow(BusinessException::new);
+        // Activate user account
+        user.setEnabled(true);
+        // Save user and return it
+        return this.userRepository.save(user);
+    }
+
+    @Override
+    public User disableAccount(Long id) throws BusinessException {
+        // Get user
+        User user = this.userRepository.findById(id).orElseThrow(BusinessException::new);
+        // Activate user account
+        user.setEnabled(false);
+        // Save user and return it
+        return this.userRepository.save(user);
+    }
+
+    @Override
     public Boolean checkUserTokenValidity(String token) {
         // Retrieve user from token
         User user = this.userRepository.findByToken(token).orElse(null);
@@ -304,5 +321,10 @@ public class UserServiceImpl implements UserService {
     @Override
     public List<User> getUsers() {
         return this.userRepository.findAll();
+    }
+
+    @Override
+    public List<User> getBasicUsers() {
+        return this.userRepository.findBySpecificRoles(Collections.singletonList(RoleType.ROLE_USER));
     }
 }

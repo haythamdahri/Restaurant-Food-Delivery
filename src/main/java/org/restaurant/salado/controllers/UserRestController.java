@@ -8,6 +8,7 @@ import org.restaurant.salado.models.PasswordReset;
 import org.restaurant.salado.providers.Constants;
 import org.restaurant.salado.services.UserService;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
@@ -18,6 +19,7 @@ import java.io.IOException;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.stream.Collectors;
 
 /**
  * @author Haytam DAHRI
@@ -48,15 +50,16 @@ public class UserRestController {
     }
 
     /**
-     * Retrieve all users endpoint
+     * Retrieve all users endpoint | Only users with ROLE_USER
      * Authorize only employees and admins to access this endpoint
+     * Exclude current authenticated user
      *
      * @return ResponseEntity<List < User>>
      */
     @PreAuthorize("hasRole('ROLE_EMPLOYEE') or hasRole('ROLE_ADMIN')")
     @GetMapping(path = "/")
     public ResponseEntity<List<User>> retrieveAllUsers() {
-        return ResponseEntity.ok(this.userService.getUsers());
+        return ResponseEntity.ok(this.userService.getBasicUsers());
     }
 
     /**
@@ -72,12 +75,48 @@ public class UserRestController {
     }
 
     /**
+     * Enable user account
+     * Authorize only Employees And Admins
+     *
+     * @param userId: User Identifier
+     * @return ResponseEntity<User>
+     */
+    @PreAuthorize("hasRole('ROLE_EMPLOYEE') or hasRole('ROLE_ADMIN')")
+    @GetMapping(path = "/enable")
+    public ResponseEntity<User> enableAccount(@RequestParam(value = "id") Long userId) {
+        try {
+            // Enable account
+            return ResponseEntity.ok(this.userService.enableAccount(userId));
+        } catch (Exception ex) {
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).build();
+        }
+    }
+
+    /**
+     * Disable user account
+     * Authorize only Employees And Admins
+     *
+     * @param userId: User Identifier
+     * @return ResponseEntity<User>
+     */
+    @PreAuthorize("hasRole('ROLE_EMPLOYEE') or hasRole('ROLE_ADMIN')")
+    @GetMapping(path = "/disable")
+    public ResponseEntity<User> disableAccount(@RequestParam(value = "id") Long userId) {
+        try {
+            // Enable account
+            return ResponseEntity.ok(this.userService.disableAccount(userId));
+        } catch (Exception ex) {
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).build();
+        }
+    }
+
+    /**
      * Retrieve current authenticated user
      *
      * @return ResponseEntity<User>
      */
     @GetMapping(path = "/current")
-    public ResponseEntity<User> retrieveAuthenticatedUser(){
+    public ResponseEntity<User> retrieveAuthenticatedUser() {
         // Fetch user using service tier and Return Response
         return ResponseEntity.ok(this.userService.getUser(this.authenticationFacade.getAuthentication().getName()));
     }

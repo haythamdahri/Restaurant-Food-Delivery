@@ -1,13 +1,16 @@
 package org.restaurant.salado.repositories;
 
+import org.restaurant.salado.entities.RoleType;
 import org.restaurant.salado.entities.User;
 import org.springframework.data.jpa.repository.JpaRepository;
+import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 import org.springframework.data.rest.core.annotation.RepositoryRestResource;
 import org.springframework.data.rest.core.annotation.RestResource;
 import org.springframework.stereotype.Repository;
 import org.springframework.web.bind.annotation.CrossOrigin;
 
+import java.util.List;
 import java.util.Optional;
 
 /**
@@ -26,5 +29,8 @@ public interface UserRepository extends JpaRepository<User, Long> {
     Optional<User> findByEmailAndEnabledIsTrue(@Param("email") String email);
 
     Optional<User> findByToken(@Param("token") String token);
+
+    @Query("select u from User u inner join u.roles r where r.roleName in :roleNames and size(u.roles) = 1")
+    List<User> findBySpecificRoles(@Param("roleNames") List<RoleType> roleName);
 
 }

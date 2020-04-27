@@ -25,6 +25,10 @@ public interface UserService {
 
     Boolean activateAccount(String token);
 
+    User enableAccount(Long id) throws BusinessException;
+
+    User disableAccount(Long id) throws BusinessException;
+
     User getUser(Long id);
 
     Boolean checkUserTokenValidity(String token);
@@ -44,5 +48,7 @@ public interface UserService {
     boolean deleteUser(Long id);
 
     List<User> getUsers();
+
+    List<User> getBasicUsers();
 
 }
