@@ -51,6 +51,7 @@ public class UserRestController {
 
     /**
      * Retrieve Basic users endpoint | Only users with ROLE_USER
+     * Search users if parameter exists
      * Authorize only employees and admins to access this endpoint
      * Exclude current authenticated user
      *
@@ -58,8 +59,9 @@ public class UserRestController {
      */
     @PreAuthorize("hasRole('ROLE_EMPLOYEE') or hasRole('ROLE_ADMIN')")
     @GetMapping(path = "/")
-    public ResponseEntity<List<User>> retrieveBasicUsers() {
-        return ResponseEntity.ok(this.userService.getBasicUsers());
+    public ResponseEntity<List<User>> retrieveBasicUsers(@RequestParam(value = "search", required = false, defaultValue = "") String search) {
+        // Check if search exists
+        return ResponseEntity.ok(this.userService.getBasicUsers(search));
     }
 
     /**

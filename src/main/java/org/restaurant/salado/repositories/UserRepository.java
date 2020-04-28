@@ -33,4 +33,8 @@ public interface UserRepository extends JpaRepository<User, Long> {
     @Query("select u from User u inner join u.roles r where r.roleName in :roleNames and size(u.roles) = 1")
     List<User> findBySpecificRoles(@Param("roleNames") List<RoleType> roleName);
 
+    @Query("select u from User u inner join u.roles r where r.roleName in :roleNames and size(u.roles) = 1 and " +
+            "(lower(u.username) like %:search% or lower(u.email) like %:search% or lower(u.location) like %:search%)")
+    List<User> findBySpecificRolesAndSearch(@Param("roleNames") List<RoleType> roleName, @Param(value = "search") String search);
+
 }

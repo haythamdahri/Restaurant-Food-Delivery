@@ -49,6 +49,6 @@ public interface UserService {
 
     List<User> getUsers();
 
-    List<User> getBasicUsers();
+    List<User> getBasicUsers(String search);
 
 }

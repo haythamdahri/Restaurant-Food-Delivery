@@ -3,10 +3,7 @@ package org.restaurant.salado.services.impl;
 import org.apache.commons.io.FilenameUtils;
 import org.apache.commons.io.IOUtils;
 import org.restaurant.salado.dtos.UserDTO;
-import org.restaurant.salado.entities.Meal;
-import org.restaurant.salado.entities.RestaurantFile;
-import org.restaurant.salado.entities.RoleType;
-import org.restaurant.salado.entities.User;
+import org.restaurant.salado.entities.*;
 import org.restaurant.salado.exceptions.BusinessException;
 import org.restaurant.salado.mappers.UserMapper;
 import org.restaurant.salado.models.PasswordReset;
@@ -21,6 +18,12 @@ import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 
+import javax.persistence.EntityManager;
+import javax.persistence.TypedQuery;
+import javax.persistence.criteria.CriteriaBuilder;
+import javax.persistence.criteria.CriteriaQuery;
+import javax.persistence.criteria.Predicate;
+import javax.persistence.criteria.Root;
 import javax.transaction.Transactional;
 import java.io.File;
 import java.io.FileInputStream;
@@ -46,6 +49,8 @@ public class UserServiceImpl implements UserService {
     private EmailService emailService;
 
     private MealService mealService;
+
+    private EntityManager entityManager;
 
     @Value("${token_expiration}")
     private int tokenExpiration;
@@ -83,6 +88,11 @@ public class UserServiceImpl implements UserService {
     @Autowired
     public void setMealService(MealService mealService) {
         this.mealService = mealService;
+    }
+
+    @Autowired
+    public void setEntityManager(EntityManager entityManager) {
+        this.entityManager = entityManager;
     }
 
     @Override
@@ -324,7 +334,14 @@ public class UserServiceImpl implements UserService {
     }
 
     @Override
-    public List<User> getBasicUsers() {
-        return this.userRepository.findBySpecificRoles(Collections.singletonList(RoleType.ROLE_USER));
+    public List<User> getBasicUsers(String search) {
+        search = search.trim().toLowerCase();
+        // Check if search is empty
+        if (search.length() == 0) {
+            // Return users with ROLE_USER without search
+            return this.userRepository.findBySpecificRoles(Collections.singletonList(RoleType.ROLE_USER));
+        }
+        // Return by search
+        return this.userRepository.findBySpecificRolesAndSearch(Collections.singletonList(RoleType.ROLE_USER), search);
     }
 }
