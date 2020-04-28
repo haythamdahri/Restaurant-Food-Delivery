@@ -5,6 +5,7 @@ import org.restaurant.salado.entities.Currency;
 import org.restaurant.salado.entities.Order;
 import org.restaurant.salado.entities.Payment;
 import org.restaurant.salado.facades.IAuthenticationFacade;
+import org.restaurant.salado.providers.Constants;
 import org.restaurant.salado.services.ChargeService;
 import org.restaurant.salado.services.OrderService;
 import org.restaurant.salado.services.PaymentService;
@@ -37,6 +38,8 @@ public class PaymentRestController {
     private static final String MESSAGE = "message";
     private static final String PAYMENT = "payment";
     private static final String NO_ACTIVE_ORDER = "noActiveOrder";
+    private static final String INSUFFICIENT_STOCK = "insufficientStock";
+
 
     @Value("${STRIPE_PUBLIC_KEY}")
     private String stripePublicKey;
@@ -100,8 +103,13 @@ public class PaymentRestController {
         Order userActiveOrder = this.orderService.getLastActiveOrder(this.userService.getUser(this.authenticationFacade.getAuthentication().getName()).getId());
         // Check if an order is in progress
         if (userActiveOrder.getMealOrders().isEmpty()) {
-            data.put(STATUS, true);
+            data.put(STATUS, false);
+            data.put(MESSAGE, Constants.NO_ORDER_IN_PROGRESS);
             data.put(NO_ACTIVE_ORDER, true);
+        } else if (!userActiveOrder.isMealsStockAvailable()) {
+            data.put(STATUS, false);
+            data.put(INSUFFICIENT_STOCK, true);
+            data.put(MESSAGE, Constants.PRODUCT_STOCK_INSUFFICIENT);
         } else {
             data.put("amount", userActiveOrder.getTotalPrice()); // in cents
             data.put("stripePublicKey", stripePublicKey);

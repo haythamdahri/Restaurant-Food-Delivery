@@ -116,4 +116,13 @@ public class Order implements Serializable {
         return this.mealOrders.stream().anyMatch(ml -> ml.getMeal().getId().equals(mealOrderId));
     }
 
+    public boolean isMealsStockAvailable() {
+        for (MealOrder mealOrder : this.mealOrders) {
+            if( mealOrder.getQuantity() > mealOrder.getMeal().getStock() ){
+                return false;
+            }
+        }
+        return true;
+    }
+
 }

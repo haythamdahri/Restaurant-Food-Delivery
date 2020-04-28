@@ -121,15 +121,13 @@ public class MealOrderServiceImpl implements MealOrderService {
         // Get last active order or create a new one of not exists
         Order userOrder = Optional.ofNullable(this.orderService.getLastActiveOrder(email)).orElse(new Order(null, user, null, BigDecimal.valueOf(0), BigDecimal.valueOf(0), BigDecimal.valueOf(0), "", new Date(), false, false, null));
         // Check if meal already exists in cart or meal stock is empty
-        if (userOrder.getMealOrders() != null) {
-            if (userOrder.checkMealOrder(mealOrder.getMeal().getId())) {
-                // Throw new Business RuntimeException
-                throw new BusinessException(Constants.MEAL_EXISTS_IN_CART);
-            } else if (mealOrder.getMeal().getStock() == 0) {
-                // Check if meal stock is available
-                // Throw new Business RuntimeException
-                throw new BusinessException(Constants.NO_PRODUCT_STOCK_AVAILABLE);
-            }
+        if (userOrder.getMealOrders() != null && userOrder.checkMealOrder(mealOrder.getMeal().getId())) {
+            // Throw new Business RuntimeException
+            throw new BusinessException(Constants.MEAL_EXISTS_IN_CART);
+        } else if (mealOrder.getMeal().getStock() == 0) {
+            // Check if meal stock is available
+            // Throw new Business RuntimeException
+            throw new BusinessException(Constants.PRODUCT_OUT_OF_STOCK);
         }
         // Save mealOrder
         mealOrder.setOrder(userOrder);

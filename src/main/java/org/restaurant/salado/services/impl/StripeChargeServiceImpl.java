@@ -80,6 +80,10 @@ public class StripeChargeServiceImpl implements ChargeService {
             // Throw exception for no order in progress
             throw new BusinessException(Constants.NO_ORDER_IN_PROGRESS);
         }
+        // Check if products stock is always available
+        if( !userActiveOrder.isMealsStockAvailable() ) {
+            throw new BusinessException(Constants.PRODUCT_STOCK_INSUFFICIENT);
+        }
         Map<String, Object> chargeParams = new HashMap<>();
         chargeParams.put("amount", userActiveOrder.getTotalPrice().intValue() * 100);
         chargeParams.put("currency", Currency.MAD);
