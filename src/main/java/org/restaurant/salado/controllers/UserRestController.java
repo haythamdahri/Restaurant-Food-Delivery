@@ -8,6 +8,7 @@ import org.restaurant.salado.models.PasswordReset;
 import org.restaurant.salado.providers.Constants;
 import org.restaurant.salado.services.UserService;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Page;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
@@ -19,7 +20,6 @@ import java.io.IOException;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.stream.Collectors;
 
 /**
  * @author Haytam DAHRI
@@ -50,6 +50,21 @@ public class UserRestController {
     }
 
     /**
+     * Retrieve Basic users Page endpoint | Only users with ROLE_USER
+     * Search users if parameter exists
+     * Authorize only employees and admins to access this endpoint
+     * Exclude current authenticated user
+     *
+     * @return ResponseEntity<Page < User>>
+     */
+    @PreAuthorize("hasRole('ROLE_EMPLOYEE') or hasRole('ROLE_ADMIN')")
+    @GetMapping(path = "/")
+    public ResponseEntity<Page<User>> retrieveBasicUsersPage(@RequestParam(value = "search", required = false, defaultValue = "") String search, @RequestParam(value = "page", required = false, defaultValue = "0") int page, @RequestParam(value = "size", required = false, defaultValue = "${page.default-size}") int size) {
+        // Check if search exists
+        return ResponseEntity.ok(this.userService.getBasicUsersPage(search, page, size));
+    }
+
+    /**
      * Retrieve Basic users endpoint | Only users with ROLE_USER
      * Search users if parameter exists
      * Authorize only employees and admins to access this endpoint
@@ -58,8 +73,8 @@ public class UserRestController {
      * @return ResponseEntity<List < User>>
      */
     @PreAuthorize("hasRole('ROLE_EMPLOYEE') or hasRole('ROLE_ADMIN')")
-    @GetMapping(path = "/")
-    public ResponseEntity<List<User>> retrieveBasicUsers(@RequestParam(value = "search", required = false, defaultValue = "") String search) {
+    @GetMapping(path = "/basics")
+    public ResponseEntity<List<User>> retrieveAllBasicUsers(@RequestParam(value = "search", required = false, defaultValue = "") String search) {
         // Check if search exists
         return ResponseEntity.ok(this.userService.getBasicUsers(search));
     }

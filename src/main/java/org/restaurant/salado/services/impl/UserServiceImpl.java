@@ -3,7 +3,10 @@ package org.restaurant.salado.services.impl;
 import org.apache.commons.io.FilenameUtils;
 import org.apache.commons.io.IOUtils;
 import org.restaurant.salado.dtos.UserDTO;
-import org.restaurant.salado.entities.*;
+import org.restaurant.salado.entities.Meal;
+import org.restaurant.salado.entities.RestaurantFile;
+import org.restaurant.salado.entities.RoleType;
+import org.restaurant.salado.entities.User;
 import org.restaurant.salado.exceptions.BusinessException;
 import org.restaurant.salado.mappers.UserMapper;
 import org.restaurant.salado.models.PasswordReset;
@@ -13,17 +16,14 @@ import org.restaurant.salado.services.*;
 import org.restaurant.salado.utils.RestaurantUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
 import org.springframework.http.MediaType;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 
 import javax.persistence.EntityManager;
-import javax.persistence.TypedQuery;
-import javax.persistence.criteria.CriteriaBuilder;
-import javax.persistence.criteria.CriteriaQuery;
-import javax.persistence.criteria.Predicate;
-import javax.persistence.criteria.Root;
 import javax.transaction.Transactional;
 import java.io.File;
 import java.io.FileInputStream;
@@ -343,5 +343,17 @@ public class UserServiceImpl implements UserService {
         }
         // Return by search
         return this.userRepository.findBySpecificRolesAndSearch(Collections.singletonList(RoleType.ROLE_USER), search);
+    }
+
+    @Override
+    public Page<User> getBasicUsersPage(String search, int page, int size) {
+        search = search.trim().toLowerCase();
+        // Check if search is empty
+        if (search.length() == 0) {
+            // Return users with ROLE_USER without search
+            return this.userRepository.findBySpecificRolesPage(PageRequest.of(page, size), Collections.singletonList(RoleType.ROLE_USER));
+        }
+        // Return by search
+        return this.userRepository.findBySpecificRolesAndSearchPage(PageRequest.of(page, size), Collections.singletonList(RoleType.ROLE_USER), search);
     }
 }

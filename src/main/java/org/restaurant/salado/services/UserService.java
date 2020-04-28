@@ -3,8 +3,8 @@ package org.restaurant.salado.services;
 import org.restaurant.salado.dtos.UserDTO;
 import org.restaurant.salado.entities.User;
 import org.restaurant.salado.exceptions.BusinessException;
-import org.restaurant.salado.models.MessageType;
 import org.restaurant.salado.models.PasswordReset;
+import org.springframework.data.domain.Page;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.io.IOException;
@@ -50,5 +50,7 @@ public interface UserService {
     List<User> getUsers();
 
     List<User> getBasicUsers(String search);
+
+    Page<User> getBasicUsersPage(String search, int page, int size);
 
 }
