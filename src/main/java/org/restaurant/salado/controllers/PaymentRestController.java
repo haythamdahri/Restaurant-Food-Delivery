@@ -36,7 +36,6 @@ public class PaymentRestController {
 
     private static final String STATUS = "status";
     private static final String MESSAGE = "message";
-    private static final String PAYMENT = "payment";
     private static final String NO_ACTIVE_ORDER = "noActiveOrder";
     private static final String INSUFFICIENT_STOCK = "insufficientStock";
 
@@ -80,7 +79,19 @@ public class PaymentRestController {
     }
 
     /**
-     * Retrieve all payments
+     * Retrieve Payments Page
+     * Authorize only Employees And Admins
+     *
+     * @return ResponseEntity<Page < Payment>>
+     */
+    @PreAuthorize("hasRole('ROLE_EMPLOYEE') or hasRole('ROLE_ADMIN')")
+    @GetMapping(path = "/")
+    public ResponseEntity<Page<Payment>> retrievePaymentsPage(@RequestParam(value = "search", required = false, defaultValue = "") String search, @RequestParam(value = "page", required = false, defaultValue = "0") int page, @RequestParam(value = "size", required = false, defaultValue = "${page.default-size}") int size) {
+        return ResponseEntity.ok(this.paymentService.getPaymentsPage(search, page, size));
+    }
+
+    /**
+     * Retrieve All Payments
      * Authorize only Employees And Admins
      *
      * @return ResponseEntity<List < Payment>>
@@ -150,14 +161,12 @@ public class PaymentRestController {
     /**
      * Retrieve current user payments page
      *
-     * @param search: Search criteria
-     * @param page:   Requested page
-     * @param size:   Request Page Size
+     * @param page: Requested page
+     * @param size: Request Page Size
      * @return ResponseEntity<Page < Payment>>
      */
-    @GetMapping(path = "/")
-    public ResponseEntity<Page<Payment>> retrieveUserPaymentsEndpoint(@RequestParam(value = "search", required = false) String search, @RequestParam(value = "page", required = false, defaultValue = "0") int page, @RequestParam(value = "size", required = false, defaultValue = "${page.default-size}") int size) {
-
+    @GetMapping(path = "/userpayments")
+    public ResponseEntity<Page<Payment>> retrieveUserPaymentsEndpoint(@RequestParam(value = "page", required = false, defaultValue = "0") int page, @RequestParam(value = "size", required = false, defaultValue = "${page.default-size}") int size) {
         return ResponseEntity.ok(this.paymentService.getUserPayments(this.authenticationFacade.getAuthentication().getName(), page, size));
     }
 

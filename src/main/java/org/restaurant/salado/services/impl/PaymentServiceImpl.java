@@ -2,6 +2,7 @@ package org.restaurant.salado.services.impl;
 
 import org.restaurant.salado.entities.Payment;
 import org.restaurant.salado.exceptions.BusinessException;
+import org.restaurant.salado.providers.Constants;
 import org.restaurant.salado.repositories.PaymentRepository;
 import org.restaurant.salado.services.PaymentContentBuilder;
 import org.restaurant.salado.services.PaymentService;
@@ -71,5 +72,23 @@ public class PaymentServiceImpl implements PaymentService {
     @Override
     public List<Payment> getPayments() {
         return this.paymentRepository.findAll();
+    }
+
+    @Override
+    public Page<Payment> getPaymentsPage(String search, int page, int size) {
+        search = search.trim().toLowerCase();
+        // Check if search is empty
+        if (search.isEmpty()) {
+            return this.paymentRepository.findAll(PageRequest.of(page, size));
+        }
+        // Cast search to long
+        try {
+            Long id = Long.parseLong(search);
+            return this.paymentRepository.searchPaymentsByIdentifier(PageRequest.of(page, size), id, Constants.SHIPPING_FEES);
+        } catch (ClassCastException | NumberFormatException ex) {
+            return this.paymentRepository.searchPayments(PageRequest.of(page, size), search);
+        } catch (Exception ex) {
+            throw new BusinessException(Constants.ERROR);
+        }
     }
 }

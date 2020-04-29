@@ -26,4 +26,6 @@ public interface PaymentService {
 
     List<Payment> getPayments();
 
+    Page<Payment> getPaymentsPage(String search, int page, int size);
+
 }
