@@ -38,6 +38,9 @@ public class Review implements Serializable {
     @Column(name = "comment", length = 1200)
     private String comment;
 
+    @Column(name = "approved")
+    private boolean approved;
+
     @Column(name = "rating")
     @Min(value = 0)
     @Max(value = 5)

@@ -12,6 +12,10 @@ public interface ReviewService {
 
     Review saveReview(Review review);
 
+    Review approveReview(Long id);
+
+    Review disapproveReview(Long id);
+
     boolean deleteReview(Long id);
 
     Review getReview(Long id);
@@ -20,7 +24,13 @@ public interface ReviewService {
 
     Page<Review> getReviews(int page, int size);
 
+    Page<Review> getReviews(String search, int page, int size);
+
+    Page<Review> getApprovedReviews(int page, int size);
+
     Page<Review> getMealReviews(Long mealId, int page, int size);
+
+    Page<Review> getApprovedMealReviews(Long mealId, int page, int size);
 
     List<Review> getUserReviews(String email);
 
