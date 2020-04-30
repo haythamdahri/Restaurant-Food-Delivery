@@ -47,6 +47,7 @@ public class MealRestController {
     @PreAuthorize("hasRole('ROLE_EMPLOYEE') or hasRole('ROLE_ADMIN')")
     @GetMapping(value = "/all")
     public ResponseEntity<List<Meal>> fetchMealsEndPoint() {
+        System.out.println("ALL");
         return ResponseEntity.ok(this.mealService.getMeals());
     }
 
@@ -108,6 +109,5 @@ public class MealRestController {
     public ResponseEntity<List<Meal>> getPopularMealsEndpoint(@RequestParam(value = "page", required = false, defaultValue = "0") int page, @RequestParam(value = "size", required = false, defaultValue = "${page.default-size}") int size) {
         return new ResponseEntity<>(this.mealService.getPopularMeals(page, size), HttpStatus.OK);
     }
-
 
 }

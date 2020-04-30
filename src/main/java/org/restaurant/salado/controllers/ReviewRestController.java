@@ -15,6 +15,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
+import javax.transaction.Transactional;
 import java.util.List;
 
 /**
@@ -158,5 +159,22 @@ public class ReviewRestController {
         review = this.reviewService.saveReview(review);
         // Return success response
         return ResponseEntity.ok(review);
+    }
+
+
+    /**
+     * Retrieve Meal object of a given Review
+     *
+     * @param id: Review IDENTIFIER
+     * @return Meal
+     */
+    @GetMapping(path = "/{id}/meal")
+    @Transactional
+    public ResponseEntity<Meal> retrieveReviewMeal(@PathVariable(value = "id") Long id) {
+        try {
+            return ResponseEntity.ok(this.reviewService.getReview(id).getMeal());
+        } catch (Exception ex) {
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).build();
+        }
     }
 }
