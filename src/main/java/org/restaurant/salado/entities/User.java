@@ -57,17 +57,17 @@ public class User implements Serializable {
     @JsonIgnore
     private Date expiryDate;
 
-    @ManyToMany(fetch = FetchType.EAGER)
+    @ManyToMany(fetch = FetchType.EAGER, cascade = {CascadeType.DETACH, CascadeType.MERGE, CascadeType.PERSIST, CascadeType.REFRESH})
     @JoinTable(name = "users_roles", joinColumns = {@JoinColumn(name = "user_id")}, inverseJoinColumns = @JoinColumn(name = "role_id"))
     @JsonIgnoreProperties(value = {"users"})
     private Set<Role> roles;
 
-    @ManyToMany(targetEntity = Meal.class)
+    @ManyToMany(targetEntity = Meal.class, cascade = {CascadeType.DETACH, CascadeType.MERGE, CascadeType.PERSIST, CascadeType.REFRESH})
     @JoinTable(name = "users_preferred_meals", joinColumns = {@JoinColumn(name = "user_id", referencedColumnName = "id")}, inverseJoinColumns = @JoinColumn(name = "meal_id"))
     @JsonProperty(access = JsonProperty.Access.WRITE_ONLY)
     private List<Meal> preferredMeals;
 
-    @OneToMany(fetch = FetchType.LAZY, mappedBy = "user")
+    @OneToMany(fetch = FetchType.LAZY, mappedBy = "user", cascade = CascadeType.ALL)
     @JsonProperty(access = JsonProperty.Access.WRITE_ONLY)
     private List<Review> reviews;
 

@@ -18,6 +18,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Sort;
 import org.springframework.http.MediaType;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Service;
@@ -351,9 +352,9 @@ public class UserServiceImpl implements UserService {
         // Check if search is empty
         if (search.length() == 0) {
             // Return users with ROLE_USER without search
-            return this.userRepository.findBySpecificRolesPage(PageRequest.of(page, size), Collections.singletonList(RoleType.ROLE_USER));
+            return this.userRepository.findBySpecificRolesPage(PageRequest.of(page, size, Sort.Direction.DESC, "id"), Collections.singletonList(RoleType.ROLE_USER));
         }
         // Return by search
-        return this.userRepository.findBySpecificRolesAndSearchPage(PageRequest.of(page, size), Collections.singletonList(RoleType.ROLE_USER), search);
+        return this.userRepository.findBySpecificRolesAndSearchPage(PageRequest.of(page, size, Sort.Direction.DESC, "id"), Collections.singletonList(RoleType.ROLE_USER), search);
     }
 }

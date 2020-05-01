@@ -10,6 +10,7 @@ import org.restaurant.salado.utils.RestaurantUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 
@@ -87,7 +88,7 @@ public class RestaurantFileServiceImpl implements RestaurantFileService {
 
     @Override
     public Page<RestaurantFile> searchRestaurantFiles(int page, int size, String search) {
-        return this.restaurantFileRepository.findByNameContainingIgnoreCaseOrId(PageRequest.of(page, size), search, search);
+        return this.restaurantFileRepository.findByNameContainingIgnoreCaseOrId(PageRequest.of(page, size, Sort.Direction.DESC, "id"), search, search);
     }
 
     @Override

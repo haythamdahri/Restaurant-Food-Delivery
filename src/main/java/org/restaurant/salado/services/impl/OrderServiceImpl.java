@@ -1,5 +1,6 @@
 package org.restaurant.salado.services.impl;
 
+import org.restaurant.salado.entities.MealOrder;
 import org.restaurant.salado.entities.Order;
 import org.restaurant.salado.repositories.OrderRepository;
 import org.restaurant.salado.services.OrderService;
@@ -8,6 +9,7 @@ import org.springframework.stereotype.Service;
 
 import javax.transaction.Transactional;
 import java.util.List;
+import java.util.stream.Collectors;
 
 /**
  * @author Haytam DAHRI
@@ -36,7 +38,12 @@ public class OrderServiceImpl implements OrderService {
 
     @Override
     public Order getLastActiveOrder(Long userId) {
-        return this.orderRepository.findByUserIdAndCancelledFalseAndDeliveredFalse(userId).orElse(null);
+        Order order = this.orderRepository.findByUserIdAndCancelledFalseAndDeliveredFalse(userId).orElse(null);
+        // Remove deleted meals from Order
+        assert order != null;
+        List<MealOrder> deletedMealOrders = order.getMealOrders().stream().filter(mealOrder -> mealOrder.getMeal().isDeleted()).collect(Collectors.toList());
+        order.getMealOrders().removeAll(deletedMealOrders);
+        return this.orderRepository.save(order);
     }
 
     @Override

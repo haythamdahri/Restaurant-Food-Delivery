@@ -45,11 +45,14 @@ public class Meal implements Serializable {
     @Column(name = "sale_price")
     private BigDecimal salePrice;
 
-    @OneToMany(fetch = FetchType.LAZY, mappedBy = "meal")
+    @Column(name = "deleted")
+    private boolean deleted;
+
+    @OneToMany(fetch = FetchType.LAZY, mappedBy = "meal", cascade = CascadeType.ALL)
     private List<Review> reviews;
 
     @JsonIgnore
-    @ManyToMany(mappedBy = "preferredMeals", targetEntity = User.class)
+    @ManyToMany(mappedBy = "preferredMeals", cascade = {CascadeType.DETACH, CascadeType.MERGE, CascadeType.PERSIST, CascadeType.REFRESH}, targetEntity = User.class)
     private List<User> usersPreferences;
 
     /**

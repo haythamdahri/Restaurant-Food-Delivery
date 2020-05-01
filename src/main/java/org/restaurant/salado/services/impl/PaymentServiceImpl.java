@@ -10,6 +10,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.core.io.InputStreamResource;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 
 import java.io.IOException;
@@ -61,12 +62,12 @@ public class PaymentServiceImpl implements PaymentService {
 
     @Override
     public Page<Payment> getUserPayments(String userEmail, int page, int size) {
-        return this.paymentRepository.findByUserEmail(PageRequest.of(page, size), userEmail);
+        return this.paymentRepository.findByUserEmail(PageRequest.of(page, size, Sort.Direction.DESC, "id"), userEmail);
     }
 
     @Override
     public Page<Payment> getUserPayments(String userEmail, String search, int page, int size) {
-        return this.paymentRepository.findByUserEmail(PageRequest.of(page, size), userEmail);
+        return this.paymentRepository.findByUserEmail(PageRequest.of(page, size, Sort.Direction.DESC, "id"), userEmail);
     }
 
     @Override
@@ -79,14 +80,14 @@ public class PaymentServiceImpl implements PaymentService {
         search = search.trim().toLowerCase();
         // Check if search is empty
         if (search.isEmpty()) {
-            return this.paymentRepository.findAll(PageRequest.of(page, size));
+            return this.paymentRepository.findAll(PageRequest.of(page, size, Sort.Direction.DESC, "id"));
         }
         // Cast search to long
         try {
             Long id = Long.parseLong(search);
-            return this.paymentRepository.searchPaymentsByIdentifier(PageRequest.of(page, size), id, Constants.SHIPPING_FEES);
+            return this.paymentRepository.searchPaymentsByIdentifier(PageRequest.of(page, size, Sort.Direction.DESC, "id"), id, Constants.SHIPPING_FEES);
         } catch (ClassCastException | NumberFormatException ex) {
-            return this.paymentRepository.searchPayments(PageRequest.of(page, size), search);
+            return this.paymentRepository.searchPayments(PageRequest.of(page, size, Sort.Direction.DESC, "id"), search);
         } catch (Exception ex) {
             throw new BusinessException(Constants.ERROR);
         }

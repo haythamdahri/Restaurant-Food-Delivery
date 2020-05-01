@@ -14,11 +14,21 @@ public interface MealService {
 
     boolean deleteMeal(Long id);
 
+    boolean undoMealDelete(Long id);
+
     Meal getMeal(Long id);
+
+    Meal getExistingMeal(Long id);
 
     List<Meal> getMeals();
 
+    List<Meal> getAllMeals();
+
     Page<Meal> getMeals(int page, int size);
+
+    Page<Meal> getMeals(String search, int page, int size);
+
+    Page<Meal> getAllMeals(String search, int page, int size);
 
     List<Meal> getPopularMeals(int page, int size);
 

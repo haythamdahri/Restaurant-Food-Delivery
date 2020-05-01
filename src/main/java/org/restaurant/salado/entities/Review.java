@@ -15,7 +15,7 @@ import java.util.Date;
  * @author Haytham DAHRI
  */
 @Entity
-@Table(name = "reviews")
+@Table(name = "reviews", uniqueConstraints = {@UniqueConstraint(columnNames = {"user_id", "meal_id"})})
 @Data
 @NoArgsConstructor
 @AllArgsConstructor

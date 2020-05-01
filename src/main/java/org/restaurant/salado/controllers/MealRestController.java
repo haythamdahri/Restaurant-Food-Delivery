@@ -39,6 +39,28 @@ public class MealRestController {
     }
 
     /**
+     * Retrieve meals Page Endpoint
+     *
+     * @return ResponseEntity<Page < Meal>>
+     */
+    @GetMapping(path = "/")
+    public ResponseEntity<Page<Meal>> retrieveMealsEndPoint(@RequestParam(value = "search", required = false, defaultValue = "") String search, @RequestParam(value = "page", required = false, defaultValue = "0") int page, @RequestParam(value = "size", required = false, defaultValue = "${page.default-size}") int size) {
+        return ResponseEntity.ok(this.mealService.getMeals(search, page, size));
+    }
+
+    /**
+     * Retrieve meals Page Endpoint
+     * Get all meals: DELETED AND NON DELETED ones
+     *
+     * @return ResponseEntity<Page < Meal>>
+     */
+    @PreAuthorize("hasRole('ROLE_EMPLOYEE') or hasRole('ROLE_ADMIN')")
+    @GetMapping(path = "/page")
+    public ResponseEntity<Page<Meal>> retrieveAllMealsPageEndPoint(@RequestParam(value = "search", required = false, defaultValue = "") String search, @RequestParam(value = "page", required = false, defaultValue = "0") int page, @RequestParam(value = "size", required = false, defaultValue = "${page.default-size}") int size) {
+        return ResponseEntity.ok(this.mealService.getAllMeals(search, page, size));
+    }
+
+    /**
      * Retrieve all meals Endpoint
      * Authorize Only Employees And Admins
      *
@@ -47,18 +69,23 @@ public class MealRestController {
     @PreAuthorize("hasRole('ROLE_EMPLOYEE') or hasRole('ROLE_ADMIN')")
     @GetMapping(value = "/all")
     public ResponseEntity<List<Meal>> fetchMealsEndPoint() {
-        System.out.println("ALL");
         return ResponseEntity.ok(this.mealService.getMeals());
     }
 
+
     /**
-     * Retrieve meals Page Endpoint
+     * Retrieve A Meal For Administration
      *
-     * @return ResponseEntity<Page < Meal>>
+     * @param id: Meal Id
+     * @return ResponseEntity
      */
-    @GetMapping(path = "/")
-    public ResponseEntity<Page<Meal>> retrieveMealsEndPoint(@RequestParam(value = "page", required = false, defaultValue = "0") int page, @RequestParam(value = "size", required = false, defaultValue = "${page.default-size}") int size) {
-        return ResponseEntity.ok(this.mealService.getMeals(page, size));
+    @GetMapping(value = "/all/{id}")
+    public ResponseEntity<Meal> retrieveMealForBackOffice(@PathVariable(value = "id") Long id) {
+        Meal meal = this.mealService.getMeal(id);
+        if( meal != null ){
+            return ResponseEntity.ok(meal);
+        }
+        return ResponseEntity.notFound().build();
     }
 
     /**
@@ -76,7 +103,7 @@ public class MealRestController {
         boolean mealPreferred = false;
         try {
             // Retrieve meal
-            meal = this.mealService.getMeal(id);
+            meal = this.mealService.getExistingMeal(id);
             // Check if meal exists
             if (meal != null) {
                 // Update number of views and save the meal
@@ -108,6 +135,42 @@ public class MealRestController {
     @GetMapping(value = "/popular")
     public ResponseEntity<List<Meal>> getPopularMealsEndpoint(@RequestParam(value = "page", required = false, defaultValue = "0") int page, @RequestParam(value = "size", required = false, defaultValue = "${page.default-size}") int size) {
         return new ResponseEntity<>(this.mealService.getPopularMeals(page, size), HttpStatus.OK);
+    }
+
+    /**
+     * Delete a given Meal By ID
+     * Deleting consist on set field deleted to true only without physical delete
+     * Authorize Only Employees And Admins
+     *
+     * @param id: Meal IDENTIFIER
+     * @return ResponseEntity<?>
+     */
+    @PreAuthorize("hasRole('ROLE_EMPLOYEE') or hasRole('ROLE_ADMIN')")
+    @DeleteMapping(path = "/{id}")
+    public ResponseEntity<?> deleteMealEndPoint(@PathVariable(value = "id") Long id) {
+        try {
+            return ResponseEntity.ok(this.mealService.deleteMeal(id));
+        } catch (Exception ex) {
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(ex.getMessage());
+        }
+    }
+
+    /**
+     * Undo Delete of a given Meal By ID
+     * Deleting consist on set field deleted to true only without physical delete
+     * Authorize Only Employees And Admins
+     *
+     * @param id: Meal IDENTIFIER
+     * @return ResponseEntity<?>
+     */
+    @PreAuthorize("hasRole('ROLE_EMPLOYEE') or hasRole('ROLE_ADMIN')")
+    @PostMapping(path = "/{id}/undo")
+    public ResponseEntity<?> resetMealEndPoint(@PathVariable(value = "id") Long id) {
+        try {
+            return ResponseEntity.ok(this.mealService.undoMealDelete(id));
+        } catch (Exception ex) {
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(ex.getMessage());
+        }
     }
 
 }

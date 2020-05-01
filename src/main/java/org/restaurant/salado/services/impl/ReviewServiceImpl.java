@@ -7,6 +7,7 @@ import org.restaurant.salado.services.ReviewService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
@@ -65,27 +66,27 @@ public class ReviewServiceImpl implements ReviewService {
 
     @Override
     public Page<Review> getReviews(int page, int size) {
-        return this.reviewRepository.findAll(PageRequest.of(page, size));
+        return this.reviewRepository.findAll(PageRequest.of(page, size, Sort.Direction.DESC, "id"));
     }
 
     @Override
     public Page<Review> getReviews(String search, int page, int size) {
-        return this.reviewRepository.searchReviews(PageRequest.of(page, size), search.trim().toLowerCase());
+        return this.reviewRepository.searchReviews(PageRequest.of(page, size, Sort.Direction.DESC, "id"), search.trim().toLowerCase());
     }
 
     @Override
     public Page<Review> getApprovedReviews(int page, int size) {
-        return this.reviewRepository.findByApprovedTrue(PageRequest.of(page, size));
+        return this.reviewRepository.findByApprovedTrue(PageRequest.of(page, size, Sort.Direction.DESC, "rating"));
     }
 
     @Override
     public Page<Review> getMealReviews(Long mealId, int page, int size) {
-        return this.reviewRepository.findByMealIdOrderById(PageRequest.of(page, size), mealId);
+        return this.reviewRepository.findByMealIdOrderById(PageRequest.of(page, size, Sort.Direction.DESC, "rating"), mealId);
     }
 
     @Override
     public Page<Review> getApprovedMealReviews(Long mealId, int page, int size) {
-        return this.reviewRepository.findByMealIdAndApprovedTrueOrderById(PageRequest.of(page, size), mealId);
+        return this.reviewRepository.findByMealIdAndApprovedTrueOrderById(PageRequest.of(page, size, Sort.Direction.DESC, "rating"), mealId);
     }
 
     @Override

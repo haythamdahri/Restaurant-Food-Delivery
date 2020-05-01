@@ -57,7 +57,7 @@ public class UserCartRestController {
         User user = this.userService.getUser(this.authenticationFacade.getAuthentication().getName());
         // Create results data
         Map<String, Object> data = new HashMap<>();
-        // Get last active order
+        // Get last active order And Delete meals from user cart if deleted
         Order userActiveOrder = this.orderService.getLastActiveOrder(user.getId());
         // Check if their is an active order
         if (userActiveOrder == null || userActiveOrder.getMealOrders().isEmpty()) {

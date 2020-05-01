@@ -125,4 +125,13 @@ public class Order implements Serializable {
         return true;
     }
 
+    public boolean isMealsNotDeleted() {
+        for( MealOrder mealOrder : this.mealOrders ) {
+            if( mealOrder.getMeal().isDeleted() ) {
+                return false;
+            }
+        }
+        return true;
+    }
+
 }
