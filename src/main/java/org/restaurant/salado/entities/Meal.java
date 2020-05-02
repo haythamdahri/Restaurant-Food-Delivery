@@ -56,15 +56,6 @@ public class Meal implements Serializable {
     private List<User> usersPreferences;
 
     /**
-     * Retrieve meal price
-     * Check if product in sale
-     * @return BigDecimal
-     */
-    public BigDecimal getPrice() {
-        return this.salePrice != null ? this.salePrice : this.price;
-    }
-
-    /**
      * Increment views for current meal
      */
     public Meal incrementViews() {

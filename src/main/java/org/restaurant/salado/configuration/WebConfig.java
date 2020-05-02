@@ -14,9 +14,15 @@ import org.springframework.web.servlet.config.annotation.WebMvcConfigurationSupp
 @EnableWebMvc
 public class WebConfig extends WebMvcConfigurationSupport {
 
-    @Bean
-    public MultipartResolver multipartResolver() {
-        return new CommonsMultipartResolver();
+    /**
+     * MultipartResolver Bean
+     * @return MultipartResolver
+     */
+    @Bean(name = "multipartResolver")
+    public CommonsMultipartResolver multipartResolver() {
+        CommonsMultipartResolver multipartResolver = new CommonsMultipartResolver();
+        multipartResolver.setMaxUploadSize(2000000);
+        return multipartResolver;
     }
 
 }

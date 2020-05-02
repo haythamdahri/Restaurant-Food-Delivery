@@ -1,8 +1,10 @@
 package org.restaurant.salado.services;
 
 import org.restaurant.salado.entities.Meal;
+import org.restaurant.salado.models.MealRequest;
 import org.springframework.data.domain.Page;
 
+import java.io.IOException;
 import java.util.List;
 
 /**
@@ -11,6 +13,8 @@ import java.util.List;
 public interface MealService {
 
     Meal saveMeal(Meal meal);
+
+    Meal saveMeal(MealRequest mealRequest) throws IOException;
 
     boolean deleteMeal(Long id);
 

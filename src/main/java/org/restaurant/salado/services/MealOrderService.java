@@ -1,7 +1,6 @@
 package org.restaurant.salado.services;
 
 import org.restaurant.salado.entities.MealOrder;
-import org.restaurant.salado.entities.Order;
 import org.restaurant.salado.models.MealOrderRequest;
 
 import java.util.List;

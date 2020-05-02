@@ -3,15 +3,18 @@ package org.restaurant.salado.controllers;
 import javassist.NotFoundException;
 import org.restaurant.salado.entities.Meal;
 import org.restaurant.salado.facades.IAuthenticationFacade;
+import org.restaurant.salado.models.MealRequest;
 import org.restaurant.salado.services.MealService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.http.HttpStatus;
+import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
 import javax.transaction.Transactional;
+import java.io.IOException;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -49,6 +52,18 @@ public class MealRestController {
     }
 
     /**
+     * Save Meal
+     *
+     * @param mealRequest: MealRequest
+     * @return ResponseEntity<Meal>
+     */
+    @PreAuthorize("hasRole('ROLE_EMPLOYEE') or hasRole('ROLE_ADMIN')")
+    @PostMapping(path = "/", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
+    public ResponseEntity<Meal> saveMealEndPoint(@ModelAttribute MealRequest mealRequest) throws IOException {
+        return ResponseEntity.ok(this.mealService.saveMeal(mealRequest));
+    }
+
+    /**
      * Retrieve meals Page Endpoint
      * Get all meals: DELETED AND NON DELETED ones
      *
@@ -82,7 +97,7 @@ public class MealRestController {
     @GetMapping(value = "/all/{id}")
     public ResponseEntity<Meal> retrieveMealForBackOffice(@PathVariable(value = "id") Long id) {
         Meal meal = this.mealService.getMeal(id);
-        if( meal != null ){
+        if (meal != null) {
             return ResponseEntity.ok(meal);
         }
         return ResponseEntity.notFound().build();

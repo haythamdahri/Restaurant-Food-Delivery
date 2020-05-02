@@ -64,6 +64,11 @@ public class MealOrderServiceImpl implements MealOrderService {
         if (mealOrder != null) {
             // Check meal available quantity
             if (mealOrder.getMeal().getStock() >= quantity) {
+                // Check if product is not deleted
+                if ( mealOrder.getMeal().isDeleted() ) {
+                    // Throw BusinessException
+                    throw new BusinessException(Constants.PRODUCT_DELETED);
+                }
                 // Update mealOrder quantity and save it
                 mealOrder.setQuantity(quantity);
                 mealOrder = this.mealOrderRepository.save(mealOrder);
@@ -72,7 +77,7 @@ public class MealOrderServiceImpl implements MealOrderService {
                 throw new BusinessException(Constants.UNAVAILABLE_PRODUCT_STOCK.replace("AVAILABLE_STOCK", mealOrder.getMeal().getStock().toString()));
             }
         } else {
-            throw new BusinessException("An error occurred while updating meal order quantity, please try again!");
+            throw new BusinessException(Constants.ERROR);
         }
         // Return mealOrder for successful operation
         return mealOrder;
@@ -111,7 +116,6 @@ public class MealOrderServiceImpl implements MealOrderService {
         return this.mealOrderRepository.findByOrderId(orderId);
     }
 
-
     @Override
     public MealOrder createOrUpdateUserCurrentOrder(String email, MealOrderRequest mealOrderRequest) {
         // Create MealOrder object
@@ -128,6 +132,10 @@ public class MealOrderServiceImpl implements MealOrderService {
             // Check if meal stock is available
             // Throw new Business RuntimeException
             throw new BusinessException(Constants.PRODUCT_OUT_OF_STOCK);
+        } else if( mealOrder.getMeal().isDeleted() ) {
+            // Check if meal is not deleted
+            // Throw new Business RuntimeException
+            throw new BusinessException(Constants.PRODUCT_DELETED);
         }
         // Save mealOrder
         mealOrder.setOrder(userOrder);

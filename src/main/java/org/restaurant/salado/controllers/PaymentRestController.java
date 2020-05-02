@@ -124,7 +124,7 @@ public class PaymentRestController {
         } else if (!userActiveOrder.isMealsNotDeleted()) {
             data.put(STATUS, false);
             data.put(INSUFFICIENT_STOCK, true);
-            data.put(MESSAGE, Constants.PRODUCT_DELETED);
+            data.put(MESSAGE, Constants.PRODUCTS_DELETED);
         } else {
             data.put("amount", userActiveOrder.getTotalPrice()); // in cents
             data.put("stripePublicKey", stripePublicKey);
