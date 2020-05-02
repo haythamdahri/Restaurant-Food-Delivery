@@ -10,6 +10,7 @@ import org.restaurant.salado.entities.User;
 import org.restaurant.salado.exceptions.BusinessException;
 import org.restaurant.salado.mappers.UserMapper;
 import org.restaurant.salado.models.PasswordReset;
+import org.restaurant.salado.models.UserRequest;
 import org.restaurant.salado.providers.Constants;
 import org.restaurant.salado.repositories.UserRepository;
 import org.restaurant.salado.services.*;
@@ -24,7 +25,6 @@ import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 
-import javax.persistence.EntityManager;
 import javax.transaction.Transactional;
 import java.io.File;
 import java.io.FileInputStream;
@@ -50,8 +50,6 @@ public class UserServiceImpl implements UserService {
     private EmailService emailService;
 
     private MealService mealService;
-
-    private EntityManager entityManager;
 
     @Value("${token_expiration}")
     private int tokenExpiration;
@@ -89,11 +87,6 @@ public class UserServiceImpl implements UserService {
     @Autowired
     public void setMealService(MealService mealService) {
         this.mealService = mealService;
-    }
-
-    @Autowired
-    public void setEntityManager(EntityManager entityManager) {
-        this.entityManager = entityManager;
     }
 
     @Override
@@ -295,6 +288,23 @@ public class UserServiceImpl implements UserService {
 
     @Override
     public User saveUser(User user) {
+        return this.userRepository.save(user);
+    }
+
+    @Override
+    public User saveUser(Long id, UserRequest userRequest) {
+        // Retrieve user
+        User user = this.userRepository.findById(id).orElseThrow(BusinessException::new);
+        Optional<User> optionalUser = this.userRepository.findByEmail(userRequest.getEmail());
+        // Retrieve User By Email: Throw exception if exists and not same user
+        if (userRequest.getEmail() != null && !user.getEmail().trim().equalsIgnoreCase(userRequest.getEmail()) && optionalUser.isPresent() && !optionalUser.orElseThrow(BusinessException::new).getId().equals(id)) {
+            throw new BusinessException(Constants.EMAIL_ALREADY_USED);
+        }
+        // Set data
+        user.setEmail(userRequest.getEmail().trim());
+        user.setUsername(userRequest.getUsername().trim());
+        user.setLocation(userRequest.getLocation().trim());
+        // Return saved user
         return this.userRepository.save(user);
     }
 

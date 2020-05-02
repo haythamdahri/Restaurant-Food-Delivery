@@ -17,6 +17,7 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 
 import javax.annotation.PostConstruct;
+import javax.transaction.Transactional;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.concurrent.CompletableFuture;
@@ -25,6 +26,7 @@ import java.util.concurrent.CompletableFuture;
  * @author Haytham DAHRI
  */
 @Service
+@Transactional
 public class StripeChargeServiceImpl implements ChargeService {
 
     @Value("${STRIPE_SECRET_KEY}")
@@ -81,7 +83,7 @@ public class StripeChargeServiceImpl implements ChargeService {
             throw new BusinessException(Constants.NO_ORDER_IN_PROGRESS);
         }
         // Check if products stock is always available
-        if( !userActiveOrder.isMealsStockAvailable() ) {
+        if (!userActiveOrder.isMealsStockAvailable()) {
             throw new BusinessException(Constants.PRODUCT_STOCK_INSUFFICIENT);
         }
         Map<String, Object> chargeParams = new HashMap<>();

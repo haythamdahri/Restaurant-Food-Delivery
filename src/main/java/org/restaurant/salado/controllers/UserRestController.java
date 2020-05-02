@@ -5,6 +5,7 @@ import org.restaurant.salado.entities.Meal;
 import org.restaurant.salado.entities.User;
 import org.restaurant.salado.facades.IAuthenticationFacade;
 import org.restaurant.salado.models.PasswordReset;
+import org.restaurant.salado.models.UserRequest;
 import org.restaurant.salado.providers.Constants;
 import org.restaurant.salado.services.UserService;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -90,6 +91,19 @@ public class UserRestController {
     public ResponseEntity<User> registerUser(@RequestBody UserDTO userDTO) throws IOException {
         // Create User Account And Return success message response
         return ResponseEntity.ok(this.userService.registerUser(userDTO));
+    }
+
+    /**
+     * Update User Info
+     *
+     * @param id:          User ID
+     * @param userRequest: UserRequest Body Object
+     * @return ResponseEntity<User>
+     */
+    @PreAuthorize("hasRole('ROLE_EMPLOYEE') or hasRole('ROLE_ADMIN')")
+    @PatchMapping(path = "/{id}")
+    public ResponseEntity<User> saveUser(@PathVariable("id") Long id, @RequestBody UserRequest userRequest) {
+        return ResponseEntity.ok(this.userService.saveUser(id, userRequest));
     }
 
     /**

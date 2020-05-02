@@ -4,6 +4,7 @@ import org.restaurant.salado.dtos.UserDTO;
 import org.restaurant.salado.entities.User;
 import org.restaurant.salado.exceptions.BusinessException;
 import org.restaurant.salado.models.PasswordReset;
+import org.restaurant.salado.models.UserRequest;
 import org.springframework.data.domain.Page;
 import org.springframework.web.multipart.MultipartFile;
 
@@ -18,6 +19,8 @@ public interface UserService {
     User registerUser(UserDTO userDTO) throws IOException;
 
     User saveUser(User user);
+
+    User saveUser(Long id, UserRequest userRequest);
 
     Boolean requestUserPasswordReset(String email);
 
