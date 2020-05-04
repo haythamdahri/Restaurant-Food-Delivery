@@ -23,10 +23,10 @@ public interface PaymentRepository extends JpaRepository<Payment, Long> {
 
     Page<Payment> findByUserEmail(@PageableDefault Pageable pageable, @Param(value = "email") String email);
 
-    @Query("SELECT p from Payment as p where p.id = :search or p.order.id = :search or p.user.id = :search or p.order.price = (:search - :shippingFees)")
+    @Query(value = "SELECT p from Payment as p where p.id = :search or p.order.id = :search or p.user.id = :search or p.order.price = (:search - :shippingFees)")
     Page<Payment> searchPaymentsByIdentifier(@PageableDefault Pageable pageable, @Param("search") Long search, @Param("shippingFees") BigDecimal shippingFees);
 
-    @Query("SELECT p from Payment as p where p.chargeId = :search  or lower(p.user.email) like %:search% or lower(p.user.username) like %:search% or lower(p.user.location) like %:search%")
+    @Query(value = "SELECT p from Payment as p where p.chargeId = :search  or lower(p.user.email) like %:search% or lower(p.user.username) like %:search% or lower(p.user.location) like %:search%")
     Page<Payment> searchPayments(@PageableDefault Pageable pageable, @Param("search") String search);
 
 }

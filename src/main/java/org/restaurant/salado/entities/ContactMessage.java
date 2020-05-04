@@ -42,6 +42,9 @@ public class ContactMessage implements Serializable {
     @Column(name = "time")
     private Date time;
 
+    @Column(name = "responded")
+    private boolean responded;
+
     @PrePersist
     void createdAt() {
         this.time = new Date();

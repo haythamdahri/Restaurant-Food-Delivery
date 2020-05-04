@@ -20,6 +20,8 @@ public interface EmailService {
 
     CompletableFuture<Boolean> sendUpdateUserMailEmail(String token, String to, String subject);
 
+    CompletableFuture<Boolean> sendContactMessageEmail(String to, String subject, String response);
+
     CompletableFuture<Boolean> sendMessageWithAttachment(String to, String subject, String text, String pathToAttachment);
 
 }

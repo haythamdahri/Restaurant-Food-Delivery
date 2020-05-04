@@ -30,11 +30,11 @@ public interface MealRepository extends JpaRepository<Meal, Long> {
 
     Page<Meal> findTop10ByDeletedFalseOrderByViewsDesc(@PageableDefault Pageable pageable);
 
-    @Query("SELECT m from Meal as m where m.deleted = false and (CONCAT(m.id, '') like %:search% or lower(m.name) like %:search% or CONCAT(m.price, '') like %:search% or " +
+    @Query(value = "SELECT m from Meal as m where m.deleted = false and (CONCAT(m.id, '') like %:search% or lower(m.name) like %:search% or CONCAT(m.salePrice, '') like %:search% or CONCAT(m.price, '') like %:search% or " +
             "CONCAT(m.views, '') like %:search% or CONCAT(m.stock, '') like %:search%)")
     Page<Meal> searchMeals(@PageableDefault Pageable pageable, String search);
 
-    @Query("SELECT m from Meal as m where CONCAT(m.id, '') like %:search% or lower(m.name) like %:search% or CONCAT(m.price, '') like %:search% or " +
+    @Query(value = "SELECT m from Meal as m where CONCAT(m.id, '') like %:search% or lower(m.name) like %:search% or CONCAT(m.salePrice, '') like %:search% or CONCAT(m.price, '') like %:search% or " +
             "CONCAT(m.views, '') like %:search% or CONCAT(m.stock, '') like %:search%")
     Page<Meal> searchAllMeals(@PageableDefault Pageable pageable, String search);
 

@@ -26,7 +26,7 @@ public interface ReviewRepository extends JpaRepository<Review, Long> {
 
     Page<Review> findByMealIdAndApprovedTrueOrderById(@PageableDefault Pageable pageable, Long mealId);
 
-    @Query("SELECT r from Review as r where lower(CONCAT(r.id, '')) like %:search% or lower(CONCAT(r.timestamp, '')) like %:search% or lower(CONCAT(r.approved, '')) like %:search% or " +
+    @Query(value = "SELECT r from Review as r where lower(CONCAT(r.id, '')) like %:search% or lower(CONCAT(r.timestamp, '')) like %:search% or lower(CONCAT(r.approved, '')) like %:search% or " +
             "lower(r.comment) like %:search% or lower(r.user.email) like %:search% or lower(r.user.username) like %:search% " +
             "or lower(r.user.location) like %:search% or lower(r.meal.name) like %:search%")
     Page<Review> searchReviews(@PageableDefault Pageable pageable, @Param(value = "search") String search);

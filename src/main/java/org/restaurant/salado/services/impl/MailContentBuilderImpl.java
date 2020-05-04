@@ -19,6 +19,7 @@ public class MailContentBuilderImpl implements MailContentBuilder {
     private static final String HOST = "host";
     private static final String PAYMENT_ID = "paymentId";
     private static final String TIMESTAMP = "timestamp";
+    private static final String RESPONSE = "response";
 
     private SpringTemplateEngine templateEngine;
 
@@ -68,6 +69,14 @@ public class MailContentBuilderImpl implements MailContentBuilder {
         context.setVariable(TIMESTAMP, timestamp);
         context.setVariable(HOST, this.hostname);
         return templateEngine.process("mailing/post-payment", context);
+    }
+
+    @Override
+    public String buildContactMessageResponseEmail(String response) {
+        Context context = new Context();
+        context.setVariable(RESPONSE, response);
+        context.setVariable(HOST, this.hostname);
+        return templateEngine.process("mailing/contact-message-response", context);
     }
 
 }

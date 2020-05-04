@@ -12,13 +12,9 @@ import javax.validation.constraints.NotNull;
 @Data
 @NoArgsConstructor
 @AllArgsConstructor
-public class UserRequest {
+public class ContactMessageResponse {
 
     @NotNull
-    private String email;
-    @NotNull
-    private String username;
-    @NotNull
-    private String location;
+    private String response;
 
 }

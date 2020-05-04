@@ -14,6 +14,7 @@ import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
 import javax.transaction.Transactional;
+import javax.validation.Valid;
 import java.io.IOException;
 import java.util.HashMap;
 import java.util.List;
@@ -59,7 +60,7 @@ public class MealRestController {
      */
     @PreAuthorize("hasRole('ROLE_EMPLOYEE') or hasRole('ROLE_ADMIN')")
     @PostMapping(path = "/", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
-    public ResponseEntity<Meal> saveMealEndPoint(@ModelAttribute MealRequest mealRequest) throws IOException {
+    public ResponseEntity<Meal> saveMealEndPoint(@Valid @ModelAttribute MealRequest mealRequest) throws IOException {
         return ResponseEntity.ok(this.mealService.saveMeal(mealRequest));
     }
 

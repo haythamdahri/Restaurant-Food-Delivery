@@ -17,4 +17,6 @@ public interface MailContentBuilder {
 
     String buildPostChargeEmail(Long paymentId, Date timestamp);
 
+    String buildContactMessageResponseEmail(String message);
+
 }

@@ -86,6 +86,19 @@ public class EmailServiceImpl implements EmailService {
         }
     }
 
+    @Override
+    public CompletableFuture<Boolean> sendContactMessageEmail(String to, String subject, String response) {
+        try {
+            MimeMessage message = this.mailSender.createMimeMessage();
+            String templateText = this.mailContentBuilder.buildContactMessageResponseEmail(response);
+            MimeMessageHelper helper = RestaurantUtils.buildMimeMessageHelper(this.from, to, subject, templateText, message, true);
+            this.mailSender.send(helper.getMimeMessage());
+            return CompletableFuture.completedFuture(true);
+        } catch (Exception ex) {
+            return CompletableFuture.completedFuture(false);
+        }
+    }
+
     /**
      * Send professional email message with template implementation
      *
