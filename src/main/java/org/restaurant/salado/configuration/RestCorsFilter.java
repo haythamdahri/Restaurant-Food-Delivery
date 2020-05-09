@@ -8,6 +8,8 @@ import javax.servlet.*;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
+import java.util.Arrays;
+import java.util.List;
 
 /**
  * @author Haytham DAHRI
@@ -17,6 +19,8 @@ import java.io.IOException;
 @Order(Ordered.HIGHEST_PRECEDENCE)
 public class RestCorsFilter implements Filter {
 
+    private final List<String> allowedOrigins = Arrays.asList("http://localhost:4200", "http://localhost:3000");
+
     /**
      * Define doFilter method
      * Set response headers and allow OPTIONS method
@@ -24,9 +28,12 @@ public class RestCorsFilter implements Filter {
     @Override
     public void doFilter(ServletRequest req, ServletResponse res, FilterChain chain) throws IOException, ServletException {
         final HttpServletResponse response = (HttpServletResponse) res;
-        response.setHeader("Access-Control-Allow-Origin", "*");
+        final HttpServletRequest request = (HttpServletRequest) req;
+        String origin = request.getHeader("Origin");
+        response.setHeader("Access-Control-Allow-Credentials", "true");
+        response.setHeader("Access-Control-Allow-Origin", allowedOrigins.contains(origin) ? origin : "");
         response.setHeader("Access-Control-Allow-Methods", "POST, PUT, GET, OPTIONS, DELETE, PATCH");
-        response.setHeader("Access-Control-Allow-Headers", "Authorization, Content-Type, token");
+        response.setHeader("Access-Control-Allow-Headers", "Authorization, Content-Type, token, Origin, X-Requested-With, Content-Type, Accept, X-CSRF-TOKEN");
         response.setHeader("Access-Control-Max-Age", "3600");
         if ("OPTIONS".equalsIgnoreCase(((HttpServletRequest) req).getMethod())) {
             response.setStatus(HttpServletResponse.SC_OK);

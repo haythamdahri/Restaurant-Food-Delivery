@@ -94,6 +94,7 @@ public class WebSecurityConfiguration extends WebSecurityConfigurerAdapter {
                 "/api/v1/users/**").permitAll()
                 // Allow POST request for password request
                 .antMatchers(HttpMethod.POST, "/api/v1/users/passwordreset").permitAll()
+                .antMatchers("/wschat/**").permitAll()
                 .antMatchers(HttpMethod.OPTIONS, "/**").permitAll()
                 // all other requests need to be authenticated
                 .anyRequest().authenticated().and().
