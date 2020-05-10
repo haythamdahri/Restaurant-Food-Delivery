@@ -1,17 +1,18 @@
 package org.restaurant.salado.controllers;
 
-import org.restaurant.salado.builders.RestaurantBuilder;
+import org.restaurant.salado.helpers.RestaurantHelper;
 import org.restaurant.salado.entities.ChatMessage;
 import org.restaurant.salado.entities.ChatMessageType;
 import org.restaurant.salado.models.ChatMessageRequest;
+import org.restaurant.salado.providers.KafkaConstants;
 import org.restaurant.salado.services.ChatMessageService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
+import org.springframework.kafka.core.KafkaTemplate;
 import org.springframework.messaging.handler.annotation.MessageMapping;
 import org.springframework.messaging.handler.annotation.Payload;
 import org.springframework.messaging.handler.annotation.SendTo;
 import org.springframework.messaging.simp.SimpMessageHeaderAccessor;
-import org.springframework.messaging.simp.SimpMessagingTemplate;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
@@ -27,23 +28,23 @@ import java.util.Objects;
 @RequestMapping(path = "/api/v1/chat")
 public class ChatRestController {
 
-    private SimpMessagingTemplate template;
-    private RestaurantBuilder restaurantBuilder;
+    private KafkaTemplate<String, ChatMessage> kafkaTemplate;
+    private RestaurantHelper restaurantHelper;
     private ChatMessageService chatMessageService;
 
     @Autowired
-    public void setTemplate(SimpMessagingTemplate template) {
-        this.template = template;
-    }
-
-    @Autowired
-    public void setRestaurantBuilder(RestaurantBuilder restaurantBuilder) {
-        this.restaurantBuilder = restaurantBuilder;
+    public void setRestaurantHelper(RestaurantHelper restaurantHelper) {
+        this.restaurantHelper = restaurantHelper;
     }
 
     @Autowired
     public void setChatMessageService(ChatMessageService chatMessageService) {
         this.chatMessageService = chatMessageService;
+    }
+
+    @Autowired
+    public void setKafkaTemplate(KafkaTemplate<String, ChatMessage> kafkaTemplate) {
+        this.kafkaTemplate = kafkaTemplate;
     }
 
     /**
@@ -59,54 +60,33 @@ public class ChatRestController {
     }
 
     /*-------------------- Group (Public) chat--------------------*/
-    @MessageMapping("/sendMessage")
+    /**
+     * Notify users in Queue about a user joining or leave
+     * @param chatMessageRequest: ChatMessageRequest Object
+     */
+    @MessageMapping(value = {"/addUser", "/removeUser"})
     @SendTo("/topic/public")
-    public ChatMessage sendMessage(@Payload ChatMessageRequest chatMessageRequest) {
-        ChatMessage chatMessage = this.restaurantBuilder.buildChatMessage(chatMessageRequest);
-        // Save ChatMessage in database if MessageType is MESSAGE
-        if( chatMessage.getMessageType().equals(ChatMessageType.MESSAGE) ) {
-            chatMessage = this.chatMessageService.saveMessageService(chatMessage);
-        }
-        return chatMessage;
-    }
-
-    @MessageMapping("/addUser")
-    @SendTo("/topic/public")
-    public ChatMessage addUser(@Payload ChatMessageRequest chatMessageRequest, SimpMessageHeaderAccessor headerAccessor) {
-        // Add user in web socket session
-        ChatMessage chatMessage = this.restaurantBuilder.buildChatMessage(chatMessageRequest);
-        // Save ChatMessage in database if MessageType is MESSAGE
-        if( chatMessage.getMessageType().equals(ChatMessageType.MESSAGE) ) {
-            chatMessage = this.chatMessageService.saveMessageService(chatMessage);
-        }
-        Objects.requireNonNull(headerAccessor.getSessionAttributes()).put("user", chatMessage.getSender().getId().toString());
-        return chatMessage;
+    public void addUser(@Payload ChatMessageRequest chatMessageRequest) {
+        // Put message in the Queue to intercept in KafkaListener
+        this.kafkaTemplate.send(KafkaConstants.KAFKA_USER_TOPIC, this.restaurantHelper.createChatMessage(chatMessageRequest));
     }
 
 
     /*--------------------Private chat--------------------*/
+
+    /**
+     * Send Private Message Handler
+     * @param chatMessageRequest: ChatMessageRequest Object
+     */
     @MessageMapping("/sendPrivateMessage")
     //@SendTo("/queue/reply")
     public void sendPrivateMessage(@Payload ChatMessageRequest chatMessageRequest) {
-        ChatMessage chatMessage = this.restaurantBuilder.buildChatMessage(chatMessageRequest);
+        ChatMessage chatMessage = this.restaurantHelper.createChatMessage(chatMessageRequest);
         // Save ChatMessage in database if MessageType is MESSAGE
         if( chatMessage.getMessageType().equals(ChatMessageType.MESSAGE) ) {
             chatMessage = this.chatMessageService.saveMessageService(chatMessage);
         }
-        this.template.convertAndSendToUser(
-                chatMessage.getReceiver().getId().toString(), "/reply", chatMessage);
-    }
-
-    @MessageMapping("/addPrivateUser")
-    @SendTo("/queue/reply")
-    public ChatMessage addPrivateUser(@Payload ChatMessageRequest chatMessageRequest, SimpMessageHeaderAccessor headerAccessor) {
-        ChatMessage chatMessage = this.restaurantBuilder.buildChatMessage(chatMessageRequest);
-        // Save ChatMessage in database if MessageType is MESSAGE
-        if( chatMessage.getMessageType().equals(ChatMessageType.MESSAGE) ) {
-            chatMessage = this.chatMessageService.saveMessageService(chatMessage);
-        }
-        // Add user in web socket session
-        Objects.requireNonNull(headerAccessor.getSessionAttributes()).put("private-user", chatMessage.getSender().getId().toString());
-        return chatMessage;
+        // Put message in the Queue to intercept in KafkaListener
+        this.kafkaTemplate.send(KafkaConstants.KAFKA_PRIVATE_TOPIC, chatMessage);
     }
 }

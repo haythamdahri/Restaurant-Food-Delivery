@@ -1,7 +1,6 @@
-package org.restaurant.salado.builders;
+package org.restaurant.salado.helpers;
 
 import org.restaurant.salado.entities.ChatMessage;
-import org.restaurant.salado.entities.ChatMessageType;
 import org.restaurant.salado.models.ChatMessageRequest;
 import org.restaurant.salado.services.UserService;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -11,7 +10,7 @@ import org.springframework.stereotype.Component;
  * @author Haytham DAHRI
  */
 @Component
-public class RestaurantBuilder {
+public class RestaurantHelper {
 
     private UserService userService;
 
@@ -20,7 +19,7 @@ public class RestaurantBuilder {
         this.userService = userService;
     }
 
-    public ChatMessage buildChatMessage(ChatMessageRequest chatMessageRequest) {
+    public ChatMessage createChatMessage(ChatMessageRequest chatMessageRequest) {
         ChatMessage chatMessage = new ChatMessage();
         chatMessage.setId(null);
         chatMessage.setSender(this.userService.getUser(chatMessageRequest.getSenderId()));
