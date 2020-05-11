@@ -29,6 +29,7 @@ import javax.transaction.Transactional;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.IOException;
+import java.time.Instant;
 import java.util.*;
 
 /**
@@ -323,6 +324,17 @@ public class UserServiceImpl implements UserService {
     }
 
     @Override
+    public User updateUserOnlineStatus(Long id, boolean online) {
+        User user = this.userRepository.findById(id).orElseThrow(BusinessException::new);
+        user.setOnline(online);
+        // Check if User is disconnect to set lastOnlineTime
+        if( !online ) {
+            user.setLastOnlineTime(Date.from(Instant.now()));
+        }
+        return this.userRepository.save(user);
+    }
+
+    @Override
     public User getUser(String email) {
         return this.userRepository.findByEmail(email).orElse(null);
     }
@@ -367,4 +379,10 @@ public class UserServiceImpl implements UserService {
         // Return by search
         return this.userRepository.findBySpecificRolesAndSearchPage(PageRequest.of(page, size, Sort.Direction.DESC, "id"), Collections.singletonList(RoleType.ROLE_USER), search);
     }
+
+    @Override
+    public List<User> getUsers(String exclusionCriteria) {
+        return this.userRepository.searchUserWithExclusion(exclusionCriteria);
+    }
+
 }

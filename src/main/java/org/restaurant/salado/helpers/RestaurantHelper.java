@@ -23,7 +23,10 @@ public class RestaurantHelper {
         ChatMessage chatMessage = new ChatMessage();
         chatMessage.setId(null);
         chatMessage.setSender(this.userService.getUser(chatMessageRequest.getSenderId()));
-        chatMessage.setReceiver(this.userService.getUser(chatMessageRequest.getReceiverId()));
+        // Set Receiver if its IDENTIFIER exists in the request object
+        if( chatMessageRequest.getReceiverId() != null ) {
+            chatMessage.setReceiver(this.userService.getUser(chatMessageRequest.getReceiverId()));
+        }
         chatMessage.setContent(chatMessageRequest.getContent());
         chatMessage.setMessageType(chatMessageRequest.getMessageType());
         return chatMessage;

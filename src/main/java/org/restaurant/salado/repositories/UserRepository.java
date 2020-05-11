@@ -29,6 +29,9 @@ public interface UserRepository extends JpaRepository<User, Long> {
     @RestResource(path = "existsByEmail", rel = "checkUserExisting")
     boolean existsByEmail(@Param("email") String email);
 
+    @Query("SELECT u FROM User u where CONCAT(u.id, '') <> :criteria and u.email <> :criteria order by u.online desc")
+    List<User> searchUserWithExclusion(@Param("criteria") String criteria);
+
     Optional<User> findByEmailAndEnabledIsTrue(@Param("email") String email);
 
     Optional<User> findByToken(@Param("token") String token);

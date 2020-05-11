@@ -10,6 +10,7 @@ import lombok.NoArgsConstructor;
 import javax.persistence.*;
 import java.io.Serializable;
 import java.sql.Timestamp;
+import java.time.LocalDate;
 import java.util.*;
 
 /**
@@ -40,6 +41,13 @@ public class User implements Serializable {
 
     @Column(name = "enabled")
     private boolean enabled;
+
+    @Column(name = "online")
+    private boolean online = false;
+
+    @Temporal(TemporalType.TIMESTAMP)
+    @Column(name = "last_online_time")
+    private Date lastOnlineTime;
 
     @OneToOne(cascade = CascadeType.ALL, fetch = FetchType.EAGER, targetEntity = RestaurantFile.class)
     @JoinColumn(name = "image_id")

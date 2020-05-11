@@ -20,6 +20,8 @@ public interface UserService {
 
     User saveUser(User user);
 
+    User updateUserOnlineStatus(Long id, boolean online);
+
     User saveUser(Long id, UserRequest userRequest);
 
     Boolean requestUserPasswordReset(String email);
@@ -51,6 +53,8 @@ public interface UserService {
     boolean deleteUser(Long id);
 
     List<User> getUsers();
+
+    List<User> getUsers(String exclusionCriteria);
 
     List<User> getBasicUsers(String search);
 
