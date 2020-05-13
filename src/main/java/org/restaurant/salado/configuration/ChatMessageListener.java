@@ -1,22 +1,19 @@
 package org.restaurant.salado.configuration;
 
+import lombok.extern.log4j.Log4j2;
 import org.restaurant.salado.entities.ChatMessage;
-import org.restaurant.salado.entities.ChatMessageType;
+import org.restaurant.salado.providers.Constants;
 import org.restaurant.salado.providers.KafkaConstants;
-import org.restaurant.salado.services.UserService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.kafka.annotation.KafkaListener;
 import org.springframework.messaging.simp.SimpMessagingTemplate;
-import org.springframework.messaging.simp.stomp.StompHeaderAccessor;
 import org.springframework.stereotype.Component;
-import org.springframework.web.socket.messaging.SessionDisconnectEvent;
-
-import java.util.Objects;
 
 /**
  * @author Haytham DAHRI
  */
 @Component
+@Log4j2
 public class ChatMessageListener {
 
     private SimpMessagingTemplate template;
@@ -28,6 +25,7 @@ public class ChatMessageListener {
 
     /**
      * Handle private Messages
+     *
      * @param chatMessage: ChatMessage Object
      */
     @KafkaListener(
@@ -35,12 +33,16 @@ public class ChatMessageListener {
             groupId = KafkaConstants.GROUP_ID
     )
     public void listenToPrivateMessages(ChatMessage chatMessage) {
-        System.out.println("sending via kafka listener | Private Message ...");
-        this.template.convertAndSendToUser(String.valueOf(chatMessage.getReceiver().getId() + chatMessage.getSender().getId()), "/reply", chatMessage);
+        log.info("sending via kafka listener | Private Message ...");
+        final String senderChannel = chatMessage.getSender().getId().toString() + Constants.CHANNEL_SEPARATOR + chatMessage.getReceiver().getId().toString();
+        final String receiverChannel = chatMessage.getReceiver().getId().toString() + Constants.CHANNEL_SEPARATOR + chatMessage.getSender().getId().toString();
+        this.template.convertAndSendToUser(senderChannel, "/reply", chatMessage);
+        this.template.convertAndSendToUser(receiverChannel, "/reply", chatMessage);
     }
 
     /**
      * Listen to users joining and leave
+     *
      * @param chatMessage: ChatMessage Object
      */
     @KafkaListener(
@@ -48,7 +50,7 @@ public class ChatMessageListener {
             groupId = KafkaConstants.GROUP_ID
     )
     public void listenToUsersJoiningAndLeave(ChatMessage chatMessage) {
-        System.out.println("sending via kafka listener | Joined or Left User ...");
+        log.info("sending via kafka listener | Joined or Left User ...");
         this.template.convertAndSend("/topic/public", chatMessage);
     }
 

@@ -1,10 +1,18 @@
 package org.restaurant.salado.entities;
 
+import com.fasterxml.jackson.annotation.JsonFormat;
+import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
+import com.fasterxml.jackson.databind.annotation.JsonSerialize;
+import com.fasterxml.jackson.datatype.jsr310.deser.LocalDateTimeDeserializer;
+import com.fasterxml.jackson.datatype.jsr310.ser.LocalDateTimeSerializer;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
+import org.hibernate.annotations.CreationTimestamp;
 
 import javax.persistence.*;
+import java.time.Instant;
+import java.time.LocalDateTime;
 import java.util.Date;
 
 /**
@@ -46,13 +54,13 @@ public class ChatMessage {
 
     @PrePersist
     private void prePersist() {
-        this.timestamp = new Date();
+        this.timestamp = Date.from(Instant.now());
     }
 
     @Override
     public String toString() {
         return "ChatMessage(id=" + this.id + ", sender=" + this.sender.getId() + ", receiver=" + this.receiver.getId() + ", content="
-                + this.content +", timestamp=" + this.timestamp + ", read=" + this.read + ")";
+                + this.content + ", timestamp=" + this.timestamp + ", read=" + this.read + ")";
     }
 
 }
