@@ -115,7 +115,7 @@ public class ChatRestController {
     public void sendPrivateMessage(@Payload ChatMessageRequest chatMessageRequest) {
         ChatMessage chatMessage = this.restaurantHelper.createChatMessage(chatMessageRequest);
         // Save ChatMessage in database if MessageType is MESSAGE
-        if (chatMessage.getMessageType().equals(ChatMessageType.MESSAGE)) {
+        if (chatMessage.getMessageType().equals(ChatMessageType.MESSAGE) && chatMessage.getContent().length() > 0) {
             chatMessage = this.chatMessageService.saveMessageService(chatMessage);
         }
         // Put message in the Queue to intercept in KafkaListener

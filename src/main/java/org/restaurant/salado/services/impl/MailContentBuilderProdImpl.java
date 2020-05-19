@@ -3,6 +3,7 @@ package org.restaurant.salado.services.impl;
 import org.restaurant.salado.services.MailContentBuilder;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.context.annotation.Profile;
 import org.springframework.stereotype.Service;
 import org.thymeleaf.context.Context;
 import org.thymeleaf.spring5.SpringTemplateEngine;
@@ -13,7 +14,8 @@ import java.util.Date;
  * @author Haytam DAHRI
  */
 @Service
-public class MailContentBuilderImpl implements MailContentBuilder {
+@Profile("prod")
+public class MailContentBuilderProdImpl implements MailContentBuilder {
 
     private static final String TOKEN = "token";
     private static final String HOST = "host";
@@ -23,7 +25,7 @@ public class MailContentBuilderImpl implements MailContentBuilder {
 
     private SpringTemplateEngine templateEngine;
 
-    @Value("${HOSTNAME}")
+    @Value("${HOST_SERVER}")
     private String hostname;
 
     @Autowired

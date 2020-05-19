@@ -1,5 +1,6 @@
 package org.restaurant.salado.configuration;
 
+import org.springframework.context.annotation.Profile;
 import org.springframework.core.Ordered;
 import org.springframework.core.annotation.Order;
 import org.springframework.stereotype.Component;
@@ -17,7 +18,8 @@ import java.util.List;
  */
 @Component
 @Order(Ordered.HIGHEST_PRECEDENCE)
-public class RestCorsFilter implements Filter {
+@Profile("dev")
+public class RestDevCorsFilter implements Filter {
 
     private final List<String> allowedOrigins = Arrays.asList("http://localhost:4200", "http://localhost:3000");
 

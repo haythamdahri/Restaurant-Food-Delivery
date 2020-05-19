@@ -4,7 +4,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
-import org.springframework.context.annotation.Profile;
 import org.springframework.http.HttpMethod;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.config.annotation.authentication.builders.AuthenticationManagerBuilder;
@@ -89,11 +88,10 @@ public class WebSecurityConfiguration extends WebSecurityConfigurerAdapter {
                 "/api/meals",
                 "/api/v1/meals/**",
                 "/api/v1/reviews/**",
-                "/api/contactmessages",
                 "/api/users/search/existsByEmail",
                 "/api/v1/users/**").permitAll()
                 // Allow POST request for password request
-                .antMatchers(HttpMethod.POST, "/api/v1/users/passwordreset").permitAll()
+                .antMatchers(HttpMethod.POST, "/api/contactmessages", "/api/v1/users/passwordreset").permitAll()
                 .antMatchers("/wschat/**").permitAll()
                 .antMatchers(HttpMethod.OPTIONS, "/**").permitAll()
                 // all other requests need to be authenticated

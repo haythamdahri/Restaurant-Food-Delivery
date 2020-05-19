@@ -9,6 +9,7 @@ import org.junit.runner.RunWith;
 import org.restaurant.salado.entities.Meal;
 import org.restaurant.salado.entities.RestaurantFile;
 import org.restaurant.salado.entities.User;
+import org.restaurant.salado.providers.Constants;
 import org.restaurant.salado.utils.RestaurantUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
@@ -70,8 +71,7 @@ public class RestaurantFileRestIntegrationTest {
         String RESTAURANT_FILES_FILE_URI = "/api/v1/restaurantfiles/file/{id}";
         // Retrieve file
         File file = new File("");
-        System.out.println("Path: " + Paths.get(System.getProperty("user.dir") + "/uploads/users/images/default.png"));
-        Path path = Paths.get(System.getProperty("user.dir") + "/uploads/users/images/default.png");
+        Path path = Paths.get(Constants.DEFAULT_USER_IMAGE);
         String originalFileName = "default.png";
         String name = "default";
         String contentType = MediaType.IMAGE_PNG_VALUE;

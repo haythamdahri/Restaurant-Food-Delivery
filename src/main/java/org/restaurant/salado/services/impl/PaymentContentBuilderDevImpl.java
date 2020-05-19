@@ -6,6 +6,7 @@ import org.restaurant.salado.providers.Constants;
 import org.restaurant.salado.services.PaymentContentBuilder;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.context.annotation.Profile;
 import org.springframework.core.io.InputStreamResource;
 import org.springframework.stereotype.Service;
 import org.thymeleaf.context.Context;
@@ -19,7 +20,8 @@ import java.io.IOException;
  * @author Haytham DAHRI
  */
 @Service
-public class PaymentContentBuilderImpl implements PaymentContentBuilder {
+@Profile("dev")
+public class PaymentContentBuilderDevImpl implements PaymentContentBuilder {
 
     private static final String PAYMENT = "payment";
     private static final String HOST = "host";

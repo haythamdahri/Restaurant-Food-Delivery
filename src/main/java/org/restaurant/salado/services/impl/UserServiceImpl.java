@@ -97,7 +97,7 @@ public class UserServiceImpl implements UserService {
         // Generate user token and expiration date
         // Add user role
         // Set user default image
-        File file = new File("uploads/users/images/default.png");
+        File file = new File(Constants.DEFAULT_USER_IMAGE);
         RestaurantFile restaurantFile = new RestaurantFile(null, FilenameUtils.removeExtension(file.getName()), RestaurantUtils.getExtensionByApacheCommonLib(file.getName()), MediaType.IMAGE_PNG.toString(), IOUtils.toByteArray(new FileInputStream(file)), null);
         restaurantFile = this.restaurantFileService.saveRestaurantFile(restaurantFile);
         user.setImage(restaurantFile);
@@ -328,7 +328,7 @@ public class UserServiceImpl implements UserService {
         User user = this.userRepository.findById(id).orElseThrow(BusinessException::new);
         user.setOnline(online);
         // Check if User is disconnect to set lastOnlineTime
-        if( !online ) {
+        if (!online) {
             user.setLastOnlineTime(Date.from(Instant.now()));
         }
         return this.userRepository.save(user);

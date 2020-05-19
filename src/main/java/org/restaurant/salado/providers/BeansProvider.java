@@ -4,6 +4,7 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.web.client.RestTemplateBuilder;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.context.annotation.Profile;
 import org.springframework.mail.javamail.JavaMailSender;
 import org.springframework.mail.javamail.JavaMailSenderImpl;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
@@ -80,6 +81,8 @@ public class BeansProvider {
                     "classpath:/static/", "classpath:/public/"
             };
 
+            private final String FILES_RESOURCE_LOCATIONS = "file:" + Constants.UPLOAD_DIR + "/";
+
             @Override
             public void addCorsMappings(CorsRegistry registry) {
                 registry.addMapping("/**").allowCredentials(true).allowedOrigins("http://localhost:8080")
@@ -90,7 +93,7 @@ public class BeansProvider {
 
             @Override
             public void addResourceHandlers(ResourceHandlerRegistry registry) {
-                registry.addResourceHandler("/uploads/**").addResourceLocations("file:uploads/");
+                registry.addResourceHandler("/uploads/**").addResourceLocations(FILES_RESOURCE_LOCATIONS);
                 registry.addResourceHandler("/static/**").addResourceLocations(CLASSPATH_RESOURCE_LOCATIONS);
             }
 

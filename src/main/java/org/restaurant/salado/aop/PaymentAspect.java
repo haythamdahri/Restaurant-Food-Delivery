@@ -24,7 +24,7 @@ public class PaymentAspect {
      * @param joinPoint: JoinPoint object
      * @param result:    Returned object
      */
-    @AfterReturning(pointcut = "execution(* org.restaurant.salado.services.impl.PaymentContentBuilderImpl.buildPaymentContent(..))", returning = "result")
+    @AfterReturning(pointcut = "execution(* org.restaurant.salado.services.impl.PaymentContentBuilderDevImpl.buildPaymentContent(..))", returning = "result")
     public void removeFileAfterReturningPaymentDetailsFile(JoinPoint joinPoint, Object result) throws IOException {
         // Retrieve parameters
         Object[] args = joinPoint.getArgs();

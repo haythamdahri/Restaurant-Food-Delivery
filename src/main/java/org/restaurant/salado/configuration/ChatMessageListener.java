@@ -34,8 +34,8 @@ public class ChatMessageListener {
     )
     public void listenToPrivateMessages(ChatMessage chatMessage) {
         log.info("sending via kafka listener | Private Message ...");
-        final String senderChannel = chatMessage.getSender().getId().toString() + Constants.CHANNEL_SEPARATOR + chatMessage.getReceiver().getId().toString();
-        final String receiverChannel = chatMessage.getReceiver().getId().toString() + Constants.CHANNEL_SEPARATOR + chatMessage.getSender().getId().toString();
+        final String senderChannel = chatMessage.getSender().getId().toString() + Constants.CHANNELS_SEPARATOR + chatMessage.getReceiver().getId().toString();
+        final String receiverChannel = chatMessage.getReceiver().getId().toString() + Constants.CHANNELS_SEPARATOR + chatMessage.getSender().getId().toString();
         this.template.convertAndSendToUser(senderChannel, "/reply", chatMessage);
         this.template.convertAndSendToUser(receiverChannel, "/reply", chatMessage);
     }

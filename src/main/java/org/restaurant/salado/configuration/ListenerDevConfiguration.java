@@ -6,6 +6,7 @@ import org.restaurant.salado.entities.ChatMessage;
 import org.restaurant.salado.providers.KafkaConstants;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.context.annotation.Profile;
 import org.springframework.kafka.annotation.EnableKafka;
 import org.springframework.kafka.config.ConcurrentKafkaListenerContainerFactory;
 import org.springframework.kafka.core.ConsumerFactory;
@@ -20,7 +21,8 @@ import java.util.Map;
  */
 @EnableKafka
 @Configuration
-public class ListenerConfiguration {
+@Profile("dev")
+public class ListenerDevConfiguration {
     @Bean
     ConcurrentKafkaListenerContainerFactory<String, ChatMessage> kafkaListenerContainerFactory() {
         ConcurrentKafkaListenerContainerFactory<String, ChatMessage> factory = new ConcurrentKafkaListenerContainerFactory<>();
@@ -36,7 +38,7 @@ public class ListenerConfiguration {
     @Bean
     public Map<String, Object> consumerConfigurations() {
         Map<String, Object> configurations = new HashMap<>();
-        configurations.put(ConsumerConfig.BOOTSTRAP_SERVERS_CONFIG, KafkaConstants.KAFKA_BROKER);
+        configurations.put(ConsumerConfig.BOOTSTRAP_SERVERS_CONFIG, KafkaConstants.KAFKA_DEV_BROKER);
         configurations.put(ConsumerConfig.GROUP_ID_CONFIG, KafkaConstants.GROUP_ID);
         configurations.put(ConsumerConfig.KEY_DESERIALIZER_CLASS_CONFIG, StringDeserializer.class);
         configurations.put(ConsumerConfig.VALUE_DESERIALIZER_CLASS_CONFIG, JsonDeserializer.class);

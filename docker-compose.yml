@@ -7,16 +7,38 @@ services:
     container_name: zookepeer-server
     ports:
       - 2181:2181
+    networks:
+      - restaurant-network
+    deploy:
+      resources:
+        limits:
+          cpus: '0.01'
+          memory: 300M
+        reservations:
+          cpus: '0.001'
+          memory: 200M
     volumes:
       - zookeeper_data:/bitnami
     environment:
       - ALLOW_ANONYMOUS_LOGIN=yes
+    restart: unless-stopped
+
   kafka:
     hostname: kafka
     image: bitnami/kafka:latest
     container_name: kafka-server
     ports:
       - 9092:9092
+    networks:
+      - restaurant-network
+    deploy:
+      resources:
+        limits:
+          cpus: '0.01'
+          memory: 300M
+        reservations:
+          cpus: '0.001'
+          memory: 200M
     volumes:
       - kafka_data:/bitnami
     environment:
@@ -25,9 +47,50 @@ services:
       - KAFKA_CREATE_TOPICS=kafka-private-chat,kafka-public-user
     depends_on:
       - zookeeper
+    restart: unless-stopped
+
+  postgres-server:
+    hostname: postgres-server
+    image: postgres:latest
+    container_name: postgres-db
+    ports:
+      - 5432:5432
+    networks:
+      - restaurant-network
+    env_file:
+      - database.env
+    restart: always
+
+  restaurant-service:
+    hostname: restaurant-service
+    container_name: restaurant-service
+    build:
+      context: ./
+    ports:
+      - 8080:8080
+    networks:
+      - restaurant-network
+    environment:
+      - HOST_SERVER=http://localhost
+    deploy:
+      resources:
+        limits:
+          cpus: '0.01'
+          memory: 300M
+        reservations:
+          cpus: '0.001'
+          memory: 200M
+    depends_on:
+      - zookeeper
+      - postgres-server
+    restart: unless-stopped
 
 volumes:
   zookeeper_data:
     driver: local
   kafka_data:
     driver: local
+
+networks: 
+  restaurant-network:
+    driver: bridge

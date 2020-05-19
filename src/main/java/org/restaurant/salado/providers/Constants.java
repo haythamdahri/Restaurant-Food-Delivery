@@ -9,6 +9,10 @@ import java.util.List;
  */
 public class Constants {
 
+    public static final String UPLOAD_DIR = System.getProperty("user.home") + "/restaurant-files/uploads";
+    public static final String DEFAULT_USER_IMAGE = UPLOAD_DIR + "/users/images/default.png";
+    public static final String DEFAULT_MEAL_IMAGE = UPLOAD_DIR + "/meals/images/meal.jpg";
+
     public static final BigDecimal SHIPPING_FEES = BigDecimal.valueOf(50.00);
     public static final int DEFAULT_PAGE_SIZE = 5;
     public static final List<String> IMAGE_CONTENT_TYPES = Arrays.asList("image/png", "image/jpeg", "image/gif");
@@ -38,9 +42,9 @@ public class Constants {
     public static final String MEAL_ORDER_QUANTITY_UPDATED_SUCCESSFULLY = "Meal order has been removed from your cart successfully";
     public static final String NO_ORDER_IN_PROGRESS = "No order in place, please add products to your cart!";
 
-    public static final String PDF_OUTPUT_DIRECTORY = "target/payment-ID.pdf";
+    public static final String PDF_OUTPUT_DIRECTORY = UPLOAD_DIR + "/payments/payment-ID.pdf";
 
-    public static final String CHANNEL_SEPARATOR = "@";
+    public static final String CHANNELS_SEPARATOR = "@";
 
     private Constants() {
 
