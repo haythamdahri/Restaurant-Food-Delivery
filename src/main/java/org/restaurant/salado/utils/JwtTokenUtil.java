@@ -1,4 +1,4 @@
-package org.restaurant.salado.configuration;
+package org.restaurant.salado.utils;
 
 import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.Jwts;

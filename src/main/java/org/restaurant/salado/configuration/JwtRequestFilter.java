@@ -1,6 +1,7 @@
 package org.restaurant.salado.configuration;
 
 import io.jsonwebtoken.ExpiredJwtException;
+import org.restaurant.salado.utils.JwtTokenUtil;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;

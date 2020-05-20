@@ -1,6 +1,6 @@
 package org.restaurant.salado.controllers;
 
-import org.restaurant.salado.configuration.JwtTokenUtil;
+import org.restaurant.salado.utils.JwtTokenUtil;
 import org.restaurant.salado.models.JwtRequest;
 import org.restaurant.salado.models.JwtResponse;
 import org.springframework.beans.factory.annotation.Autowired;

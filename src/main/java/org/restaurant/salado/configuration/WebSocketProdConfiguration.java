@@ -18,7 +18,7 @@ public class WebSocketProdConfiguration implements WebSocketMessageBrokerConfigu
     @Override
     public void registerStompEndpoints(StompEndpointRegistry registry) {
         // chat client will use this to connect to the server
-        registry.addEndpoint("/wschat").setAllowedOrigins("http://localhost:4200", "http://localhost:3000").withSockJS().setSupressCors(true);
+        registry.addEndpoint("/wschat").setAllowedOrigins("http://localhost", "http://localhost:81").withSockJS().setSupressCors(true);
     }
 
     @Override

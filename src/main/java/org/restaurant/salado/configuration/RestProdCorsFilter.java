@@ -21,7 +21,7 @@ import java.util.List;
 @Profile("prod")
 public class RestProdCorsFilter implements Filter {
 
-    private final List<String> allowedOrigins = Arrays.asList("http://localhost:4200", "http://localhost:3000");
+    private final List<String> allowedOrigins = Arrays.asList("http://localhost", "http://localhost:81");
 
     /**
      * Define doFilter method
