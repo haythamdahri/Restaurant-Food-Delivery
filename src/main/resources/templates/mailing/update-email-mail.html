@@ -20,7 +20,7 @@
             <br/>
             Please use the link below to activate your new email.<br />
             <i>If you didn't request email change, please ignore this message or contact us.</i>
-            <a target="_blank" th:href="@{${host} + ':4200/contact-us'}">Contact Us</a>
+            <a target="_blank" th:href="@{${host} + '/contact-us'}">Contact Us</a>
         </td>
     </tr>
     <tr>
@@ -34,7 +34,7 @@
                         style="font:12px/14px Arial, Helvetica, sans-serif; color:#f8f9fb; text-transform:uppercase; mso-padding-alt:12px 10px 10px; border-radius:2px;">
                         <a style="font-weight: bold; text-decoration:none; color:#f8f9fb; display:block; padding:12px 10px 10px;"
                            target="_blank"
-                           th:href="@{${host} + ':4200/activate-account/' + ${token}}"
+                           th:href="@{${host} + '/activate-account/' + ${token}}"
                         >Confirm email</a>
                     </td>
                 </tr>

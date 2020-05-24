@@ -21,7 +21,7 @@
             <br/>
             Please activate your account via the link below.
             <i>If you didn't create an account in our platform with this email, please ignore this message or contact us.</i>
-            <a target="_blank" th:href="@{${host} + ':4200/contact-us'}">Contact Us</a>
+            <a target="_blank" th:href="@{${host} + '/contact-us'}">Contact Us</a>
         </td>
     </tr>
     <tr>
@@ -35,7 +35,7 @@
                         style="font:12px/14px Arial, Helvetica, sans-serif; color:#f8f9fb; text-transform:uppercase; mso-padding-alt:12px 10px 10px; border-radius:2px;">
                         <a style="font-weight: bold; text-decoration:none; color:#f8f9fb; display:block; padding:12px 10px 10px;"
                            target="_blank"
-                           th:href="@{${host} + ':4200/activate-account/' + ${token}}"
+                           th:href="@{${host} + '/activate-account/' + ${token}}"
                         >Activate my account</a>
                     </td>
                 </tr>
